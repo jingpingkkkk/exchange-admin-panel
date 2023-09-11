@@ -82,7 +82,7 @@ export default function AgentForm() {
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), null], "Passwords must match")
       .required("Confirm Password is required"),
-    mobileNumber: Yup.string().matches(/^\d{10}$/, "Phone number must be 10 digits"),
+    mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
     creditPoints: Yup.number()
       .required("Credit amount is required")
       .test("creditPoints", "Credit amount exceeds available balance " + loginUserData.balance, function (value) {
@@ -122,7 +122,7 @@ export default function AgentForm() {
       .test("passwords-match", "Passwords must match", function (value) {
         return this.parent.password === value;
       }),
-    mobileNumber: Yup.string().matches(/^\d{10}$/, "Phone number must be 10 digits"),
+    mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
     creditPoints: Yup.number()
       .required("Credit amount is required")
       .test("creditPoints", "Credit amount exceeds available balance " + loginUserData.balance, function (value) {
