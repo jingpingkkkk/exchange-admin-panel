@@ -296,7 +296,14 @@ export default function AccountList() {
   };
 
   const handleDownload = async () => {
-    await downloadCSV("users/getAllUsers", searchQuery, "account.csv");
+    const params = {
+      sortBy,
+      direction,
+      searchQuery,
+      parentId,
+      role: selectedRole === "all" ? allowedRoles : [selectedRole],
+    };
+    await downloadCSV("users/getAllUsers", params, "account.csv");
   };
 
   const handleDelete = (id) => {
