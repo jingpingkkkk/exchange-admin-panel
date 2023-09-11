@@ -130,7 +130,7 @@ export default function AccountList() {
           )}
 
           {permission.ACCOUNT_MODULE.WITHDRAW && (
-            <OverlayTrigger placement="top" overlay={<Tooltip> Click here to withdrw</Tooltip>}>
+            <OverlayTrigger placement="top" overlay={<Tooltip> Click here to withdraw</Tooltip>}>
               <Button
                 variant="danger"
                 onClick={() => handleWithdrawClick(row)}
