@@ -182,8 +182,6 @@ export default function SuperAdminForm() {
             settlementDate: result.settlementDate || "",
             settlementDay: result.settlementDay || "",
             settlementTime: result.settlementTime || "",
-            isAutoSettlement: result.isAutoSettlement || "",
-            isCasinoAvailable: result.isCasinoAvailable || "",
             isCasinoAvailable: result.isCasinoAvailable || false,
             isAutoSettlement: result.isAutoSettlement || false,
           }));
@@ -205,6 +203,12 @@ export default function SuperAdminForm() {
   }, [id]);
 
   const formTitle = id ? "UPDATE SUPER ADMIN" : "CREATE SUPER ADMIN";
+
+  const handleDurationChange = (event) => {
+    formik.setFieldValue("settlementDurationType", event.target.value);
+    formik.setFieldValue("settlementDate", "");
+    formik.setFieldValue("settlementDay", "");
+  };
 
   return (
     <div>
@@ -445,7 +449,7 @@ export default function SuperAdminForm() {
               label="Settlement Duration"
               name="settlementDurationType"
               value={formik.values.settlementDurationType}
-              onChange={(event) => formik.setFieldValue("settlementDurationType", event.target.value)}
+              onChange={(event) => handleDurationChange(event)}
               error={formik.touched.settlementDurationType && formik.errors.settlementDurationType}
               isRequired="false"
               width={3}
