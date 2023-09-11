@@ -28,7 +28,7 @@ export default function UserEditForm() {
         return true;
       }),
     fullName: Yup.string().required("Full name is required"),
-    mobileNumber: Yup.string().matches(/^\d{10}$/, "Phone number must be 10 digits"),
+    mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
     city: Yup.string(),
   });
 
@@ -97,7 +97,7 @@ export default function UserEditForm() {
     creditPoints: "",
     role: "user",
     isBetLock: false,
-    isActive: true,
+    isActive: false,
     forcePasswordChange: true,
     exposureLimit: "",
     exposurePercentage: "",

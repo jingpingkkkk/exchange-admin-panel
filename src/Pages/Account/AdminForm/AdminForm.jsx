@@ -34,7 +34,7 @@ export default function AdminForm() {
     role: "admin",
     rate: "",
     isBetLock: false,
-    isActive: true,
+    isActive: false,
     forcePasswordChange: true,
     loginUserData: loginUserData,
   };
@@ -53,10 +53,14 @@ export default function AdminForm() {
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), null], "Passwords must match")
       .required("Confirm Password is required"),
-    mobileNumber: Yup.string().matches(/^\d{10}$/, "Phone number must be 10 digits"),
-    creditPoints: Yup.number()
+    mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+    creditPoints: Yup.string()
       .required("Credit amount is required")
+      .test("is-number", "Credit amount must be a valid number", function (value) {
+        return !isNaN(value);
+      })
       .test("creditPoints", "Credit amount exceeds available balance " + loginUserData.balance, function (value) {
+        console.log("here");
         const user = loginUserData;
         const creditPoints = user?.balance || 0;
         if (user?.role !== "system_owner" && value > creditPoints) {
@@ -93,9 +97,12 @@ export default function AdminForm() {
       .test("passwords-match", "Passwords must match", function (value) {
         return this.parent.password === value;
       }),
-    mobileNumber: Yup.string().matches(/^\d{10}$/, "Phone number must be 10 digits"),
-    creditPoints: Yup.number()
+    mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+    creditPoints: Yup.string()
       .required("Credit amount is required")
+      .test("is-number", "Credit amount must be a valid number", function (value) {
+        return !isNaN(value);
+      })
       .test("creditPoints", "Credit amount exceeds available balance " + loginUserData.balance, function (value) {
         const user = loginUserData;
         const creditPoints = user?.balance || 0;
@@ -252,7 +259,7 @@ export default function AdminForm() {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={formik.touched.mobileNumber && formik.errors.mobileNumber}
-                  isRequired="false"
+                  isRequired="true"
                   width={3}
                 />
 

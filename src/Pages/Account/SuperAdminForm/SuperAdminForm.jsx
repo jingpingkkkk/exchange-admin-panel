@@ -37,9 +37,13 @@ const validationSchemaForCreate = Yup.object({
     .required("Confirm Password is required"),
   currencyId: Yup.string().required("Currency is required"),
   mobileNumber: Yup.string()
-    .matches(/^\d{10}$/, "Phone number must be 10 digits")
+    .matches(/^\d{10}$/, "Mobile number must be 10 digits")
     .required("Mobile number is required"),
-  creditPoints: Yup.number().required("Credit amount is required"),
+  creditPoints: Yup.string()
+    .required("Credit amount is required")
+    .test("is-number", "Credit amount must be a valid number", function (value) {
+      return !isNaN(value);
+    }),
   rate: Yup.number()
     .required("Rate is required")
     .min(0, "Rate cannot be lower than 0")
@@ -63,8 +67,12 @@ const validationSchemaForUpdate = Yup.object({
     .test("passwords-match", "Passwords must match", function (value) {
       return this.parent.password === value;
     }),
-  mobileNumber: Yup.string().matches(/^\d{10}$/, "Phone number must be 10 digits"),
-  creditPoints: Yup.number().required("Credit amount is required"),
+  mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+  creditPoints: Yup.string()
+    .required("Credit amount is required")
+    .test("is-number", "Credit amount must be a valid number", function (value) {
+      return !isNaN(value);
+    }),
   rate: Yup.number()
     .required("Rate is required")
     .min(0, "Rate cannot be lower than 0")
@@ -106,7 +114,7 @@ export default function SuperAdminForm() {
     domainUrl: "",
     contactEmail: "",
     isBetLock: false,
-    isActive: true,
+    isActive: false,
     forcePasswordChange: true,
     availableSports: [],
     settlementDurationType: "",
@@ -182,8 +190,6 @@ export default function SuperAdminForm() {
             settlementDate: result.settlementDate || "",
             settlementDay: result.settlementDay || "",
             settlementTime: result.settlementTime || "",
-            isAutoSettlement: result.isAutoSettlement || "",
-            isCasinoAvailable: result.isCasinoAvailable || "",
             isCasinoAvailable: result.isCasinoAvailable || false,
             isAutoSettlement: result.isAutoSettlement || false,
           }));
@@ -205,6 +211,12 @@ export default function SuperAdminForm() {
   }, [id]);
 
   const formTitle = id ? "UPDATE SUPER ADMIN" : "CREATE SUPER ADMIN";
+
+  const handleDurationChange = (event) => {
+    formik.setFieldValue("settlementDurationType", event.target.value);
+    formik.setFieldValue("settlementDate", "");
+    formik.setFieldValue("settlementDay", "");
+  };
 
   return (
     <div>
@@ -445,7 +457,7 @@ export default function SuperAdminForm() {
               label="Settlement Duration"
               name="settlementDurationType"
               value={formik.values.settlementDurationType}
-              onChange={(event) => formik.setFieldValue("settlementDurationType", event.target.value)}
+              onChange={(event) => handleDurationChange(event)}
               error={formik.touched.settlementDurationType && formik.errors.settlementDurationType}
               isRequired="false"
               width={3}

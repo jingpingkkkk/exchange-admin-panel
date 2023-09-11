@@ -5,13 +5,12 @@ import DataTable from "react-data-table-component";
 import "react-data-table-component-extensions/dist/index.css";
 import { Link, useLocation, useParams } from "react-router-dom";
 import SearchInput from "../../../components/Common/FormComponents/SearchInput"; // Import the FormInput component
+import { permission } from "../../../lib/user-permissions";
 import { showAlert } from "../../../utils/alertUtils";
 import { downloadCSV } from "../../../utils/csvUtils";
 import { Notify } from "../../../utils/notify";
-import { deleteData, getAllData, updateUserStatus } from "../accountService";
-import { permission } from "../../../lib/user-permissions";
 import TransactionModal from "../TransactionModal";
-import { createTransaction } from "../accountService";
+import { createTransaction, deleteData, getAllData, updateUserStatus } from "../accountService";
 
 export default function UserList() {
   const location = useLocation();
@@ -204,7 +203,7 @@ export default function UserList() {
             </Button>
           </OverlayTrigger>
 
-          <OverlayTrigger placement="top" overlay={<Tooltip> Click here to withdrw</Tooltip>}>
+          <OverlayTrigger placement="top" overlay={<Tooltip> Click here to withdraw</Tooltip>}>
             <Button
               variant="danger"
               onClick={() => handleWithdrawClick(row)}
