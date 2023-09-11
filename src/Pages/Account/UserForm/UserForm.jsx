@@ -64,7 +64,7 @@ export default function UserForm() {
     creditPoints: "",
     role: "user",
     isBetLock: false,
-    isActive: true,
+    isActive: false,
     forcePasswordChange: true,
     exposureLimit: 0,
     exposurePercentage: 0,

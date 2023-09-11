@@ -34,7 +34,7 @@ export default function MasterForm() {
     role: "master",
     rate: "",
     isBetLock: false,
-    isActive: true,
+    isActive: false,
     forcePasswordChange: true,
   };
   const validationSchemaForCreate = Yup.object({

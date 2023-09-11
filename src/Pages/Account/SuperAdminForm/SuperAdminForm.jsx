@@ -106,7 +106,7 @@ export default function SuperAdminForm() {
     domainUrl: "",
     contactEmail: "",
     isBetLock: false,
-    isActive: true,
+    isActive: false,
     forcePasswordChange: true,
     availableSports: [],
     settlementDurationType: "",

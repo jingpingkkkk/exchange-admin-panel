@@ -34,7 +34,7 @@ export default function AdminForm() {
     role: "admin",
     rate: "",
     isBetLock: false,
-    isActive: true,
+    isActive: false,
     forcePasswordChange: true,
     loginUserData: loginUserData,
   };

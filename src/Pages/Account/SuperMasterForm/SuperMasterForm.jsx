@@ -111,7 +111,7 @@ export default function SuperMasterForm() {
     role: "super_master",
     rate: "",
     isBetLock: false,
-    isActive: true,
+    isActive: false,
     forcePasswordChange: true,
   };
 

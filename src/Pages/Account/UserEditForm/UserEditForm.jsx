@@ -97,7 +97,7 @@ export default function UserEditForm() {
     creditPoints: "",
     role: "user",
     isBetLock: false,
-    isActive: true,
+    isActive: false,
     forcePasswordChange: true,
     exposureLimit: "",
     exposurePercentage: "",

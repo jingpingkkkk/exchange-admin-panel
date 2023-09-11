@@ -34,7 +34,7 @@ export default function AgentForm() {
     role: "agent",
     rate: "",
     isBetLock: false,
-    isActive: true,
+    isActive: false,
     forcePasswordChange: true,
   };
 
