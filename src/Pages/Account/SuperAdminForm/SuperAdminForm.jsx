@@ -39,7 +39,11 @@ const validationSchemaForCreate = Yup.object({
   mobileNumber: Yup.string()
     .matches(/^\d{10}$/, "Mobile number must be 10 digits")
     .required("Mobile number is required"),
-  creditPoints: Yup.number().required("Credit amount is required"),
+  creditPoints: Yup.string()
+    .required("Credit amount is required")
+    .test("is-number", "Credit amount must be a valid number", function (value) {
+      return !isNaN(value);
+    }),
   rate: Yup.number()
     .required("Rate is required")
     .min(0, "Rate cannot be lower than 0")
@@ -64,7 +68,11 @@ const validationSchemaForUpdate = Yup.object({
       return this.parent.password === value;
     }),
   mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
-  creditPoints: Yup.number().required("Credit amount is required"),
+  creditPoints: Yup.string()
+    .required("Credit amount is required")
+    .test("is-number", "Credit amount must be a valid number", function (value) {
+      return !isNaN(value);
+    }),
   rate: Yup.number()
     .required("Rate is required")
     .min(0, "Rate cannot be lower than 0")
