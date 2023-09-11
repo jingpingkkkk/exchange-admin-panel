@@ -108,7 +108,11 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setIsAuthenticated(false);
+    const drf = localStorage.getItem("dfr_buf");
+    const frr = localStorage.getItem("frr_buf");
     localStorage.clear();
+    localStorage.setItem("dfr_buf", drf);
+    localStorage.setItem("frr_buf", frr);
     window.location.reload();
   };
 

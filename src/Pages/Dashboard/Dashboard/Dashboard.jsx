@@ -68,7 +68,6 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    console.log(newUser, authUser);
     if (newUser) {
       setCode(getTransactionCode(authUser.transactionCode));
     }
