@@ -250,7 +250,7 @@ export default function AgentForm() {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={formik.touched.mobileNumber && formik.errors.mobileNumber}
-                  isRequired="false"
+                  isRequired="true"
                   width={3}
                 />
 
