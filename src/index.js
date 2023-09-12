@@ -244,7 +244,7 @@ const Root = () => {
                   >
                     <Route path={`${process.env.PUBLIC_URL}/account-statement`} element={<AccountStatement />} />
                   </Route>
-                  <Route path="/" element={<ProtectedRoutes allowedRoles={permission.COMPETITIONS.ACTIVE} />}>
+                  <Route path="/" element={<ProtectedRoutes allowedRoles={permission.REPORT_MODULE.USER_HISTORY} />}>
                     <Route path={`${process.env.PUBLIC_URL}/user-history`} element={<UserHistory />} />
                   </Route>
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.BANK_MODULE.ACTIVE} />}>
