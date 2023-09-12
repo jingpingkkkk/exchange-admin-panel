@@ -257,10 +257,10 @@ export default function MultiLogin() {
                                     disabled={!formik.values.moduleIds.includes(module._id)}
                                     type="checkbox"
                                     className="form-check-input"
-                                    id={subModule.moduleId}
+                                    id={subModule._id}
                                     name="moduleIds"
-                                    checked={formik.values.moduleIds.includes(subModule.moduleId)}
-                                    onChange={(e) => handleModuleChange(subModule.moduleId, e.target.checked)}
+                                    checked={formik.values.moduleIds.includes(subModule._id)}
+                                    onChange={(e) => handleModuleChange(subModule._id, e.target.checked)}
                                   />
                                   <CFormLabel className="form-check-label fw-normal">{subModule.name}</CFormLabel>
                                 </div>
