@@ -57,6 +57,7 @@ const validationSchemaForCreate = Yup.object({
   settlementDate: Yup.number().nullable(true),
   settlementDay: Yup.string().oneOf(days, "Invalid option selected").nullable(true),
   settlementTime: Yup.string().nullable(true),
+  transactionCode: Yup.string().required("Transaction code is required"),
 });
 
 const validationSchemaForUpdate = Yup.object({
@@ -86,6 +87,7 @@ const validationSchemaForUpdate = Yup.object({
   settlementDate: Yup.number().nullable(true),
   settlementDay: Yup.string().oneOf(days, "Invalid option selected").nullable(true),
   settlementTime: Yup.string().nullable(true),
+  transactionCode: Yup.string().required("Transaction code is required"),
 });
 
 export default function SuperAdminForm() {
@@ -123,6 +125,7 @@ export default function SuperAdminForm() {
     settlementTime: "",
     isCasinoAvailable: false,
     isAutoSettlement: false,
+    transactionCode: "",
   };
 
   const submitForm = async (values) => {
@@ -136,10 +139,12 @@ export default function SuperAdminForm() {
         response = await updateData({
           _id: id,
           ...values,
+          isTransactionCode: true,
         });
       } else {
         response = await addData({
           ...values,
+          isTransactionCode: true,
         });
       }
 
@@ -513,6 +518,18 @@ export default function SuperAdminForm() {
               onBlur={formik.handleBlur}
               error={formik.touched.settlementTime && formik.errors.settlementTime}
               isRequired="false"
+              width={3}
+            />
+
+            <FormInput
+              label="Transaction Code"
+              name="transactionCode"
+              type="password"
+              value={formik.values.transactionCode}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.transactionCode && formik.errors.transactionCode}
+              isRequired="true"
               width={3}
             />
 

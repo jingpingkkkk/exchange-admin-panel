@@ -37,6 +37,7 @@ export default function AdminForm() {
     isActive: false,
     forcePasswordChange: true,
     loginUserData: loginUserData,
+    transactionCode: "",
   };
 
   const validationSchemaForCreate = Yup.object({
@@ -79,6 +80,7 @@ export default function AdminForm() {
         }
         return true; // Validation passed
       }),
+    transactionCode: Yup.string().required("Transaction Code is required"),
   });
 
   const validationSchemaForUpdate = Yup.object({
@@ -122,6 +124,7 @@ export default function AdminForm() {
         }
         return true; // Validation passed
       }),
+    transactionCode: Yup.string().required("Transaction Code is required"),
   });
 
   const submitForm = async (values) => {
@@ -133,10 +136,12 @@ export default function AdminForm() {
         response = await updateData({
           _id: id,
           ...values,
+          isTransactionCode: true,
         });
       } else {
         response = await addData({
           ...values,
+          isTransactionCode: true,
         });
       }
       if (response.success) {
@@ -355,7 +360,19 @@ export default function AdminForm() {
                   </CCol>
                 </Row>
 
-                <CCol xs={12}>
+                <FormInput
+                  label="Transaction Code"
+                  name="transactionCode"
+                  type="password"
+                  value={formik.values.transactionCode}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.transactionCode && formik.errors.transactionCode}
+                  isRequired="true"
+                  width={3}
+                />
+
+                <CCol xs={12} className="pt-3">
                   <div className="d-grid gap-2 d-md-block">
                     <CButton color="primary" type="submit" className="me-3">
                       {loading ? <CSpinner size="sm" /> : "Save"}
