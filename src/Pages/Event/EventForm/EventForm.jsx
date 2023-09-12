@@ -96,7 +96,7 @@ export default function EventForm() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const competitionBody = { fields: { name: 1, sportId: 1 }, sortBy: "name", direction: "asc" };
+      const competitionBody = { fields: { name: 1, sportId: 1 }, sortBy: "name", direction: "asc",status:true };
       if (id) {
         const result = await getEventDetailByID(id);
 
