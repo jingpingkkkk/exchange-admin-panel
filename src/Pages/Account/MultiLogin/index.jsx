@@ -127,7 +127,7 @@ export default function MultiLogin() {
             if (defPermission.subModules?.length) {
               defPermission.subModules.forEach((subModule) => {
                 if (permissions.includes(subModule.key)) {
-                  moduleIds.push(subModule.moduleId);
+                  moduleIds.push(subModule._id);
                 }
               });
             }
