@@ -12,7 +12,7 @@ const generateTableColumns = (moduleList) => {
       name: "SR.NO",
       selector: (row, index) => index + 1,
       sortable: false,
-      width: "100px",
+      width: "80px",
       style: { position: "sticky", left: 0, zIndex: 1, backgroundColor: "#f9f9f9" },
     },
     {
@@ -20,7 +20,6 @@ const generateTableColumns = (moduleList) => {
       selector: (row) => [row.username],
       sortable: true,
       sortField: "username",
-      width: "100px",
       style: { position: "sticky", left: 0, zIndex: 1, backgroundColor: "#f9f9f9" },
     },
     {
@@ -28,7 +27,6 @@ const generateTableColumns = (moduleList) => {
       selector: (row) => [row.fullName],
       sortable: true,
       sortField: "fullName",
-      width: "100px",
       style: { position: "sticky", left: 0, zIndex: 1, backgroundColor: "#f9f9f9" },
     },
   ];
