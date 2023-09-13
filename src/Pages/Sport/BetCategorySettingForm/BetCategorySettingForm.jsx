@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Button, Card, Col, Dropdown, Row, Tooltip, OverlayTrigger } from "react-bootstrap";
+import { CButton, CCol, CContainer, CForm, CFormLabel } from "@coreui/react";
 import { useFormik } from "formik";
-import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
-import { getBetCategorySettingByID, updateBetCategorySetting } from "../sportService";
-import { Notify } from "../../../utils/notify";
-import FormInput from "../../../components/Common/FormComponents/FormInput";
-import FormSelect from "../../../components/Common/FormComponents/FormSelect";
-import FormTextarea from "../../../components/Common/FormComponents/FormTextarea";
+import React, { useEffect, useState } from "react";
+import { Card, Col, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import { CForm, CCol, CButton, CFormLabel, CContainer } from "@coreui/react";
+import FormInput from "../../../components/Common/FormComponents/FormInput";
+import FormTextarea from "../../../components/Common/FormComponents/FormTextarea";
+import { Notify } from "../../../utils/notify";
+import { getBetCategorySettingByID, updateBetCategorySetting } from "../sportService";
 
 export default function BetCategorySettingForm(props) {
   const navigate = useNavigate();
@@ -33,8 +32,7 @@ export default function BetCategorySettingForm(props) {
       notes: [{ description: "", highlight: false }],
     },
     validationSchema: Yup.object({
-      minBet: Yup.number().required("Min Bet is required")
-        .min(1, "Min Bet cannot be lower than 1"),
+      minBet: Yup.number().required("Min Bet is required").min(1, "Min Bet cannot be lower than 1"),
       maxBet: Yup.number()
         .required("Max Bet is required")
         .test("minBetLessThanMaxBet", "Max Bet must be greater than Min Bet", function (value) {
@@ -49,8 +47,7 @@ export default function BetCategorySettingForm(props) {
 
           return true;
         }),
-      betDelay: Yup.number().required("Min Bet is required")
-        .min(1, "Bet delay cannot be lower than 1"),
+      betDelay: Yup.number().required("Min Bet is required").min(1, "Bet delay cannot be lower than 1"),
       notes: Yup.array().of(
         Yup.object().shape({
           description: Yup.string().required("Description is required"),
@@ -93,10 +90,7 @@ export default function BetCategorySettingForm(props) {
   const handleAddNote = () => {
     formik.setValues((prevValues) => ({
       ...prevValues,
-      notes: [
-        ...prevValues.notes,
-        { description: "", highlight: false },
-      ],
+      notes: [...prevValues.notes, { description: "", highlight: false }],
     }));
   };
 
@@ -182,7 +176,6 @@ export default function BetCategorySettingForm(props) {
                 <CContainer>
                   {formik.values.notes.map((note, index) => (
                     <Row key={index} className="mb-3">
-
                       <FormTextarea
                         label="Description"
                         name={`notes[${index}].description`}
@@ -209,38 +202,24 @@ export default function BetCategorySettingForm(props) {
                             checked={formik.values.notes[index].highlight}
                             type="checkbox"
                           />
-                          <label
-                            htmlFor={`highlightSwitch_${index}`}
-                            className="label-primary"
-                          ></label>
+                          <label htmlFor={`highlightSwitch_${index}`} className="label-primary"></label>
                         </div>
                       </CCol>
 
                       <Col md={2}>
-                        {index !== 0 && (
-                          <OverlayTrigger placement="top" overlay={<Tooltip > Click here to remove</Tooltip>}>
-                            <CButton
-                              className="mt-6"
-                              color="danger"
-                              onClick={() => handleRemoveNote(index)}
-                            >
-                              <i className="fa fa-close"></i>
-                            </CButton>
-                          </OverlayTrigger>
-
-                        )}
+                        <OverlayTrigger placement="top" overlay={<Tooltip> Click here to remove</Tooltip>}>
+                          <CButton className="mt-6" color="danger" onClick={() => handleRemoveNote(index)}>
+                            <i className="fa fa-close"></i>
+                          </CButton>
+                        </OverlayTrigger>
                       </Col>
                     </Row>
                   ))}
 
                   <CCol xs={12}>
                     <div className="d-grid gap-2 d-md-block">
-                      <OverlayTrigger placement="top" overlay={<Tooltip > Click here to add new</Tooltip>}>
-                        <CButton
-                          color="warning"
-                          type="button"
-                          onClick={handleAddNote}
-                        >
+                      <OverlayTrigger placement="top" overlay={<Tooltip> Click here to add new</Tooltip>}>
+                        <CButton color="warning" type="button" onClick={handleAddNote}>
                           <i className="fa fa-plus"></i>
                         </CButton>
                       </OverlayTrigger>
