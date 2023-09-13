@@ -39,6 +39,8 @@ export default function CompetitionForm() {
       sportId: Yup.string().required("Sport is required"),
       betDelay: Yup.number().min(0).nullable(true),
       isActive: Yup.boolean().required("Status is required"),
+      startDate: Yup.string().required("Start Date is required"),
+      endDate: Yup.string().required("End Date is required"),
     }),
     onSubmit: async (values) => {
       // Perform form submission logic
@@ -190,6 +192,7 @@ export default function CompetitionForm() {
                   onBlur={formik.handleBlur}
                   error={formik.touched.startDate && formik.errors.startDate}
                   width={3}
+                  isRequired="true"
                 />
 
                 <FormInput
@@ -201,6 +204,7 @@ export default function CompetitionForm() {
                   onBlur={formik.handleBlur}
                   error={formik.touched.endDate && formik.errors.endDate}
                   width={3}
+                  isRequired="true"
                 />
 
                 <FormInput
