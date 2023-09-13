@@ -53,6 +53,7 @@ export default function MultiLogin() {
   const location = useLocation();
 
   const id = location.state ? location.state.id : "";
+  const reset = location.state ? location.state.reset : "";
 
   const [loading, setLoading] = useState(false);
   const [defaultPermissionLoading, setDefaultPermissionLoading] = useState(false);
@@ -143,7 +144,7 @@ export default function MultiLogin() {
       formik.resetForm();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, reset]);
 
   const handleModuleChange = (id, checked) => {
     const currentList = formik.values.moduleIds;
@@ -293,8 +294,8 @@ export default function MultiLogin() {
                     </CButton>
                     <Link
                       to={`${process.env.PUBLIC_URL}/multi-login`}
-                      state={{}}
-                      className="btn btn-danger btn-icon text-white "
+                      state={{ id, reset: Math.random() }}
+                      className="btn btn-danger btn-icon text-white"
                     >
                       Reset
                     </Link>
