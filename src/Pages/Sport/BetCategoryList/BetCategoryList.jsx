@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Button, Card, Col, Dropdown, Row, Tooltip, OverlayTrigger } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import "react-data-table-component-extensions/dist/index.css";
-import { getBetCategoryListBySportID, deleteSport } from "../sportService";
-import { downloadCSV } from '../../../utils/csvUtils';
-import { showAlert } from '../../../utils/alertUtils';
+import { Link, useLocation } from "react-router-dom";
 import SearchInput from "../../../components/Common/FormComponents/SearchInput"; // Import the SearchInput component
+import { showAlert } from "../../../utils/alertUtils";
+import { downloadCSV } from "../../../utils/csvUtils";
+import { deleteSport, getBetCategoryListBySportID } from "../sportService";
 
 export default function BetCategoryList(props) {
-
   const Export = ({ onExport }) => (
-    <Button className="btn btn-secondary" onClick={(e) => onExport(e.target.value)}>Export</Button>
+    <Button className="btn btn-secondary" onClick={(e) => onExport(e.target.value)}>
+      Export
+    </Button>
   );
 
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = React.useState("");
   const location = useLocation();
   const { sportId } = location.state;
 
@@ -23,32 +24,39 @@ export default function BetCategoryList(props) {
   const [totalRows, setTotalRows] = useState(0);
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState('createdAt');
-  const [direction, setDirection] = useState('desc');
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [direction, setDirection] = useState("desc");
 
   // Function to generate URL with query parameter
 
   const columns = [
     {
       name: "SR.NO",
-      selector: (row, index) => ((currentPage - 1) * perPage) + (index + 1),
+      selector: (row, index) => (currentPage - 1) * perPage + (index + 1),
       sortable: false,
     },
     {
       name: "BET CATEGORY",
       selector: (row) => [row.betCatName],
       sortable: true,
-      sortField: 'betCatName'
+      sortField: "betCatName",
     },
     {
-      name: 'ACTION',
-      cell: row => (
+      name: "ACTION",
+      cell: (row) => (
         <div>
-          <OverlayTrigger placement="top" overlay={<Tooltip > Click here to edit</Tooltip>}>
+          <OverlayTrigger placement="top" overlay={<Tooltip> Click here to edit</Tooltip>}>
             <Link
               to={`${process.env.PUBLIC_URL}/bet-category-setting`}
-              state={{ id: row._id, sportId: row.sportsId, betCatId: row.betCatId, betCatName: row.betCatName, sportsName: row.sportsName }}
-              className="btn btn-primary btn-lg">
+              state={{
+                id: row._id,
+                sportId: row.sportsId,
+                betCatId: row.betCatId,
+                betCatName: row.betCatName,
+                sportsName: row.sportsName,
+              }}
+              className="btn btn-primary btn-lg"
+            >
               <i className="fa fa-edit"></i>
             </Link>
           </OverlayTrigger>
@@ -96,14 +104,10 @@ export default function BetCategoryList(props) {
     return <Export onExport={() => Selectdata()} icon="true" />;
   }, [data, selectdata, selectedRows]);
 
-  const fetchData = async (page, sortBy, direction, searchQuery, sportId) => {
+  const fetchData = async (page, sortBy, direction, searchQuery) => {
     setLoading(true);
     try {
-      const requestParameter = {
-        sportId: sportId,
-        searchQuery: searchQuery
-      }
-
+      const requestParameter = { page, perPage, sortBy, direction, sportId, searchQuery };
       const result = await getBetCategoryListBySportID(requestParameter);
       setData(result.records);
       setTotalRows(result.totalRecords);
@@ -122,7 +126,7 @@ export default function BetCategoryList(props) {
     try {
       const success = await deleteSport(id);
       if (success) {
-        fetchData(currentPage, sortBy, direction, searchQuery);
+        fetchData(currentPage, sortBy, direction, searchQuery, sportId);
         setLoading(false);
       }
     } catch (error) {
@@ -134,7 +138,6 @@ export default function BetCategoryList(props) {
     }
   };
 
-
   const handleSort = (column, sortDirection) => {
     // simulate server sort
     setSortBy(column.sortField);
@@ -144,7 +147,7 @@ export default function BetCategoryList(props) {
     setLoading(false);
   };
 
-  const handlePageChange = page => {
+  const handlePageChange = (page) => {
     setCurrentPage(page);
     fetchData(page, sortBy, direction, searchQuery);
   };
@@ -156,7 +159,7 @@ export default function BetCategoryList(props) {
   };
 
   const handleDownload = async () => {
-    await downloadCSV('sportsBetCategories/getAllSportsBetCategory', searchQuery, 'sports.csv');
+    await downloadCSV("sportsBetCategories/getAllSportsBetCategory", searchQuery, "sports.csv");
   };
 
   const handleDelete = (id) => {
@@ -164,10 +167,10 @@ export default function BetCategoryList(props) {
   };
 
   useEffect(() => {
-    if (searchQuery !== '') {
-      fetchData(currentPage, sortBy, direction, searchQuery, sportId); // fetch page 1 of users
+    if (searchQuery !== "") {
+      fetchData(currentPage, sortBy, direction, searchQuery); // fetch page 1 of users
     } else {
-      fetchData(currentPage, sortBy, direction, '', sportId); // fetch page 1 of users
+      fetchData(currentPage, sortBy, direction, ""); // fetch page 1 of users
     }
   }, [perPage, searchQuery, sportId]);
 
@@ -175,7 +178,7 @@ export default function BetCategoryList(props) {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">BET CATEGORY BY  SPORTS</h1>
+          <h1 className="page-title">BET CATEGORY BY SPORTS</h1>
           {/* <Breadcrumb className="breadcrumb">
             <Breadcrumb.Item className="breadcrumb-item" href="#">
               Category
@@ -204,13 +207,8 @@ export default function BetCategoryList(props) {
       <Row className=" row-sm">
         <Col lg={12}>
           <Card>
-
             <Card.Body>
-              <SearchInput
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                loading={loading}
-              />
+              <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} loading={loading} />
               <div className="table-responsive export-table">
                 <DataTable
                   columns={columns}
