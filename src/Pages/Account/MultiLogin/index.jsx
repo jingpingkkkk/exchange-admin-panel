@@ -7,7 +7,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput";
 import { Notify } from "../../../utils/notify";
-import { createCloneUser, getDetailByID, getPermissionsById, getUserPermissions, updateData } from "../accountService";
+import { createCloneUser, getDetailByID, getUserPermissions, updateData } from "../accountService";
 import MultiLoginListing from "./MultiLoginListing";
 
 const multiLoginCreateSchema = Yup.object({
@@ -103,8 +103,8 @@ export default function MultiLogin() {
 
   useEffect(() => {
     setDefaultPermissionLoading(true);
-    Promise.all([getDetailByID(id), getUserPermissions(id), getPermissionsById(id)])
-      .then(([user, defaultPermissions, permissions]) => {
+    Promise.all([getDetailByID(id), getUserPermissions(id)])
+      .then(([user, permissions]) => {
         setDefaultPermissionLoading(false);
 
         if (user) {
@@ -117,17 +117,17 @@ export default function MultiLogin() {
           }));
         }
 
-        setModuleList(defaultPermissions);
+        setModuleList(permissions);
 
         if (permissions.length) {
           const moduleIds = [];
-          defaultPermissions.forEach((defPermission) => {
-            if (permissions.includes(defPermission.key)) {
-              moduleIds.push(defPermission._id);
+          permissions.forEach((permission) => {
+            if (permissions.isActive) {
+              moduleIds.push(permission._id);
             }
-            if (defPermission.subModules?.length) {
-              defPermission.subModules.forEach((subModule) => {
-                if (permissions.includes(subModule.key)) {
+            if (permission.subModules?.length) {
+              permission.subModules.forEach((subModule) => {
+                if (subModule.isActive) {
                   moduleIds.push(subModule._id);
                 }
               });
@@ -307,7 +307,7 @@ export default function MultiLogin() {
         </Col>
       </Row>
 
-      <MultiLoginListing parentLoading={defaultPermissionLoading} id={id} moduleList={moduleList} />
+      <MultiLoginListing parentLoading={defaultPermissionLoading} id={id} />
     </div>
   );
 }
