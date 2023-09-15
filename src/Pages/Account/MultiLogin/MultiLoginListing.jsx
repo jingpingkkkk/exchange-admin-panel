@@ -4,7 +4,7 @@ import { Card } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
 import SearchInput from "../../../components/Common/FormComponents/SearchInput";
-import { decryptUserPermissions, getAllData, user } from "../accountService";
+import { decryptUserPermissions, getAllData, getUserDefaultPermissions, user } from "../accountService";
 
 const generateTableColumns = (moduleList) => {
   const columns = [
@@ -31,31 +31,26 @@ const generateTableColumns = (moduleList) => {
     },
   ];
 
+  const isActivePermission = (module, permissions) => {
+    const modulePermission = permissions.find((permission) => permission.key === module);
+    if (modulePermission) {
+      return modulePermission.isActive;
+    }
+    return false;
+  };
+
   moduleList.forEach((module) => {
     columns.push({
-      name: module.name.toUpperCase(),
-      selector: (row) => [row[module.key]],
+      name: module.split("_").join(" ").toUpperCase(),
+      selector: (row) => [row.key],
       sortable: true,
-      sortField: module.key,
+      sortField: module,
       cell: (row) => (
-        <div className="h4 mb-0">{row[module.key] ? <i className="fa fa-check-circle text-success" /> : null}</div>
+        <div className="h4 mb-0">
+          {isActivePermission(module, row.permissions) ? <i className="fa fa-check-circle text-success" /> : null}
+        </div>
       ),
     });
-    if (module.subModules.length) {
-      module.subModules.forEach((subModule) => {
-        columns.push({
-          name: `${subModule.name.toUpperCase()} (${module.name.toUpperCase()})`,
-          selector: (row) => [row[subModule.key]],
-          sortable: true,
-          sortField: subModule.key,
-          cell: (row) => (
-            <div className="h4 mb-0">
-              {row[subModule.key] ? <i className="fa fa-check-circle text-success" /> : null}
-            </div>
-          ),
-        });
-      });
-    }
   });
 
   columns.push({
@@ -74,7 +69,7 @@ const generateTableColumns = (moduleList) => {
   return columns;
 };
 
-function MultiLoginListing({ parentLoading = false, id, moduleList = [] }) {
+function MultiLoginListing({ parentLoading = false, id }) {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [clonedUsers, setClonedUsers] = useState([]);
@@ -83,8 +78,7 @@ function MultiLoginListing({ parentLoading = false, id, moduleList = [] }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("createdAt");
   const [direction, setDirection] = useState("desc");
-
-  const tableColumns = generateTableColumns(moduleList);
+  const [tableColumns, setTableColumns] = useState([]);
 
   const handleSort = (column, sortDirection) => {
     setSortBy(column.sortField);
@@ -105,8 +99,7 @@ function MultiLoginListing({ parentLoading = false, id, moduleList = [] }) {
 
   useEffect(() => {
     const fetchAllUsers = async () => {
-      setLoading(true);
-      const result = await getAllData({
+      const params = {
         page: currentPage,
         perPage,
         sortBy,
@@ -114,35 +107,45 @@ function MultiLoginListing({ parentLoading = false, id, moduleList = [] }) {
         searchQuery,
         cloneParentId: user._id,
         withPermissions: true,
-      });
+      };
 
-      if (result) {
-        const users = result.records.map((user) => {
-          const clonedUser = { ...user };
-          const decryptedModules = decryptUserPermissions(user.permissions);
+      setLoading(true);
 
-          moduleList.forEach((module) => {
-            const modulePermission = decryptedModules.find((permission) => permission === module.key);
-            clonedUser[module.key] = modulePermission;
+      Promise.all([getAllData(params), getUserDefaultPermissions()])
+        .then(([userData, defaultPermissions]) => {
+          const moduleList =
+            defaultPermissions
+              ?.flatMap((module) => {
+                if (module.subModules?.length) {
+                  return [...module.subModules, module];
+                }
+                return module;
+              })
+              ?.map((module) => module.key) || [];
 
-            if (module.subModules?.length) {
-              module.subModules.forEach((subModule) => {
-                const subModulePermission = decryptedModules.find((permission) => permission === subModule.key);
-                clonedUser[subModule.key] = subModulePermission;
+          if (userData) {
+            const users = userData.records.map((user) => {
+              const clonedUser = { ...user };
+              const userPermissions = decryptUserPermissions(user.permissions);
+              clonedUser.permissions = userPermissions.flatMap((module) => {
+                if (module.subModules?.length) {
+                  return [...module.subModules, module];
+                }
+                return module;
               });
-            }
-          });
+              return clonedUser;
+            });
 
-          return clonedUser;
-        });
-        setClonedUsers(users);
-        setTotalRows(result.totalRecords);
-      }
-      setLoading(false);
+            setClonedUsers(users);
+            setTableColumns(generateTableColumns(moduleList));
+            setTotalRows(userData.totalRecords);
+          }
+        })
+        .finally(() => setLoading(false));
     };
 
     fetchAllUsers();
-  }, [id, currentPage, perPage, sortBy, direction, searchQuery, moduleList]);
+  }, [id, currentPage, perPage, sortBy, direction, searchQuery]);
 
   return (
     <Card>

@@ -48,10 +48,20 @@ export default function EventForm() {
       matchTime: Yup.string().required("Time is required"),
       oddsLimit: Yup.number(),
       volumeLimit: Yup.number(),
-      maxStake: Yup.number(),
-      minStake: Yup.number(),
+      maxStake: Yup.number().when("minStake", (minStake, schema) =>
+        schema.test({
+          test: (maxStake) => !maxStake || maxStake >= minStake,
+          message: "Max stake must be greater than or equal to min stake",
+        })
+      ),
+      minStake: Yup.number().min(0, "Min stake must be greater than or equal to 0"),
       minStakeSession: Yup.number(),
-      maxStakeSession: Yup.number(),
+      maxStakeSession: Yup.number().when("minStakeSession", (minStakeSession, schema) =>
+        schema.test({
+          test: (maxStakeSession) => !maxStakeSession || maxStakeSession >= minStakeSession,
+          message: "Max stake session must be greater than or equal to min stake session",
+        })
+      ),
       betDelay: Yup.number(),
     }),
     onSubmit: async (values) => {
@@ -96,7 +106,7 @@ export default function EventForm() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const competitionBody = { fields: { name: 1, sportId: 1 }, sortBy: "name", direction: "asc",status:true };
+      const competitionBody = { fields: { name: 1, sportId: 1 }, sortBy: "name", direction: "asc", status: true };
       if (id) {
         const result = await getEventDetailByID(id);
 
@@ -225,6 +235,7 @@ export default function EventForm() {
                     className="mt-3"
                     label="Min Stake"
                     name="minStake"
+                    min="0"
                     type="number"
                     value={formik.values.minStake}
                     onChange={formik.handleChange}
@@ -238,6 +249,7 @@ export default function EventForm() {
                     label="Max Stake"
                     name="maxStake"
                     type="number"
+                    min="0"
                     value={formik.values.maxStake}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
@@ -250,6 +262,7 @@ export default function EventForm() {
                     label="Odds Limit"
                     name="oddsLimit"
                     type="number"
+                    min="0"
                     value={formik.values.oddsLimit}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
@@ -262,6 +275,7 @@ export default function EventForm() {
                     label="Volume Limit"
                     name="volumeLimit"
                     type="number"
+                    min="0"
                     value={formik.values.volumeLimit}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
@@ -274,6 +288,7 @@ export default function EventForm() {
                     label="Min Stake Session"
                     name="minStakeSession"
                     type="number"
+                    min="0"
                     value={formik.values.minStakeSession}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
@@ -286,6 +301,7 @@ export default function EventForm() {
                     label="Max Stake Session"
                     name="maxStakeSession"
                     type="number"
+                    min="0"
                     value={formik.values.maxStakeSession}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
@@ -298,6 +314,7 @@ export default function EventForm() {
                     label="Bet Delay"
                     name="betDelay"
                     type="number"
+                    min="0"
                     value={formik.values.betDelay}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}

@@ -1,4 +1,4 @@
-import { CButton, CCol, CForm, CSpinner } from "@coreui/react";
+import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput";
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
+import FormToggleSwitch from "../../../components/Common/FormComponents/FormToggleSwitch"; // Import the FormToggleSwitch component
 import { Notify } from "../../../utils/notify";
 import { getAllSport } from "../../Sport/sportService";
 import { addCompetition, getCompetitionDetailByID, updateCompetition } from "../competitionService";
@@ -30,11 +31,16 @@ export default function CompetitionForm() {
       sportId: "",
       startDate: "",
       endDate: "",
-      betDelay: "",
+      betDelay: 0,
+      isActive: true,
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
       sportId: Yup.string().required("Sport is required"),
+      betDelay: Yup.number().min(0).nullable(true),
+      isActive: Yup.boolean().required("Status is required"),
+      startDate: Yup.string().required("Start Date is required"),
+      endDate: Yup.string().required("End Date is required"),
     }),
     onSubmit: async (values) => {
       // Perform form submission logic
@@ -87,7 +93,8 @@ export default function CompetitionForm() {
           sportId: result.sportId || "",
           startDate: startDateFormatted,
           endDate: endDateFormatted || "",
-          betDelay: result.betDelay || "",
+          betDelay: result.betDelay || 0,
+          isActive: result.isActive === true,
         }));
       }
       setSportLoading(true);
@@ -185,6 +192,7 @@ export default function CompetitionForm() {
                   onBlur={formik.handleBlur}
                   error={formik.touched.startDate && formik.errors.startDate}
                   width={3}
+                  isRequired="true"
                 />
 
                 <FormInput
@@ -196,6 +204,7 @@ export default function CompetitionForm() {
                   onBlur={formik.handleBlur}
                   error={formik.touched.endDate && formik.errors.endDate}
                   width={3}
+                  isRequired="true"
                 />
 
                 <FormInput
@@ -209,6 +218,16 @@ export default function CompetitionForm() {
                   isRequired="false"
                   width={3}
                 />
+
+                <CCol md={12} className="ps-4 pb-2">
+                  <CFormLabel htmlFor="isActive">Is Active</CFormLabel>
+                  <FormToggleSwitch
+                    id="isActive"
+                    name="isActive"
+                    checked={formik.values.isActive}
+                    onChange={() => formik.setFieldValue("isActive", !formik.values.isActive)}
+                  />
+                </CCol>
 
                 <CCol xs={12}>
                   <div className="d-grid gap-2 d-md-block">

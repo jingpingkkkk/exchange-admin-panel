@@ -62,7 +62,7 @@ export default function AgentForm() {
       }
     } catch (error) {
       // Handle error
-      Notify.error(error.message);
+      // Notify.error(error.message);
       setServerError(error.message);
     } finally {
       setLoading(false); // Set loading state to false
