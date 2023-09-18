@@ -39,8 +39,33 @@ export default function CompetitionForm() {
       sportId: Yup.string().required("Sport is required"),
       betDelay: Yup.number().min(0).nullable(true),
       isActive: Yup.boolean().required("Status is required"),
-      startDate: Yup.string().required("Start Date is required"),
-      endDate: Yup.string().required("End Date is required"),
+      startDate: Yup.date()
+    .required("Start Date is required")
+    .min(new Date(), "Start date must be today or a future date")
+    .test(
+      "is-start-date-less",
+      "Start date must be less than the end date",
+      function (startDate) {
+        const endDate = this.parent.endDate; 
+        if (!startDate || !endDate) {
+          return true;
+        }
+        return new Date(startDate) < new Date(endDate);
+      }
+    ),
+  endDate: Yup.date()
+    .required("End Date is required")
+    .test(
+      "is-end-date-greater",
+      "End date must be greater than the start date",
+      function (endDate) {
+        const startDate = this.parent.startDate; 
+        if (!startDate || !endDate) {
+          return true;
+        }
+        return endDate > startDate;
+      }
+    ),
     }),
     onSubmit: async (values) => {
       // Perform form submission logic
