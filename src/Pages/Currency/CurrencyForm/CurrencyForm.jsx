@@ -26,7 +26,7 @@ export default function CurrencyForm() {
       multiplier: "",
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Name is required"),
+      name: Yup.string().required("Currency is required"),
       multiplier: Yup.number().min(0).required("Conversion Rate must be a number"),
     }),
     onSubmit: async (values) => {
