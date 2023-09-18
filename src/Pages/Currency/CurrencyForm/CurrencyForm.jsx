@@ -24,10 +24,12 @@ export default function CurrencyForm() {
     initialValues: {
       name: "",
       multiplier: "",
+      countryName:"",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Currency is required"),
       multiplier: Yup.number().min(0).required("Conversion Rate must be a number"),
+      countryName: Yup.string().required("Country Name is required"),
     }),
     onSubmit: async (values) => {
       // Perform form submission logic
@@ -40,11 +42,13 @@ export default function CurrencyForm() {
             _id: id,
             name: values.name,
             multiplier: values.multiplier,
+            countryName:values.countryName,
           });
         } else {
           response = await addCurrency({
             name: values.name,
             multiplier: values.multiplier,
+            countryName:values.countryName,
           });
         }
         if (response.success) {
@@ -72,6 +76,7 @@ export default function CurrencyForm() {
           ...prevValues,
           name: result.name || "",
           multiplier: result.multiplier || "",
+          countryName:result.countryName || "",
         }));
       }
     };
@@ -124,6 +129,17 @@ export default function CurrencyForm() {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={formik.touched.multiplier && formik.errors.multiplier}
+                  width={3}
+                  isRequired="true"
+                />
+                 <FormInput
+                  label="Country Name"
+                  name="countryName"
+                  type="text"
+                  value={formik.values.countryName}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.countryName && formik.errors.countryName}
                   width={3}
                   isRequired="true"
                 />
