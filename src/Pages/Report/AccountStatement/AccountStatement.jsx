@@ -4,8 +4,8 @@ import { Row, Card, Col, Breadcrumb, Button } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import "react-data-table-component-extensions/dist/index.css";
 import { getAllTransactionActivity } from "../reportService";
-import { downloadCSV } from '../../../utils/csvUtils';
-import { showAlert } from '../../../utils/alertUtils';
+import { downloadCSV } from "../../../utils/csvUtils";
+import { showAlert } from "../../../utils/alertUtils";
 import SearchInput from "../../../components/Common/FormComponents/SearchInput"; // Import the SearchInput component
 import { getAllData } from "../../Account/accountService";
 //import 'react-date-range/dist/styles.css'; // main style file
@@ -15,26 +15,26 @@ import { CCol, CButton, CSpinner } from "@coreui/react";
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
 import FormInput from "../../../components/Common/FormComponents/FormInput";
 
-
 export default function AccountStatement() {
-
   const Export = ({ onExport }) => (
-    <Button className="btn btn-secondary" onClick={(e) => onExport(e.target.value)}>Export</Button>
+    <Button className="btn btn-secondary" onClick={(e) => onExport(e.target.value)}>
+      Export
+    </Button>
   );
 
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = React.useState("");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState('createdAt');
-  const [direction, setDirection] = useState('desc');
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [direction, setDirection] = useState("desc");
 
   const [userList, setuserList] = useState([]);
-  const [startDateValue, setStartDateValue] = useState('');
-  const [endDateValue, setEndDateValue] = useState('');
-  const [selectedUser, setSelectedUser] = useState('');
+  const [startDateValue, setStartDateValue] = useState("");
+  const [endDateValue, setEndDateValue] = useState("");
+  const [selectedUser, setSelectedUser] = useState("");
   const [filters, setFilters] = useState({
     userId: "",
     starDate: "",
@@ -46,66 +46,58 @@ export default function AccountStatement() {
   const columns = [
     {
       name: "SR.NO",
-      selector: (row, index) => ((currentPage - 1) * perPage) + (index + 1),
+      selector: (row, index) => (currentPage - 1) * perPage + (index + 1),
       sortable: false,
     },
     {
       name: "DATE",
       selector: (row) => {
         const originalDate = new Date(row.createdAt);
-        const formattedDate = originalDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-          second: 'numeric',
+        const formattedDate = originalDate.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
         });
         return formattedDate;
       },
       sortable: true,
-      sortField: 'date'
+      sortField: "date",
     },
     {
       name: "CREDIT",
       selector: (row) => [row.points],
       sortable: true,
-      sortField: 'points',
-      cell: (row) => (
-        <div style={{ color: "green" }}>
-          {row.type === "credit" ? row.points : ""}
-        </div>
-      ),
+      sortField: "points",
+      cell: (row) => <div style={{ color: "green" }}>{row.type === "credit" ? row.points : ""}</div>,
     },
     {
       name: "DEBIT",
       selector: (row) => [row.points],
       sortable: true,
-      sortField: 'points',
-      cell: (row) => (
-        <div style={{ color: "red" }}>
-          {row.type === "debit" ? "-" + row.points : ""}
-        </div>
-      ),
+      sortField: "points",
+      cell: (row) => <div style={{ color: "red" }}>{row.type === "debit" ? "-" + row.points : ""}</div>,
     },
     {
       name: "PTS",
       selector: (row) => [row.balancePoints],
       sortable: true,
-      sortField: 'balancePoints',
-
+      sortField: "balancePoints",
     },
     {
       name: "REMARKS",
       selector: (row) => [row.remark],
       sortable: true,
-      sortField: 'remark'
+      sortField: "remark",
     },
     {
-      name: "FROMTO",
+      name: "FROM-TO",
       selector: (row) => [row.fromtoName],
       sortable: true,
-      sortField: 'fromtoName'
+      width: "280px",
+      sortField: "fromtoName",
     },
   ];
 
@@ -123,7 +115,7 @@ export default function AccountStatement() {
         searchQuery: searchQuery,
         userId: userId,
         fromDate: fromDate,
-        toDate: toDate
+        toDate: toDate,
       });
 
       setData(result.records);
@@ -147,7 +139,7 @@ export default function AccountStatement() {
     setLoading(false);
   };
 
-  const handlePageChange = page => {
+  const handlePageChange = (page) => {
     setCurrentPage(page);
     fetchData(page, sortBy, direction, searchQuery, filters);
   };
@@ -159,14 +151,14 @@ export default function AccountStatement() {
   };
 
   const handleDownload = async () => {
-    await downloadCSV('currencies/getAllTransactionActivity', searchQuery, 'currency.csv');
+    await downloadCSV("currencies/getAllTransactionActivity", searchQuery, "currency.csv");
   };
 
   const selectionRange = {
     startDate: new Date(),
     endDate: new Date(),
-    key: 'selection',
-  }
+    key: "selection",
+  };
 
   const handleSelect = (ranges) => {
     console.log(ranges);
@@ -176,7 +168,7 @@ export default function AccountStatement() {
     //     endDate: [native Date Object],
     //   }
     // }
-  }
+  };
 
   const handleFilterClick = () => {
     const newFilters = {
@@ -208,7 +200,7 @@ export default function AccountStatement() {
 
   const filterData = async () => {
     const userData = await getAllData();
-    const dropdownOptions = userData.records.map(option => ({
+    const dropdownOptions = userData.records.map((option) => ({
       value: option._id,
       label: option.username,
     }));
@@ -216,12 +208,12 @@ export default function AccountStatement() {
   };
 
   useEffect(() => {
-    if (searchQuery !== '') {
+    if (searchQuery !== "") {
       fetchData(currentPage, sortBy, direction, searchQuery, filters); // fetch page 1 of users
     } else {
-      fetchData(currentPage, sortBy, direction, '', filters); // fetch page 1 of users
+      fetchData(currentPage, sortBy, direction, "", filters); // fetch page 1 of users
     }
-    filterData()
+    filterData();
   }, [perPage, searchQuery]);
 
   return (
@@ -242,7 +234,7 @@ export default function AccountStatement() {
                 name="sportId"
                 value={selectedUser} // Set the selectedUser as the value
                 onChange={(name, selectedValue) => setSelectedUser(selectedValue)} // Update the selectedUser
-                onBlur={() => { }} // Add an empty function as onBlur prop
+                onBlur={() => {}} // Add an empty function as onBlur prop
                 error=""
                 width={2}
                 options={userList}
@@ -254,7 +246,7 @@ export default function AccountStatement() {
                 type="date"
                 value={startDateValue}
                 onChange={(event) => setStartDateValue(event.target.value)} // Use event.target.value to get the updated value
-                onBlur={() => { }}
+                onBlur={() => {}}
                 width={2}
               />
 
@@ -264,7 +256,7 @@ export default function AccountStatement() {
                 type="date"
                 value={endDateValue}
                 onChange={(event) => setEndDateValue(event.target.value)} // Use event.target.value to get the updated value
-                onBlur={() => { }}
+                onBlur={() => {}}
                 width={2}
               />
 
@@ -283,11 +275,7 @@ export default function AccountStatement() {
               </CCol>
             </Card.Header>
             <Card.Body>
-              <SearchInput
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                loading={loading}
-              />
+              <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} loading={loading} />
               {/* <Row>
                 <CCol xs={4}>
                   <DateRangePicker
