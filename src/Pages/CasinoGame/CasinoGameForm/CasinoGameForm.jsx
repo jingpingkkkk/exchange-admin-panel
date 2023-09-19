@@ -89,7 +89,12 @@ export default function CasinoGameForm() {
   };
 
   const fetchAndUpdateFormData = async () => {
-    Promise.all([getCasinoGameDetailByID(id), getAllCasino()]).then((results) => {
+    Promise.all([
+      getCasinoGameDetailByID(id),
+      getAllCasino({
+        status: true,
+      }),
+    ]).then((results) => {
       console.log(results);
       const [fetchtedUser, allCasino] = results;
       if (fetchtedUser !== null) {
