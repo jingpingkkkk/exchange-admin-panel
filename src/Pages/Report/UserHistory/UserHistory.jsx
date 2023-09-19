@@ -25,6 +25,7 @@ export default function UserHistory() {
 
   const [searchQuery, setSearchQuery] = React.useState('');
   const [data, setData] = useState([]);
+  const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false);
   const [loading, setLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
   const [perPage, setPerPage] = useState(10);
@@ -227,6 +228,7 @@ export default function UserHistory() {
       toDate: endDateValue, // Replace endDateValue with the actual state value for end date
     };
     setFilters(newFilters);
+    setResetPaginationToggle(!resetPaginationToggle);
     // Fetch data with the updated filters object
     fetchData(currentPage, sortBy, direction, searchQuery, newFilters);
   };
@@ -240,6 +242,7 @@ export default function UserHistory() {
     // Add more filter states if needed
     setFormSelectKey(formSelectKey + 1);
     setFormSelectTypeKey(formSelectTypeKey + 1);
+    setResetPaginationToggle(!resetPaginationToggle);
 
     // Fetch data with the updated filters object
     fetchData(currentPage, sortBy, direction, searchQuery, {
@@ -369,6 +372,7 @@ export default function UserHistory() {
                   highlightOnHover
                   progressPending={loading}
                   paginationServer
+                  paginationResetDefaultPage={resetPaginationToggle}
                   paginationTotalRows={totalRows}
                   onChangeRowsPerPage={handlePerRowsChange}
                   onChangePage={handlePageChange}
