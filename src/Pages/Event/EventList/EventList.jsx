@@ -147,7 +147,7 @@ export default function EventList() {
           <OverlayTrigger placement="top" overlay={<Tooltip> Click here to edit</Tooltip>}>
             <Link
               to={`${process.env.PUBLIC_URL}/event-form`}
-              state={{ id: row._id }}
+              state={{ id: row._id, liveEvent: false }}
               className="btn btn-primary btn-lg"
             >
               <i className="fa fa-edit"></i>
