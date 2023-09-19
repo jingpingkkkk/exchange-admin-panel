@@ -1,12 +1,12 @@
-import { CButton, CCol, CForm, CSpinner, CFormLabel } from "@coreui/react";
+import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
-import { addCasino, getCasinoDetailByID, updateCasino } from "../casinoService";
 import { Notify } from "../../../utils/notify";
+import { addCasino, getCasinoDetailByID, updateCasino } from "../casinoService";
 
 const validationSchemaForCreate = Yup.object({
   name: Yup.string().required("Name is required"),
@@ -67,7 +67,7 @@ export default function CasinoForm() {
         response = await addCasino(formData);
       }
 
-      if (response.data.success) {
+      if (response.success) {
         Notify.success(editMode ? "Casino updated successfully" : "Casino added successfully");
         navigate("/casino-list/");
       } else {
@@ -159,7 +159,7 @@ export default function CasinoForm() {
             <CCol md="2">
               {casinoImageUrl && (
                 <div className="image-preview">
-                  <img src={casinoImageUrl} alt="Casino image" />
+                  <img src={casinoImageUrl} alt="Casino" />
                 </div>
               )}
             </CCol>
