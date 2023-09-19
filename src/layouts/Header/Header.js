@@ -186,7 +186,7 @@ export function Header() {
                       </div>
                     </div>
                   </div>
-                  <div className="dropdown d-md-flex">
+                  {/* <div className="dropdown d-md-flex">
                     <Link
                       to="#"
                       className="nav-link icon theme-layout nav-link-bg layout-setting"
@@ -199,7 +199,7 @@ export function Header() {
                         <i className={`fe ${"fe-sun"}`}></i>
                       </span>
                     </Link>
-                  </div>
+                  </div> */}
                   {user.role !== "system_owner" && (
                     <div className="dropdown d-md-flex mx-4">
                       <div className="theme-layout nav-link-bg layout-setting pt-1">
