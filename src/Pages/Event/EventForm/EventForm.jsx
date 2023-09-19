@@ -16,6 +16,7 @@ export default function EventForm() {
   const location = useLocation();
 
   const id = location.state ? location.state.id : "";
+  const cancel_redirect = location.state ? location.state.liveEvent : false;
 
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState(null);
@@ -379,10 +380,19 @@ export default function EventForm() {
                   <CButton color="primary" type="submit" className="me-2">
                     {loading ? <CSpinner size="sm" /> : "Save"}
                   </CButton>
-
-                  <Link to={`${process.env.PUBLIC_URL}/event-list`} className="btn btn-danger btn-icon text-white">
-                    Cancel
-                  </Link>
+                  {cancel_redirect && (
+                    <Link
+                      to={`${process.env.PUBLIC_URL}/api-event-list`}
+                      className="btn btn-danger btn-icon text-white"
+                    >
+                      Cancel
+                    </Link>
+                  )}
+                  {!cancel_redirect && (
+                    <Link to={`${process.env.PUBLIC_URL}/event-list`} className="btn btn-danger btn-icon text-white">
+                      Cancel
+                    </Link>
+                  )}
                 </div>
               </CForm>
             </Card.Body>
