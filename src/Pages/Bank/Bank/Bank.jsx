@@ -236,7 +236,6 @@ export default function Bank() {
         userId: _id,
         filterUserId: filterUserId,
       });
-
       setData(result.details);
       //setData(dummyDataArray);
       //setTotalRows(result.totalRecords);
@@ -268,6 +267,7 @@ export default function Bank() {
         EXPOSURE: item.exposure,
         "AVAILABLE PTS": item.balance,
         "ACCOUNT TYPE": item.role,
+        "STATUS":item.fromtoName
       }));
       exportToExcel(formattedData, "bank.xlsx"); // Utilize exportToExcel utility function
     } catch (error) {
@@ -285,7 +285,7 @@ export default function Bank() {
         filterUserId: filterUserId,
       });
 
-      const columns = ["USERNAME", "CR", "PTS", "CLIENT(P/L)", "EXPOSURE", "AVAILABLE PTS", "ACCOUNT TYPE"];
+      const columns = ["USERNAME", "CR", "PTS", "CLIENT(P/L)", "EXPOSURE", "AVAILABLE PTS", "ACCOUNT TYPE","STATUS"];
 
       const formattedData = result.details.map((item) => ({
         USERNAME: item.username,
@@ -295,6 +295,7 @@ export default function Bank() {
         EXPOSURE: item.exposure,
         "AVAILABLE PTS": item.balance,
         "ACCOUNT TYPE": item.role,
+        "STATUS":item.fromtoName
       }));
       exportToPDF(columns, formattedData, "book.pdf");
     } catch (error) {
