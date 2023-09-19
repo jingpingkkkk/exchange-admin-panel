@@ -75,7 +75,7 @@ export default function CasinoGameForm() {
         response = await addCasinoGame(formData);
       }
 
-      if (response.data.success) {
+      if (response.success) {
         Notify.success(editMode ? "Casino game updated successfully" : "Casino game added successfully");
         navigate("/casino-game-list/");
       } else {
@@ -205,8 +205,11 @@ export default function CasinoGameForm() {
             <CCol xs={12} className="pt-3">
               <div className="d-grid gap-2 d-md-block">
                 <CButton color="primary" type="submit" className="me-md-3">
-                  {loading ? <CSpinner size="sm" /> : editMode ? "Update" : "Create"}
+                  {loading ? <CSpinner size="sm" /> : "Save"}
                 </CButton>
+                <Link to={`${process.env.PUBLIC_URL}/casino-game-list`} className="btn btn-danger btn-icon text-white">
+                  Cancel
+                </Link>
               </div>
             </CCol>
           </CForm>
