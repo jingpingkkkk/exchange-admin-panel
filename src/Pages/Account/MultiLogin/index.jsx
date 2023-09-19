@@ -122,7 +122,7 @@ export default function MultiLogin() {
         if (permissions.length) {
           const moduleIds = [];
           permissions.forEach((permission) => {
-            if (permissions.isActive) {
+            if (permission.isActive) {
               moduleIds.push(permission._id);
             }
             if (permission.subModules?.length) {
