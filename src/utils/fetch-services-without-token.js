@@ -19,6 +19,7 @@ const postData = async (url, body) => {
 
   return data;
 };
+
 const getData = async (url) => {
   const response = await fetch(`${BaseURL}/${url}`, {
     method: "GET",
