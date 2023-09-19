@@ -117,7 +117,7 @@ function MultiLoginListing({ parentLoading = false, id }) {
             defaultPermissions
               ?.flatMap((module) => {
                 if (module.subModules?.length) {
-                  return [...module.subModules, module];
+                  return [module, ...module.subModules];
                 }
                 return module;
               })
