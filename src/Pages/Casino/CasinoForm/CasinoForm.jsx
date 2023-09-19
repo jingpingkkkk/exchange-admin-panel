@@ -2,7 +2,7 @@ import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
 import { Notify } from "../../../utils/notify";
@@ -167,8 +167,11 @@ export default function CasinoForm() {
             <CCol xs={12} className="pt-3">
               <div className="d-grid gap-2 d-md-block">
                 <CButton color="primary" type="submit" className="me-md-3">
-                  {loading ? <CSpinner size="sm" /> : editMode ? "Update" : "Create"}
+                  {loading ? <CSpinner size="sm" /> : "Save"}
                 </CButton>
+                <Link to={`${process.env.PUBLIC_URL}/casino-list`} className="btn btn-danger btn-icon text-white">
+                  Cancel
+                </Link>
               </div>
             </CCol>
           </CForm>
