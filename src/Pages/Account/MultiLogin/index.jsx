@@ -118,7 +118,6 @@ export default function MultiLogin() {
         }
 
         setModuleList(permissions);
-        console.log(permissions);
 
         if (permissions.length) {
           const moduleIds = [];
