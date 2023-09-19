@@ -4,7 +4,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import "./index.scss";
 import { permission } from "./lib/user-permissions";
-import { handshake } from "./utils/fetch-services-without-token";
 
 //const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 //App
@@ -98,7 +97,6 @@ const Loaderimg = () => {
 
 const Root = () => {
   useEffect(() => {
-    handshake();
     //Switcherdata.localStorageBackUp();
     //Switcherdata.HorizontalHoverMenu();
   }, []);
