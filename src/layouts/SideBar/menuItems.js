@@ -101,10 +101,12 @@ const menuItems = [
     icon: "file-text",
     children: [
       {
+        id: activeModules?.REPORT_ACCOUNT_STATEMENT,
         title: "Account statement",
         path: `${process.env.PUBLIC_URL}/account-statement`,
       },
       {
+        id: activeModules?.REPORT_USER_HISTORY,
         title: "User history",
         path: `${process.env.PUBLIC_URL}/user-history`,
       },
