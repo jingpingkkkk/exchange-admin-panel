@@ -42,9 +42,16 @@ export default function CompetitionForm() {
       isActive: Yup.boolean().required("Status is required"),
       startDate: Yup.date()
         .required("Start Date is required")
-        .min(new Date(), "Start date must be today or a future date")
+        .test("is-start-date-valid", "Start date must be today", function (startDate) {
+          const currentDate = new Date();
+          if (!startDate) {
+            return true;
+          }
+          return startDate.toDateString() === currentDate.toDateString();
+        })
         .test("is-start-date-less", "Start date must be less than the end date", function (startDate) {
           const endDate = this.parent.endDate;
+          const currentDate = new Date();
           if (!startDate || !endDate) {
             return true;
           }
@@ -57,9 +64,11 @@ export default function CompetitionForm() {
           if (!startDate || !endDate) {
             return true;
           }
-          return endDate > startDate;
+          return new Date(endDate) > new Date(startDate);
         }),
     }),
+    
+    
     onSubmit: async (values) => {
       // Perform form submission logic
       setServerError(null); // Reset server error state
