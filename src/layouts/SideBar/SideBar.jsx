@@ -10,7 +10,27 @@ const Sidebar = () => {
 
   useEffect(() => {
     const userPermissions = activeSessionKeys();
-    const allowedMenuItems = menuItems.filter((item) => userPermissions.includes(item.id));
+    const allowedMenuItems = [];
+    for (const item of menuItems) {
+      let itemObj = {};
+      const children = [];
+      if (item?.children?.length) {
+        item.children.forEach((child) => {
+          if (userPermissions.includes(child.id)) {
+            children.push(child);
+          }
+        });
+      }
+      if (item?.children?.length && !children.length) {
+        continue;
+      }
+      if (userPermissions.includes(item.id)) {
+        itemObj = { ...item, children };
+      }
+      if (Object.keys(itemObj).length) {
+        allowedMenuItems.push(itemObj);
+      }
+    }
     setMainMenu(allowedMenuItems);
   }, []);
 

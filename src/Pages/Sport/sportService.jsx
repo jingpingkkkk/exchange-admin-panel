@@ -11,6 +11,18 @@ export const getAllSport = async (page, perPage, sortBy, direction, searchQuery)
   return result.success ? result.data : [];
 };
 
+export const getAllActiveSport = async (page, perPage, sortBy, direction, searchQuery) => {
+  const result = await postData("sport/getAllSport", {
+    page: page,
+    perPage: perPage,
+    sortBy: sortBy,
+    direction: direction,
+    searchQuery: searchQuery,
+    status: "true",
+  });
+  return result.success ? result.data : [];
+};
+
 export const deleteSport = async (id) => {
   const result = await postData("sport/deleteSport", {
     _id: id,

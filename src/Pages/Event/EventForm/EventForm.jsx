@@ -66,6 +66,10 @@ export default function EventForm() {
       betDelay: Yup.number(),
     }),
     onSubmit: async (values) => {
+      if ((values.minStake || values.maxStake) && values.minStake > values.maxStake) {
+        formik.setFieldError("maxStake", "Max stake must be greater than Min Stake");
+        return;
+      }
       setServerError(null);
       setLoading(true);
       try {

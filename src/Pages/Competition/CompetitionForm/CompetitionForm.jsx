@@ -8,7 +8,7 @@ import FormInput from "../../../components/Common/FormComponents/FormInput";
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
 import FormToggleSwitch from "../../../components/Common/FormComponents/FormToggleSwitch"; // Import the FormToggleSwitch component
 import { Notify } from "../../../utils/notify";
-import { getAllSport } from "../../Sport/sportService";
+import { getAllActiveSport } from "../../Sport/sportService";
 import { addCompetition, getCompetitionDetailByID, updateCompetition } from "../competitionService";
 
 export default function CompetitionForm() {
@@ -40,32 +40,24 @@ export default function CompetitionForm() {
       betDelay: Yup.number().min(0).nullable(true),
       isActive: Yup.boolean().required("Status is required"),
       startDate: Yup.date()
-    .required("Start Date is required")
-    .min(new Date(), "Start date must be today or a future date")
-    .test(
-      "is-start-date-less",
-      "Start date must be less than the end date",
-      function (startDate) {
-        const endDate = this.parent.endDate; 
-        if (!startDate || !endDate) {
-          return true;
-        }
-        return new Date(startDate) < new Date(endDate);
-      }
-    ),
-  endDate: Yup.date()
-    .required("End Date is required")
-    .test(
-      "is-end-date-greater",
-      "End date must be greater than the start date",
-      function (endDate) {
-        const startDate = this.parent.startDate; 
-        if (!startDate || !endDate) {
-          return true;
-        }
-        return endDate > startDate;
-      }
-    ),
+        .required("Start Date is required")
+        .min(new Date(), "Start date must be today or a future date")
+        .test("is-start-date-less", "Start date must be less than the end date", function (startDate) {
+          const endDate = this.parent.endDate;
+          if (!startDate || !endDate) {
+            return true;
+          }
+          return new Date(startDate) < new Date(endDate);
+        }),
+      endDate: Yup.date()
+        .required("End Date is required")
+        .test("is-end-date-greater", "End date must be greater than the start date", function (endDate) {
+          const startDate = this.parent.startDate;
+          if (!startDate || !endDate) {
+            return true;
+          }
+          return endDate > startDate;
+        }),
     }),
     onSubmit: async (values) => {
       // Perform form submission logic
@@ -123,7 +115,7 @@ export default function CompetitionForm() {
         }));
       }
       setSportLoading(true);
-      const sportData = await getAllSport();
+      const sportData = await getAllActiveSport();
       const dropdownOptions = sportData.records.map((option) => ({
         value: option._id,
         label: option.name,

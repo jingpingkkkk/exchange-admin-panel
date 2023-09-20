@@ -1,4 +1,5 @@
 import { CButton, CCol, CSpinner } from "@coreui/react";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Button, Card, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import DataTable from "react-data-table-component";
@@ -105,14 +106,8 @@ export default function EventList() {
     {
       name: "MATCH DATE",
       selector: (row) => {
-        const originalDate = new Date(row.matchDate);
-        const formattedDate = originalDate.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-          hour: "numeric",
-          minute: "numeric",
-        });
+        const matchTime = row?.matchTime ? moment(row?.matchTime, "HH:mm").format("hh:mm A") : "";
+        const formattedDate = moment(row.matchDate).format("DD/MM/YYYY") + " " + matchTime;
         return formattedDate;
       },
       sortable: true,
@@ -202,6 +197,7 @@ export default function EventList() {
         toDate: toDate,
         status: status,
       });
+      console.log(result.records);
       setData(result.records);
       setTotalRows(result.totalRecords);
       setEventStatus(
