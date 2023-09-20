@@ -28,7 +28,9 @@ export default function UserEditForm() {
         return true;
       }),
     fullName: Yup.string().required("Full name is required"),
-    mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+    mobileNumber: Yup.string()
+      .required("Mobile number is required")
+      .matches(/^\d{10}$/, "Mobile number must be 10 digits"),
     city: Yup.string(),
     transactionCode: Yup.string().required("Transaction code is required"),
   });

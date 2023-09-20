@@ -52,7 +52,9 @@ export default function MasterForm() {
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), null], "Passwords must match")
       .required("Confirm Password is required"),
-    mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+    mobileNumber: Yup.string()
+      .required("Mobile number is required")
+      .matches(/^\d{10}$/, "Mobile number must be 10 digits"),
     creditPoints: Yup.string()
       .required("Credit amount is required")
       .test("is-number", "Credit amount must be a valid number", function (value) {
@@ -96,7 +98,9 @@ export default function MasterForm() {
       .test("passwords-match", "Passwords must match", function (value) {
         return this.parent.password === value;
       }),
-    mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+    mobileNumber: Yup.string()
+      .required("Mobile number is required")
+      .matches(/^\d{10}$/, "Mobile number must be 10 digits"),
     creditPoints: Yup.string()
       .required("Credit amount is required")
       .test("is-number", "Credit amount must be a valid number", function (value) {

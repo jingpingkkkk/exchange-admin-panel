@@ -68,7 +68,9 @@ const validationSchemaForUpdate = Yup.object({
     .test("passwords-match", "Passwords must match", function (value) {
       return this.parent.password === value;
     }),
-  mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+  mobileNumber: Yup.string()
+    .required("Mobile number is required")
+    .matches(/^\d{10}$/, "Mobile number must be 10 digits"),
   creditPoints: Yup.string()
     .required("Credit amount is required")
     .test("is-number", "Credit amount must be a valid number", function (value) {
