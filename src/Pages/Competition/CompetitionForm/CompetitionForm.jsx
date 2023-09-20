@@ -25,41 +25,62 @@ export default function CompetitionForm() {
   const [sportList, setSportList] = useState([]);
   const [sportLoading, setSportLoading] = useState(false);
 
+  const competition = {
+    name: "",
+    sportId: "",
+    startDate: "",
+    endDate: "",
+    betDelay: 0,
+    isActive: true,
+    completed: false,
+  }
+  const validationSchemaForCreate = Yup.object({
+    name: Yup.string().required("Name is required"),
+    sportId: Yup.string().required("Sport is required"),
+    betDelay: Yup.number().min(0).nullable(true),
+    isActive: Yup.boolean().required("Status is required"),
+    startDate: Yup.date()
+      .required("Start Date is required")
+      .test("is-start-date-valid", "Start date must be today", function (startDate) {
+        const currentDate = new Date();
+        if (!startDate) {
+          return true;
+        }
+        return startDate.toDateString() === currentDate.toDateString();
+      })
+      .test("is-start-date-less", "Start date must be less than the end date", function (startDate) {
+        const endDate = this.parent.endDate;
+        if (!startDate || !endDate) {
+          return true;
+        }
+        return new Date(startDate) < new Date(endDate);
+      }),
+    endDate: Yup.date()
+      .required("End Date is required")
+      .test("is-end-date-greater", "End date must be greater than the start date", function (endDate) {
+        const startDate = this.parent.startDate;
+        if (!startDate || !endDate) {
+          return true;
+        }
+        return new Date(endDate) > new Date(startDate);
+      }),
+  });
+
+  const validationSchemaForUpdate = Yup.object({
+    name: Yup.string().required("Name is required"),
+    sportId: Yup.string().required("Sport is required"),
+    betDelay: Yup.number().min(0).nullable(true),
+    isActive: Yup.boolean().required("Status is required"),
+    startDate: Yup.date()
+      .required("Start Date is required"),
+    endDate: Yup.date()
+      .required("End Date is required")
+
+  });
+
   const formik = useFormik({
-    initialValues: {
-      name: "",
-      sportId: "",
-      startDate: "",
-      endDate: "",
-      betDelay: 0,
-      isActive: true,
-      completed: false,
-    },
-    validationSchema: Yup.object({
-      name: Yup.string().required("Name is required"),
-      sportId: Yup.string().required("Sport is required"),
-      betDelay: Yup.number().min(0).nullable(true),
-      isActive: Yup.boolean().required("Status is required"),
-      startDate: Yup.date()
-        .required("Start Date is required")
-        .min(new Date(), "Start date must be today or a future date")
-        .test("is-start-date-less", "Start date must be less than the end date", function (startDate) {
-          const endDate = this.parent.endDate;
-          if (!startDate || !endDate) {
-            return true;
-          }
-          return new Date(startDate) < new Date(endDate);
-        }),
-      endDate: Yup.date()
-        .required("End Date is required")
-        .test("is-end-date-greater", "End date must be greater than the start date", function (endDate) {
-          const startDate = this.parent.startDate;
-          if (!startDate || !endDate) {
-            return true;
-          }
-          return endDate > startDate;
-        }),
-    }),
+    initialValues: competition,
+    validationSchema: editMode ? validationSchemaForUpdate : validationSchemaForCreate,
     onSubmit: async (values) => {
       // Perform form submission logic
       setServerError(null); // Reset server error state
