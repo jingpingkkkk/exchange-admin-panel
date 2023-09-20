@@ -33,6 +33,7 @@ export default function CompetitionForm() {
       endDate: "",
       betDelay: 0,
       isActive: true,
+      completed: false,
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
@@ -112,6 +113,7 @@ export default function CompetitionForm() {
           endDate: endDateFormatted || "",
           betDelay: result.betDelay || 0,
           isActive: result.isActive === true,
+          completed: result.completed || false,
         }));
       }
       setSportLoading(true);
@@ -236,7 +238,7 @@ export default function CompetitionForm() {
                   width={3}
                 />
 
-                <CCol md={12} className="ps-4 pb-2">
+                <CCol md={1} className="ps-4 pb-2">
                   <CFormLabel htmlFor="isActive">Is Active</CFormLabel>
                   <FormToggleSwitch
                     id="isActive"
@@ -245,6 +247,18 @@ export default function CompetitionForm() {
                     onChange={() => formik.setFieldValue("isActive", !formik.values.isActive)}
                   />
                 </CCol>
+
+                {editMode && (
+                  <CCol md={1} className="ps-4 pb-2">
+                    <CFormLabel htmlFor="completed">Completed</CFormLabel>
+                    <FormToggleSwitch
+                      id="completed"
+                      name="completed"
+                      checked={formik.values.completed}
+                      onChange={() => formik.setFieldValue("completed", !formik.values.completed)}
+                    />
+                  </CCol>
+                )}
 
                 <CCol xs={12}>
                   <div className="d-grid gap-2 d-md-block">
