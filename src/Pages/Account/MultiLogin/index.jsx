@@ -80,7 +80,11 @@ export default function MultiLogin() {
 
         if (id) {
           body._id = id;
-          response = await updateData({ ...body, isTransactionCode: true });
+          response = await updateData({
+            ...body,
+            isTransactionCode: true,
+            isMultiLoginUser: true,
+          });
         } else {
           response = await createCloneUser(body);
         }
