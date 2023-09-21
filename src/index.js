@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import "./index.scss";
 import { permission } from "./lib/user-permissions";
+import { handshake } from "./utils/encryption";
 
 //const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 //App
@@ -99,6 +100,11 @@ const Root = () => {
   useEffect(() => {
     //Switcherdata.localStorageBackUp();
     //Switcherdata.HorizontalHoverMenu();
+    const interval = setInterval(async () => await handshake(), 1000 * 60 * 5);
+    handshake();
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   return (
