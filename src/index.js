@@ -115,7 +115,7 @@ const Root = () => {
                   {/* Currency */}
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.CURRENCIES.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/currency-form`} element={<CurrencyForm />} />{" "}
-                  </Route>{" "}
+                  </Route>
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.CURRENCIES.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/currency-list`} element={<CurrencyList />} />
                   </Route>
@@ -259,6 +259,7 @@ const Root = () => {
                 <Route path={`${process.env.PUBLIC_URL}/errorpage500`} element={<Errorpage500 />} />
                 <Route path={`${process.env.PUBLIC_URL}/errorpage503`} element={<Errorpage503 />} />
               </Route>
+
               <Route path="*" element={<Errorpage400 />} />
             </Routes>
           </AuthProvider>
