@@ -192,7 +192,7 @@ const Root = () => {
                   {/* Transaction Panel User route  */}
                   <Route
                     path="/"
-                    element={<ProtectedRoutes allowedRoles={permission.TRANSACTION_PANEL_USER_MODULE.CREATE} />}
+                    element={<ProtectedRoutes allowedRoles={permission.TRANSACTION_PANEL_USER_MODULE.ACTIVE} />}
                   >
                     <Route
                       path={`${process.env.PUBLIC_URL}/transaction-panel-user-form`}

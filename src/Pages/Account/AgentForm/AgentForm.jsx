@@ -94,7 +94,7 @@ export default function AgentForm() {
       .test("creditPoints", "Credit amount exceeds available balance " + loginUserData.balance, function (value) {
         const user = loginUserData;
         const creditPoints = user?.balance || 0;
-        if (user?.role !== "system_owner" && value > creditPoints) {
+        if (user?.role !== "system_owner" && Number(value) > creditPoints) {
           return false; // Validation failed
         }
         return true; // Validation passed
@@ -140,7 +140,7 @@ export default function AgentForm() {
       .test("creditPoints", "Credit amount exceeds available balance " + loginUserData.balance, function (value) {
         const user = loginUserData;
         const creditPoints = user?.balance || 0;
-        if (user?.role !== "system_owner" && value > creditPoints) {
+        if (user?.role !== "system_owner" && Number(value) > creditPoints) {
           return false; // Validation failed
         }
         return true; // Validation passed
