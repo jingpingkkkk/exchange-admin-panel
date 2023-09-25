@@ -5,6 +5,7 @@ import { AuthProvider } from "./components/AuthContext";
 import "./index.scss";
 import { permission } from "./lib/user-permissions";
 import { handshake } from "./utils/encryption";
+import EventBetMetchods from "./Pages/EventBetMatchods/component";
 
 //const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 //App
@@ -182,6 +183,10 @@ const Root = () => {
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.EVENT_BET.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/event-bet-detail`} element={<EventBetDetail />} />
                   </Route>
+                  <Route path="/" element={<ProtectedRoutes allowedRoles={permission.EVENT_BET.ACTIVE} />}>
+                    <Route path={`${process.env.PUBLIC_URL}/event-bet-metchods/`} element={<EventBetMetchods />} />
+                  </Route>
+
                   {/* Theme User route  */}
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.THEME_USER_MODULE.CREATE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/theme-user-form`} element={<ThemeUserForm />} />
