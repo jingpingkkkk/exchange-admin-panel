@@ -1,4 +1,4 @@
-import { CButton, CCol, CForm, CSpinner, CFormLabel } from "@coreui/react";
+import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
@@ -6,10 +6,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
-import FormToggleSwitch from "../../../components/Common/FormComponents/FormToggleSwitch"; // Import the FormToggleSwitch component
-import { addCasinoGame, getCasinoGameDetailByID, updateCasinoGame } from "../casinoGameService";
-import { getAllCasino } from "../../Casino/casinoService";
 import { Notify } from "../../../utils/notify";
+import { getAllCasino } from "../../Casino/casinoService";
+import { addCasinoGame, getCasinoGameDetailByID, updateCasinoGame } from "../casinoGameService";
 
 const validationSchemaForCreate = Yup.object({
   name: Yup.string().required("Name is required"),
@@ -95,7 +94,6 @@ export default function CasinoGameForm() {
         status: true,
       }),
     ]).then((results) => {
-      console.log(results);
       const [fetchtedUser, allCasino] = results;
       if (fetchtedUser !== null) {
         const result = fetchtedUser;
