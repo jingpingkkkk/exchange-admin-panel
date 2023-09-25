@@ -78,9 +78,9 @@ export default function AccountList() {
         row.hasChild ? (
           <div>
             {/* <Link to={`${process.env.PUBLIC_URL}/account-list/`} state={{ parentId: row._id }} >{row.username}</Link> */}
-            {/* <Link to={`${process.env.PUBLIC_URL}/account-list/` + row._id} target="_blank"> */}
+            <Link to={`${process.env.PUBLIC_URL}/account-list/` + row._id} target="_blank">
               {row.username}
-            {/* </Link> */}
+            </Link>
           </div>
         ) : (
           <span>{row.username}</span>
@@ -246,6 +246,7 @@ export default function AccountList() {
         role: selectedRole === "all" ? allowedRoles : [selectedRole],
       });
 
+      console.log(result)
       setData(result.records);
       setTotalRows(result.totalRecords);
       setLoading(false);
