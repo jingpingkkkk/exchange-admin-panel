@@ -36,7 +36,7 @@ const validationSchemaForCreate = Yup.object({
       const creditPoints = user?.balance || 0;
 
       // Check if the user's role is not 'system_owner' and credit amount exceeds creditPoints
-      if (user?.role !== "system_owner" && Number(value) > creditPoints) {
+      if (user?.role !== "system_owner" && value > creditPoints) {
         return false; // Validation failed
       }
       return true; // Validation passed

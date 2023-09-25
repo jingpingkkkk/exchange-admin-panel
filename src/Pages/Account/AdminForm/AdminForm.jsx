@@ -63,9 +63,10 @@ export default function AdminForm() {
         return !isNaN(value);
       })
       .test("creditPoints", "Credit amount exceeds available balance " + loginUserData.balance, function (value) {
+        console.log("here");
         const user = loginUserData;
         const creditPoints = user?.balance || 0;
-        if (user?.role !== "system_owner" && Number(value) > creditPoints) {
+        if (user?.role !== "system_owner" && value > creditPoints) {
           return false; // Validation failed
         }
         return true; // Validation passed
@@ -111,7 +112,7 @@ export default function AdminForm() {
       .test("creditPoints", "Credit amount exceeds available balance " + loginUserData.balance, function (value) {
         const user = loginUserData;
         const creditPoints = user?.balance || 0;
-        if (user?.role !== "system_owner" && Number(value) > creditPoints) {
+        if (user?.role !== "system_owner" && value > creditPoints) {
           return false; // Validation failed
         }
         return true; // Validation passed
