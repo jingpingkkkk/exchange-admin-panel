@@ -97,3 +97,53 @@
 .tooltip {
   z-index: 2000; /* Adjust the value as needed */
 }
+.accortion-card{
+  background-color: #100f10 !important;
+  color:white !important;
+  display: flex;
+}
+.accortion-card .MuiSvgIcon-root{
+ color: white !important; 
+}
+.accordtion-header{
+  display: flex;
+  background-color: #100f10 !important;
+  justify-content: space-between;
+}
+.button-accortion{
+  background-color: #F18521 !important;
+  color: #fff;
+}
+
+.btnSucc{
+  background-color: #F18521 !important;
+  color: #fff;
+  /* padding: 0px 10px 5px 0px !important; */
+}
+
+.buttons{
+  display: flex;
+}
+.tableSpan{
+  font-size: 12px;
+  float: right;
+  text-align: right;
+  color: #333;
+  line-height: 22px;
+    letter-spacing: 0;
+}
+.table-span
+{
+  height: 21px ;
+    color: #333 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin-bottom: 0 !important;
+    line-height: 1 !important;
+}
+ 
+.accortion-card p{
+
+font-size: 16px !important;
+}
