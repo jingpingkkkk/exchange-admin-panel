@@ -4,7 +4,7 @@ import { Card } from "react-bootstrap";
 import { AuthContext } from "../../components/AuthContext";
 
 export default function Login() {
-  const { login, loginError } = useContext(AuthContext);
+  const { login, loginError, loading } = useContext(AuthContext);
 
   const [validated, setValidated] = useState(false);
   const [username, setUsername] = useState("");
@@ -58,6 +58,7 @@ export default function Login() {
 
                   <div className="wrap-input100 validate-input">
                     <CFormInput
+                      disabled={loading}
                       className="input100"
                       type="text"
                       name="username"
@@ -76,6 +77,7 @@ export default function Login() {
 
                   <div className="wrap-input100 validate-input">
                     <CFormInput
+                      disabled={loading}
                       className="input100"
                       type="password"
                       name="password"
@@ -93,8 +95,8 @@ export default function Login() {
                   </div>
 
                   <div className="container-login100-form-btn">
-                    <CButton color="primary" type="submit" className="login100-form-btn btn-primary">
-                      Login
+                    <CButton disabled={loading} color="primary" type="submit" className="login100-form-btn btn-primary">
+                      {loading ? "Logging in..." : "Login"}
                     </CButton>
                   </div>
                 </CForm>
