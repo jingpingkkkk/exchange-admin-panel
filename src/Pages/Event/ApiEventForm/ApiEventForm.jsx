@@ -1,10 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Accordion, Card, Row, Col } from "react-bootstrap";
-import { getAllCompetionByEvent, activeAllEvent, activeAllCompetition } from "../eventService";
+import { CButton, CCol, CFormLabel, CSpinner } from "@coreui/react";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { Accordion, Card, Col, Row } from "react-bootstrap";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import FormInput from "../../../components/Common/FormComponents/FormInput";
 import { Notify } from "../../../utils/notify";
-import { CCol, CFormLabel, CButton, CSpinner } from "@coreui/react";
+import { activeAllCompetition, activeAllEvent, getAllCompetionByEvent } from "../eventService";
+
+const formatMatchDate = (event) => {
+  const time = event?.matchTime
+    ? moment(event.matchTime, "HH:mm").format("hh:mm A")
+    : moment(event.matchDate).format("hh:mm A");
+  const datetime = event.matchDate ? moment(event.matchDate).format("DD-MM-YYYY") + " " + time || "" : "";
+  return datetime;
+};
 
 export default function EventForm() {
   const navigate = useNavigate();
@@ -181,7 +190,7 @@ export default function EventForm() {
                                                     state={{ id: event._id, liveEvent: true }}
                                                   >
                                                     <li className="listunorder" key={event._id + "_list"}>
-                                                      {event.name}
+                                                      {event.name} - ({formatMatchDate(event)})
                                                       <span className="badgetext badge bg-default rounded-pill">
                                                         <i className="fa fa-edit"></i>
                                                       </span>
@@ -315,7 +324,7 @@ export default function EventForm() {
                                     onClick={() => toggleEventStatus(event)}
                                     style={{ cursor: "pointer" }}
                                   >
-                                    {event.name}
+                                    {event.name} - ({formatMatchDate(event)})
                                   </li>
                                 ) : null
                               )}

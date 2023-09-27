@@ -15,7 +15,11 @@ export default function App() {
   const location = useLocation();
 
   useEffect(() => {
-    navigate(location.pathname);
+    if (location.pathname === "/") {
+      navigate("/dashboard");
+    } else {
+      navigate(location.pathname);
+    }
   }, []);
 
   return (

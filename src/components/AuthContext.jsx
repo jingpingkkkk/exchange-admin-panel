@@ -105,9 +105,14 @@ export const AuthProvider = ({ children }) => {
     window.location.reload();
   };
 
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, loginError, resetPassword }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const values = {
+    loading,
+    isAuthenticated,
+    login,
+    logout,
+    loginError,
+    resetPassword,
+  };
+
+  return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
 };

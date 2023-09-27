@@ -86,37 +86,45 @@ export default function EventList() {
       name: "SR.NO",
       selector: (row, index) => (currentPage - 1) * perPage + (index + 1),
       sortable: false,
+      width: "80px",
     },
     {
       name: "NAME",
-      selector: (row) => [row.name],
+      selector: (row) => [<div title={row.name}>{row.name}</div>],
       sortable: true,
       sortField: "name",
+      width: "250px",
     },
     {
       name: "COMPETITION",
-      selector: (row) => [row.competitionName],
+      selector: (row) => [<div title={row.competitionName}>{row.competitionName}</div>],
       sortable: true,
+      width: "250px",
     },
     {
       name: "SPORT",
       selector: (row) => [row.sportsName],
       sortable: true,
+      width: "100px",
     },
     {
       name: "MATCH DATE",
       selector: (row) => {
-        const matchTime = row?.matchTime ? moment(row?.matchTime, "HH:mm").format("hh:mm A") : "";
-        const formattedDate = moment(row.matchDate).format("DD/MM/YYYY") + " " + matchTime;
-        return formattedDate;
+        const matchTime = row?.matchTime
+          ? moment(row?.matchTime, "HH:mm").format("hh:mm A")
+          : moment(row.matchDate).format("hh:mm A");
+        const formattedDate = moment(row.matchDate).format("DD/MM/YYYY") + " " + matchTime || "";
+        return <div title={formattedDate}>{formattedDate}</div>;
       },
       sortable: true,
       sortField: "matchDate",
+      width: "175px",
     },
     {
       name: "EVENT STATUS",
       selector: (row) => [row.status],
       sortable: true,
+      width: "100px",
     },
     permission.EVENTS.ACTIVE && {
       name: "STATUS",
@@ -202,7 +210,6 @@ export default function EventList() {
         toDate: toDate,
         status: status,
       });
-      console.log(result.records);
       setData(result.records);
       setTotalRows(result.totalRecords);
       setEventStatus(
