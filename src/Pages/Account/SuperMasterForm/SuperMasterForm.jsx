@@ -353,7 +353,10 @@ export default function SuperMasterForm() {
                       name="forcePasswordChange"
                       checked={formik.values.forcePasswordChange}
                       onChange={() => {
-                        formik.setFieldValue("forcePasswordChange", !formik.values.forcePasswordChange);
+                        formik.setFieldValue(
+                          "forcePasswordChange",
+                          editMode ? !formik.values.forcePasswordChange : true
+                        );
                       }}
                     />
                   </CCol>
