@@ -12,10 +12,12 @@ import { addCasino, getCasinoDetailByID, updateCasino } from "../casinoService";
 
 const validationSchemaForCreate = Yup.object({
   name: Yup.string().required("Name is required"),
+  casinoType: Yup.string().required("Casino type is required"),
 });
 
 const validationSchemaForUpdate = Yup.object({
   name: Yup.string().required("Name is required"),
+  casinoType: Yup.string().required("Casino type is required"),
 });
 
 const casinoTypes = [
@@ -39,6 +41,7 @@ export default function CasinoForm() {
 
   const user = {
     name: "",
+    casinoType: "",
   };
 
   const handleSingleImageUpload = (event, fieldName) => {
@@ -151,7 +154,7 @@ export default function CasinoForm() {
               value={formik.values.casinoType}
               onChange={(name, selectedValue) => formik.setFieldValue("casinoType", selectedValue)}
               onBlur={formik.handleBlur}
-              error={formik.touched.casinoId && formik.errors.casinoId}
+              error={formik.touched.casinoType && formik.errors.casinoType}
               isRequired="true"
               width={3}
               options={casinoTypes}
