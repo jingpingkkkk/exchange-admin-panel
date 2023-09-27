@@ -38,6 +38,7 @@ export default function EventForm() {
       minStakeSession: 0,
       maxStakeSession: 0,
       isActive: false,
+      isFavourite: false,
       completed: false,
       betDeleted: false,
       betLock: false,
@@ -129,6 +130,7 @@ export default function EventForm() {
           minStakeSession: result.minStakeSession,
           maxStakeSession: result.maxStakeSession,
           isActive: result.isActive || false,
+          isFavourite: result.isFavourite || false,
           completed: result.completed || false,
           betDeleted: result.betDeleted || false,
           betDelay: result.betDelay,
@@ -337,6 +339,18 @@ export default function EventForm() {
                       checked={formik.values.isActive}
                       onChange={() => {
                         formik.setFieldValue("isActive", !formik.values.isActive);
+                      }}
+                    />
+                  </CCol>
+
+                  <CCol sm="4" md="2" lg="1">
+                    <CFormLabel htmlFor="isFavourite">Favourite</CFormLabel>
+                    <FormToggleSwitch
+                      id="isFavourite"
+                      name="isFavourite"
+                      checked={formik.values.isFavourite}
+                      onChange={() => {
+                        formik.setFieldValue("isFavourite", !formik.values.isFavourite);
                       }}
                     />
                   </CCol>

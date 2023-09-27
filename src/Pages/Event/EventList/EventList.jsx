@@ -113,6 +113,11 @@ export default function EventList() {
       sortable: true,
       sortField: "matchDate",
     },
+    {
+      name: "EVENT STATUS",
+      selector: (row) => [row.status],
+      sortable: true,
+    },
     permission.EVENTS.ACTIVE && {
       name: "STATUS",
       selector: (row) => [row.betCategory],
