@@ -1,49 +1,48 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Row, Card, Col, Breadcrumb, Button } from "react-bootstrap";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { Button, Card, Col, Row } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import "react-data-table-component-extensions/dist/index.css";
-import { getUserActivity, getUserActivityTypes } from "../reportService";
-import { downloadCSV } from '../../../utils/csvUtils';
-import { showAlert } from '../../../utils/alertUtils';
 import SearchInput from "../../../components/Common/FormComponents/SearchInput"; // Import the SearchInput component
+import { downloadCSV } from "../../../utils/csvUtils";
 import { getAllData } from "../../Account/accountService";
+import { getUserActivity, getUserActivityTypes } from "../reportService";
 //import 'react-date-range/dist/styles.css'; // main style file
 //import 'react-date-range/dist/theme/default.css'; // theme css file
 //import { DateRangePicker } from 'react-date-range';
-import { CCol, CButton, CSpinner } from "@coreui/react";
-import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
+import { CButton, CCol, CSpinner } from "@coreui/react";
 import FormInput from "../../../components/Common/FormComponents/FormInput";
-import { exportToExcel, exportToPDF } from '../../../utils/exportUtils'; // Import utility functions for exporting
-
+import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
+import { exportToExcel, exportToPDF } from "../../../utils/exportUtils"; // Import utility functions for exporting
 
 export default function UserHistory() {
-
   const Export = ({ onExport }) => (
-    <Button className="btn btn-secondary" onClick={(e) => onExport(e.target.value)}>Export</Button>
+    <Button className="btn btn-secondary" onClick={(e) => onExport(e.target.value)}>
+      Export
+    </Button>
   );
 
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = React.useState("");
   const [data, setData] = useState([]);
   const [resetPaginationToggle, setResetPaginationToggle] = React.useState(false);
   const [loading, setLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState('createdAt');
-  const [direction, setDirection] = useState('desc');
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [direction, setDirection] = useState("desc");
 
   const [userList, setUserList] = useState([]);
-  const [startDateValue, setStartDateValue] = useState('');
-  const [endDateValue, setEndDateValue] = useState('');
-  const [selectedUser, setSelectedUser] = useState('');
+  const [startDateValue, setStartDateValue] = useState("");
+  const [endDateValue, setEndDateValue] = useState("");
+  const [selectedUser, setSelectedUser] = useState("");
   const [typeList, setTypeList] = useState([]);
-  const [selectedType, setSelectedType] = useState('');
+  const [selectedType, setSelectedType] = useState("");
   const [filters, setFilters] = useState({
     userId: "",
     starDate: "",
     endDate: "",
-    type: ""
+    type: "",
     // Add more filters here if needed
   });
   const [formSelectKey, setFormSelectKey] = useState(0);
@@ -52,50 +51,39 @@ export default function UserHistory() {
   const columns = [
     {
       name: "SR.NO",
-      selector: (row, index) => ((currentPage - 1) * perPage) + (index + 1),
+      selector: (row, index) => (currentPage - 1) * perPage + (index + 1),
       sortable: false,
     },
     {
       name: "USERNAME",
       selector: (row) => [row.username],
       sortable: true,
-      sortField: 'points',
+      sortField: "points",
     },
     {
       name: "DATE",
-      selector: (row) => {
-        const originalDate = new Date(row.createdAt);
-        const formattedDate = originalDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-          second: 'numeric',
-        });
-        return formattedDate;
-      },
+      selector: (row) => [moment(row.createdAt).format("DD-MM-YYYY HH:mm:ss")],
       sortable: true,
-      sortField: 'date'
+      sortField: "createdAt",
     },
     {
       name: "IP ADDRESS",
       selector: (row) => [row.ipAddress],
       sortable: true,
-      sortField: 'ipAddress',
+      sortField: "ipAddress",
     },
     {
       name: "CITY",
       selector: (row) => [row.city],
       sortable: true,
-      sortField: 'city',
+      sortField: "city",
     },
     {
       name: "COUNTRY",
       selector: (row) => [row.country],
       sortable: true,
-      sortField: 'country',
-    }
+      sortField: "country",
+    },
   ];
 
   const actionsMemo = React.useMemo(() => <Export onExport={() => handleDownload()} />, []);
@@ -113,7 +101,7 @@ export default function UserHistory() {
         userId: userId,
         type: type,
         fromDate: fromDate,
-        toDate: toDate
+        toDate: toDate,
       });
 
       setData(result.records);
@@ -137,7 +125,7 @@ export default function UserHistory() {
     setLoading(false);
   };
 
-  const handlePageChange = page => {
+  const handlePageChange = (page) => {
     setCurrentPage(page);
     fetchData(page, sortBy, direction, searchQuery, filters);
   };
@@ -149,14 +137,14 @@ export default function UserHistory() {
   };
 
   const handleDownload = async () => {
-    await downloadCSV('currencies/getUserActivity', searchQuery, 'currency.csv');
+    await downloadCSV("currencies/getUserActivity", searchQuery, "currency.csv");
   };
 
   const selectionRange = {
     startDate: new Date(),
     endDate: new Date(),
-    key: 'selection',
-  }
+    key: "selection",
+  };
 
   const handleSelect = (ranges) => {
     console.log(ranges);
@@ -166,30 +154,30 @@ export default function UserHistory() {
     //     endDate: [native Date Object],
     //   }
     // }
-  }
+  };
 
   const handleExcelExport = async () => {
     try {
       const response = await getUserActivity(); // Replace with your actual API call
       // Generate and download Excel file
 
-      const formattedData = response.records.map(item => ({
-        "USERNAME": item.username,
-        "DATE": new Date(item.createdAt).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-          second: 'numeric',
+      const formattedData = response.records.map((item) => ({
+        USERNAME: item.username,
+        DATE: new Date(item.createdAt).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
         }),
         "IP ADDRESS": item.ipAddress,
-        "CITY": item.city,
-        "COUNTRY": item.country,
+        CITY: item.city,
+        COUNTRY: item.country,
       }));
-      exportToExcel(formattedData, 'userHistory.xlsx'); // Utilize exportToExcel utility function
+      exportToExcel(formattedData, "userHistory.xlsx"); // Utilize exportToExcel utility function
     } catch (error) {
-      console.error('Error exporting to Excel:', error);
+      console.error("Error exporting to Excel:", error);
     }
   };
 
@@ -198,25 +186,25 @@ export default function UserHistory() {
       const response = await getUserActivity(); // Replace with your actual API call
       // Generate and download PDF file
 
-      const columns = ['USERNAME', 'DATE', 'IP ADDRESS', 'CITY', 'COUNTRY'];
+      const columns = ["USERNAME", "DATE", "IP ADDRESS", "CITY", "COUNTRY"];
 
-      const formattedData = response.records.map(item => ({
-        "USERNAME": item.username,
-        "DATE": new Date(item.createdAt).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-          second: 'numeric',
+      const formattedData = response.records.map((item) => ({
+        USERNAME: item.username,
+        DATE: new Date(item.createdAt).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
         }),
         "IP ADDRESS": item.ipAddress,
-        "CITY": item.city,
-        "COUNTRY": item.country,
+        CITY: item.city,
+        COUNTRY: item.country,
       }));
-      exportToPDF(columns, formattedData, 'userHistory.pdf');
+      exportToPDF(columns, formattedData, "userHistory.pdf");
     } catch (error) {
-      console.error('Error exporting to PDF:', error);
+      console.error("Error exporting to PDF:", error);
     }
   };
 
@@ -249,7 +237,7 @@ export default function UserHistory() {
       userId: "",
       startDate: "",
       endDate: "",
-      type: ""
+      type: "",
       // Add more filters here if needed
     });
   };
@@ -257,7 +245,7 @@ export default function UserHistory() {
   const filterData = async () => {
     Promise.all([getAllData(), getUserActivityTypes()]).then((results) => {
       const [userData, userActivityTypes] = results;
-      const dropdownOptions = userData.records.map(option => ({
+      const dropdownOptions = userData.records.map((option) => ({
         value: option._id,
         label: option.username,
       }));
@@ -267,12 +255,12 @@ export default function UserHistory() {
   };
 
   useEffect(() => {
-    if (searchQuery !== '') {
+    if (searchQuery !== "") {
       fetchData(currentPage, sortBy, direction, searchQuery, filters); // fetch page 1 of users
     } else {
-      fetchData(currentPage, sortBy, direction, '', filters); // fetch page 1 of users
+      fetchData(currentPage, sortBy, direction, "", filters); // fetch page 1 of users
     }
-    filterData()
+    filterData();
   }, [perPage, searchQuery]);
 
   return (
@@ -293,7 +281,7 @@ export default function UserHistory() {
                 name="userId"
                 value={selectedUser} // Set the selectedUser as the value
                 onChange={(name, selectedValue) => setSelectedUser(selectedValue)} // Update the selectedUser
-                onBlur={() => { }} // Add an empty function as onBlur prop
+                onBlur={() => {}} // Add an empty function as onBlur prop
                 error=""
                 width={2}
                 options={userList}
@@ -305,7 +293,7 @@ export default function UserHistory() {
                 name="type"
                 value={selectedType} // Set the selectedType as the value
                 onChange={(name, selectedValue) => setSelectedType(selectedValue)} // Update the selectedType
-                onBlur={() => { }} // Add an empty function as onBlur prop
+                onBlur={() => {}} // Add an empty function as onBlur prop
                 error=""
                 width={2}
                 options={typeList}
@@ -317,7 +305,7 @@ export default function UserHistory() {
                 type="date"
                 value={startDateValue}
                 onChange={(event) => setStartDateValue(event.target.value)} // Use event.target.value to get the updated value
-                onBlur={() => { }}
+                onBlur={() => {}}
                 width={2}
               />
 
@@ -327,7 +315,7 @@ export default function UserHistory() {
                 type="date"
                 value={endDateValue}
                 onChange={(event) => setEndDateValue(event.target.value)} // Use event.target.value to get the updated value
-                onBlur={() => { }}
+                onBlur={() => {}}
                 width={2}
               />
 
@@ -343,17 +331,17 @@ export default function UserHistory() {
                     Reset
                   </button>
 
-                  <Button variant="success" className="ms-3 me-3 mt-6" onClick={handleExcelExport}><i className="fa fa-file-excel-o"></i></Button>
-                  <Button variant="info" className=" mt-6" onClick={handlePDFExport}><i className="fa fa-file-pdf-o"></i></Button>
+                  <Button variant="success" className="ms-3 me-3 mt-6" onClick={handleExcelExport}>
+                    <i className="fa fa-file-excel-o"></i>
+                  </Button>
+                  <Button variant="info" className=" mt-6" onClick={handlePDFExport}>
+                    <i className="fa fa-file-pdf-o"></i>
+                  </Button>
                 </div>
               </CCol>
             </Card.Header>
             <Card.Body>
-              <SearchInput
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                loading={loading}
-              />
+              <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} loading={loading} />
               {/* <Row>
                 <CCol xs={4}>
                   <DateRangePicker
