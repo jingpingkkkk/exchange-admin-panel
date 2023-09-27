@@ -1,4 +1,4 @@
-import { CButton, CCol, CForm, CSpinner } from "@coreui/react";
+import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
@@ -6,8 +6,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput";
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
+import FormToggleSwitch from "../../../components/Common/FormComponents/FormToggleSwitch"; // Import the FormToggleSwitch component
 import { Notify } from "../../../utils/notify";
-import { getAllSport } from "../../Sport/sportService";
+import { getAllActiveSport } from "../../Sport/sportService";
 import { addCompetition, getCompetitionDetailByID, updateCompetition } from "../competitionService";
 
 export default function CompetitionForm() {
@@ -24,18 +25,62 @@ export default function CompetitionForm() {
   const [sportList, setSportList] = useState([]);
   const [sportLoading, setSportLoading] = useState(false);
 
+  const competition = {
+    name: "",
+    sportId: "",
+    startDate: "",
+    endDate: "",
+    betDelay: 0,
+    isActive: true,
+    completed: false,
+  }
+  const validationSchemaForCreate = Yup.object({
+    name: Yup.string().required("Name is required"),
+    sportId: Yup.string().required("Sport is required"),
+    betDelay: Yup.number().min(0).nullable(true),
+    isActive: Yup.boolean().required("Status is required"),
+    startDate: Yup.date()
+      .required("Start Date is required")
+      .test("is-start-date-valid", "Start date must be today", function (startDate) {
+        const currentDate = new Date();
+        if (!startDate) {
+          return true;
+        }
+        return startDate.toDateString() === currentDate.toDateString();
+      })
+      .test("is-start-date-less", "Start date must be less than the end date", function (startDate) {
+        const endDate = this.parent.endDate;
+        if (!startDate || !endDate) {
+          return true;
+        }
+        return new Date(startDate) < new Date(endDate);
+      }),
+    endDate: Yup.date()
+      .required("End Date is required")
+      .test("is-end-date-greater", "End date must be greater than the start date", function (endDate) {
+        const startDate = this.parent.startDate;
+        if (!startDate || !endDate) {
+          return true;
+        }
+        return new Date(endDate) > new Date(startDate);
+      }),
+  });
+
+  const validationSchemaForUpdate = Yup.object({
+    name: Yup.string().required("Name is required"),
+    sportId: Yup.string().required("Sport is required"),
+    betDelay: Yup.number().min(0).nullable(true),
+    isActive: Yup.boolean().required("Status is required"),
+    startDate: Yup.date()
+      .required("Start Date is required"),
+    endDate: Yup.date()
+      .required("End Date is required")
+
+  });
+
   const formik = useFormik({
-    initialValues: {
-      name: "",
-      sportId: "",
-      startDate: "",
-      endDate: "",
-      betDelay: "",
-    },
-    validationSchema: Yup.object({
-      name: Yup.string().required("Name is required"),
-      sportId: Yup.string().required("Sport is required"),
-    }),
+    initialValues: competition,
+    validationSchema: editMode ? validationSchemaForUpdate : validationSchemaForCreate,
     onSubmit: async (values) => {
       // Perform form submission logic
       setServerError(null); // Reset server error state
@@ -87,11 +132,13 @@ export default function CompetitionForm() {
           sportId: result.sportId || "",
           startDate: startDateFormatted,
           endDate: endDateFormatted || "",
-          betDelay: result.betDelay || "",
+          betDelay: result.betDelay || 0,
+          isActive: result.isActive === true,
+          completed: result.completed || false,
         }));
       }
       setSportLoading(true);
-      const sportData = await getAllSport();
+      const sportData = await getAllActiveSport();
       const dropdownOptions = sportData.records.map((option) => ({
         value: option._id,
         label: option.name,
@@ -185,6 +232,7 @@ export default function CompetitionForm() {
                   onBlur={formik.handleBlur}
                   error={formik.touched.startDate && formik.errors.startDate}
                   width={3}
+                  isRequired="true"
                 />
 
                 <FormInput
@@ -196,6 +244,7 @@ export default function CompetitionForm() {
                   onBlur={formik.handleBlur}
                   error={formik.touched.endDate && formik.errors.endDate}
                   width={3}
+                  isRequired="true"
                 />
 
                 <FormInput
@@ -209,6 +258,28 @@ export default function CompetitionForm() {
                   isRequired="false"
                   width={3}
                 />
+
+                <CCol md={1} className="ps-4 pb-2">
+                  <CFormLabel htmlFor="isActive">Is Active</CFormLabel>
+                  <FormToggleSwitch
+                    id="isActive"
+                    name="isActive"
+                    checked={formik.values.isActive}
+                    onChange={() => formik.setFieldValue("isActive", !formik.values.isActive)}
+                  />
+                </CCol>
+
+                {editMode && (
+                  <CCol md={1} className="ps-4 pb-2">
+                    <CFormLabel htmlFor="completed">Completed</CFormLabel>
+                    <FormToggleSwitch
+                      id="completed"
+                      name="completed"
+                      checked={formik.values.completed}
+                      onChange={() => formik.setFieldValue("completed", !formik.values.completed)}
+                    />
+                  </CCol>
+                )}
 
                 <CCol xs={12}>
                   <div className="d-grid gap-2 d-md-block">

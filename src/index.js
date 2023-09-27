@@ -4,7 +4,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./components/AuthContext";
 import "./index.scss";
 import { permission } from "./lib/user-permissions";
-import { handshake } from "./utils/fetch-services-without-token";
+import { handshake } from "./utils/encryption";
+import EventBetMetchods from "./Pages/EventBetMatchods/component";
 
 //const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 //App
@@ -98,9 +99,13 @@ const Loaderimg = () => {
 
 const Root = () => {
   useEffect(() => {
-    handshake();
     //Switcherdata.localStorageBackUp();
     //Switcherdata.HorizontalHoverMenu();
+    const interval = setInterval(async () => await handshake(), 1000 * 60 * 5);
+    handshake();
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -117,7 +122,7 @@ const Root = () => {
                   {/* Currency */}
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.CURRENCIES.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/currency-form`} element={<CurrencyForm />} />{" "}
-                  </Route>{" "}
+                  </Route>
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.CURRENCIES.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/currency-list`} element={<CurrencyList />} />
                   </Route>
@@ -178,6 +183,10 @@ const Root = () => {
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.EVENT_BET.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/event-bet-detail`} element={<EventBetDetail />} />
                   </Route>
+                  <Route path="/" element={<ProtectedRoutes allowedRoles={permission.EVENT_BET.ACTIVE} />}>
+                    <Route path={`${process.env.PUBLIC_URL}/event-bet-metchods/`} element={<EventBetMetchods />} />
+                  </Route>
+
                   {/* Theme User route  */}
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.THEME_USER_MODULE.CREATE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/theme-user-form`} element={<ThemeUserForm />} />
@@ -188,7 +197,7 @@ const Root = () => {
                   {/* Transaction Panel User route  */}
                   <Route
                     path="/"
-                    element={<ProtectedRoutes allowedRoles={permission.TRANSACTION_PANEL_USER_MODULE.CREATE} />}
+                    element={<ProtectedRoutes allowedRoles={permission.TRANSACTION_PANEL_USER_MODULE.ACTIVE} />}
                   >
                     <Route
                       path={`${process.env.PUBLIC_URL}/transaction-panel-user-form`}
@@ -261,6 +270,7 @@ const Root = () => {
                 <Route path={`${process.env.PUBLIC_URL}/errorpage500`} element={<Errorpage500 />} />
                 <Route path={`${process.env.PUBLIC_URL}/errorpage503`} element={<Errorpage503 />} />
               </Route>
+
               <Route path="*" element={<Errorpage400 />} />
             </Routes>
           </AuthProvider>

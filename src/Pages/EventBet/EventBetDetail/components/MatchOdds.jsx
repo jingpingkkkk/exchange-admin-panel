@@ -1,14 +1,46 @@
+import { React, useEffect, useState } from "react";
 import { ExpandMore } from "@mui/icons-material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { CardActions } from "@mui/material";
-import Collapse from "@mui/material/Collapse";
+import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
+import MuiAccordion from "@mui/material/Accordion";
+import MuiAccordionSummary from "@mui/material/AccordionSummary";
+import MuiAccordionDetails from "@mui/material/AccordionDetails";
+import { styled } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
-import { React, useEffect, useState } from "react";
-import { Card } from "react-bootstrap";
+import { Card, Row, Table } from "react-bootstrap";
 import { io } from "socket.io-client";
 import BetBox from "../../../../components/Common/BetComponents/BetBox";
 import "../../eventBetDetail.css";
+import { Button } from "react-bootstrap";
 
+import { TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+const Accordion = styled((props) => <MuiAccordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
+  border: `1px solid ${theme.palette.divider}`,
+  "&:not(:last-child)": {
+    borderBottom: 0,
+  },
+  "&:before": {
+    display: "none",
+  },
+}));
+
+const AccordionSummary = styled((props) => (
+  <MuiAccordionSummary expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />} {...props} />
+))(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, .05)" : "rgba(0, 0, 0, .03)",
+  flexDirection: "row-reverse",
+  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
+    transform: "rotate(90deg)",
+  },
+  "& .MuiAccordionSummary-content": {
+    marginLeft: theme.spacing(1),
+  },
+}));
+
+const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderTop: "1px solid rgba(0, 0, 0, .125)",
+}));
 const formatSize = (size) => {
   if (!size) return;
   if (size >= 100000) {
@@ -26,12 +58,17 @@ function MatchOdds({ marketId, selectedEvent }) {
   const socket = io(marketUrl);
 
   const [show, setShow] = useState(true);
-  const [expanded, setExpanded] = useState(true);
   const [teamOneLayData, setTeamOneLayData] = useState([]);
   const [teamOneBackData, setTeamOneBackData] = useState([]);
   const [teamTwoLayData, setTeamTwoLayData] = useState([]);
   const [teamTwoBackData, setTeamTwoBackData] = useState([]);
+  // const [expanded, setExpanded] = (React.useState < string) | (false > "panel1");
 
+  const [expanded, setExpanded] = useState("panel1");
+
+  const handleChange = (panel) => (event, newExpanded) => {
+    setExpanded(newExpanded ? panel : false);
+  };
   useEffect(() => {
     socket.on("connect", () => {
       socket.emit("join:market", {
@@ -74,103 +111,847 @@ function MatchOdds({ marketId, selectedEvent }) {
   return (
     <Card className="card">
       {" "}
-      <CardActions className="card-header bg-primary br-tr-3 br-tl-3">
-        <h3 className="card-title text-white">MATCH_ODDS</h3>
+      <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+        <div className="accordtion-header">
+          <AccordionSummary className="accortion-card" aria-controls="panel1d-content" id="panel1d-header">
+            <Typography>Match_ODDS</Typography>
+          </AccordionSummary>
+        </div>
+        <AccordionDetails>
+          <TableContainer>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell></TableCell>
+                  <TableCell align="right">
+                    {" "}
+                    <span className="tableSpan"> 1.3L </span>
+                  </TableCell>
+                  <TableCell align="right">
+                    <div className="grey-box back2">Back</div>
+                  </TableCell>
+                  <TableCell align="right">
+                    <div className="grey-box lay2">Lay</div>
+                  </TableCell>
+                  <TableCell align="right"></TableCell>
+                  <TableCell align="right"></TableCell>
+                  <TableCell align="right"></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {/* {rows.map((row) => ( */}
 
-        <div className="rtlcards ">
+                <TableRow
+                  // key={row.name}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    <span className="table-span">
+                      {" "}
+                      {"Bangladesh"}
+                      <br />0{" "}
+                    </span>
+                  </TableCell>
+                  <TableCell align="right">
+                    <div className="grey-box back2">
+                      2.34 <br />
+                      10.38k
+                    </div>
+                  </TableCell>
+                  <TableCell align="right">
+                    {" "}
+                    <div className="grey-box lay2">
+                      2.34 <br />
+                      10.38k
+                    </div>
+                  </TableCell>
+                  <TableCell align="right">
+                    {" "}
+                    <div className="grey-box lay2">
+                      2.34 <br />
+                      10.38k
+                    </div>
+                  </TableCell>
+                  <TableCell align="right">
+                    <div className="grey-box back2">
+                      2.34 <br />
+                      10.38k
+                    </div>
+                  </TableCell>
+                  <TableCell align="right">
+                    {" "}
+                    <div className="grey-box lay2">
+                      2.34 <br />
+                      10.38k
+                    </div>
+                  </TableCell>
+                  <TableCell align="right">
+                    <div className="grey-box back2">
+                      2.34 <br />
+                      10.38k
+                    </div>
+                  </TableCell>
+                </TableRow>
+                <TableRow
+                  // key={row.name}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    <span className="table-span">
+                      {" "}
+                      {"New Zealand"}
+                      <br />0{" "}
+                    </span>
+                  </TableCell>
+                  <TableCell align="right">
+                    <div className="grey-box back2">
+                      2.34 <br />
+                      10.38k
+                    </div>
+                  </TableCell>
+                  <TableCell align="right">
+                    {" "}
+                    <div className="grey-box lay2">
+                      2.34 <br />
+                      10.38k
+                    </div>
+                  </TableCell>
+                  <TableCell align="right">
+                    {" "}
+                    <div className="grey-box lay2">
+                      2.34 <br />
+                      10.38k
+                    </div>
+                  </TableCell>
+                  <TableCell align="right">
+                    <div className="grey-box back2">
+                      2.34 <br />
+                      10.38k
+                    </div>
+                  </TableCell>
+                  <TableCell align="right">
+                    {" "}
+                    <div className="grey-box lay2">
+                      2.34 <br />
+                      10.38k
+                    </div>
+                  </TableCell>
+                  <TableCell align="right">
+                    <div className="grey-box back2">
+                      2.34 <br />
+                      10.38k
+                    </div>
+                  </TableCell>
+                </TableRow>
+                {/* ))}  */}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </AccordionDetails>
+      </Accordion>
+      <div className="rtlcards">
+        <ExpandMore
+          expand={expanded.toString()}
+          onClick={() => setExpanded(!expanded)}
+          aria-expanded={expanded}
+          aria-label="show more"
+        ></ExpandMore>
+      </div>
+      <div className="mt-3">
+        <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+          <div className="accordtion-header">
+            <AccordionSummary className="accortion-card" aria-controls="panel1d-content" id="panel1d-header">
+              <Typography>Bookmaker</Typography>
+            </AccordionSummary>
+          </div>
+          <AccordionDetails>
+            <TableContainer>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <span className="tableSpan"> Min:100 Max:29L22 </span>
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">Back</div>
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box lay2">Lay</div>
+                    </TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* {rows.map((row) => ( */}
+
+                  <TableRow
+                    // key={row.name}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      <span className="table-span">
+                        {" "}
+                        {"Bangladesh"}
+                        <br />0{" "}
+                      </span>
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">
+                        2.34 <br />
+                        10.38k
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <div className="grey-box lay2">
+                        2.34 <br />
+                        10.38k
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <div className="grey-box lay2">
+                        2.34 <br />
+                        10.38k
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">
+                        2.34 <br />
+                        10.38k
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <div className="grey-box lay2">
+                        2.34 <br />
+                        10.38k
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">
+                        2.34 <br />
+                        10.38k
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow
+                    // key={row.name}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      <span className="table-span">
+                        {" "}
+                        {"New Zealand"}
+                        <br />0{" "}
+                      </span>
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">
+                        2.34 <br />
+                        10.38k
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <div className="grey-box lay2">
+                        2.34 <br />
+                        10.38k
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <div className="grey-box lay2">
+                        2.34 <br />
+                        10.38k
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">
+                        2.34 <br />
+                        10.38k
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <div className="grey-box lay2">
+                        2.34 <br />
+                        10.38k
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">
+                        2.34 <br />
+                        10.38k
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                  {/* ))}  */}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </AccordionDetails>
+        </Accordion>
+        <div className="rtlcards">
           <ExpandMore
             expand={expanded.toString()}
             onClick={() => setExpanded(!expanded)}
             aria-expanded={expanded}
             aria-label="show more"
-          >
-            <ExpandMoreIcon className=" text-white" />
-          </ExpandMore>
-
-          <IconButton
-            size="small"
-            edge="start"
-            color="inherit"
-            onClick={() => setShow(false)}
-            aria-label="close"
-          ></IconButton>
+          ></ExpandMore>
         </div>
-      </CardActions>
-      <Collapse in={expanded} timeout="auto">
-        <div className="card-body">
-          <div className="row main-title-row">
-            <div className="col-md-4 col-sm-12 col-12"></div>
-            <div className="col-md-8 col-sm-12 col-12 center-content">
-              <div className="yes-nno-tab">
-                <div className="grey-box back2">Back</div>
-                <div className="grey-box lay2">Lay</div>
-              </div>
+      </div>
+      <Row>
+        <div className="col-6 mt-3">
+          <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+            <div className="accordtion-header">
+              <AccordionSummary className="accortion-card" aria-controls="panel1d-content" id="panel1d-header">
+                <Typography>Bookmaker 2</Typography>
+              </AccordionSummary>
             </div>
-          </div>
+            <AccordionDetails>
+              <TableContainer>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="right">
+                        {" "}
+                        <span className="tableSpan"> Min:100 Max:29L22 </span>
+                      </TableCell>
+                      <TableCell align="right">
+                        <div className="grey-box back2">Back</div>
+                      </TableCell>
+                      <TableCell align="right">
+                        <div className="grey-box lay2">Lay</div>
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {/* {rows.map((row) => ( */}
 
-          <div className="row pb-2">
-            <div className="col-md-4 col-sm-12 col-12">
-              <div className="title-area">
-                <span>{selectedEvent.market_runner[0]?.runnerName}</span>
-              </div>
-            </div>
-            <div className="col-md-8 col-sm-12 col-12">
-              <div className="blocks griad-6-boxes">
-                {teamOneBackData.reverse().map((back_one, back_one_index) => {
-                  const backgroundColor = "back" + back_one_index;
-                  return (
-                    <BetBox
-                      key={`back-one-${back_one_index}`}
-                      topDate={back_one?.price}
-                      bottomData={formatSize(back_one?.size)}
-                      colorClass={` ${backgroundColor}`}
-                    />
-                  );
-                })}
-
-                {teamOneLayData.map((lay_one, lay_one_index) => (
-                  <BetBox
-                    key={`lay-one-${lay_one_index}`}
-                    topDate={lay_one?.price}
-                    bottomData={formatSize(lay_one?.size)}
-                    colorClass={`lay${lay_one_index}`}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="row pb-2">
-            <div className="col-md-4 col-sm-12 col-12">
-              <div className="title-area">
-                <span>{selectedEvent.market_runner[1]?.runnerName}</span>{" "}
-              </div>
-            </div>
-
-            <div className="col-md-8 col-sm-12 col-12">
-              <div className="blocks griad-6-boxes">
-                {teamTwoBackData.reverse().map((back_two, back_two_index) => (
-                  <BetBox
-                    key={`back-two-${back_two_index}`}
-                    topDate={back_two?.price}
-                    bottomData={formatSize(back_two?.size)}
-                    colorClass={`back${back_two_index}`}
-                  />
-                ))}
-
-                {teamTwoLayData.map((lay_two, lay_two_index) => (
-                  <BetBox
-                    key={`lay-two-${lay_two_index}`}
-                    topDate={lay_two?.price}
-                    bottomData={formatSize(lay_two?.size)}
-                    colorClass={`lay${lay_two_index}`}
-                  />
-                ))}
-              </div>
-            </div>
+                    <TableRow
+                      // key={row.name}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        <span className="table-span">
+                          {" "}
+                          {"Bangladesh"}
+                          <br />0{" "}
+                        </span>
+                      </TableCell>
+                      <TableCell align="right">
+                        <div className="grey-box back2">
+                          2.34 <br />
+                          10.38k
+                        </div>
+                      </TableCell>
+                      <TableCell align="right">
+                        {" "}
+                        <div className="grey-box lay2">
+                          2.34 <br />
+                          10.38k
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow
+                      // key={row.name}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        <span className="table-span">
+                          {" "}
+                          {"New Zealand"}
+                          <br />0{" "}
+                        </span>
+                      </TableCell>
+                      <TableCell align="right">
+                        <div className="grey-box back2">
+                          2.34 <br />
+                          10.38k
+                        </div>
+                      </TableCell>
+                      <TableCell align="right">
+                        {" "}
+                        <div className="grey-box lay2">
+                          2.34 <br />
+                          10.38k
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                    {/* ))}  */}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </AccordionDetails>
+          </Accordion>
+          <div className="rtlcards">
+            <ExpandMore
+              expand={expanded.toString()}
+              onClick={() => setExpanded(!expanded)}
+              aria-expanded={expanded}
+              aria-label="show more"
+            ></ExpandMore>
           </div>
         </div>
-      </Collapse>
+        <div className="col-6 mt-3">
+          <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+            <div className="accordtion-header">
+              <AccordionSummary className="accortion-card" aria-controls="panel1d-content" id="panel1d-header">
+                <Typography>Tied Match</Typography>
+              </AccordionSummary>
+            </div>
+            <AccordionDetails>
+              <TableContainer>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell></TableCell>
+                      <TableCell align="right">
+                        {" "}
+                        <span className="tableSpan"> Min:100 Max:29L22 </span>
+                      </TableCell>
+                      <TableCell align="right">
+                        <div className="grey-box back2">Back</div>
+                      </TableCell>
+                      <TableCell align="right">
+                        <div className="grey-box lay2">Lay</div>
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {/* {rows.map((row) => ( */}
+
+                    <TableRow
+                      // key={row.name}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        <span className="table-span">
+                          {" "}
+                          {"Bangladesh"}
+                          <br />0{" "}
+                        </span>
+                      </TableCell>
+                      <TableCell></TableCell>
+
+                      <TableCell align="right">
+                        <div className="grey-box back2">
+                          2.34 <br />
+                          10.38k
+                        </div>
+                      </TableCell>
+                      <TableCell align="right">
+                        {" "}
+                        <div className="grey-box lay2">
+                          2.34 <br />
+                          10.38k
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow
+                      // key={row.name}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        <span className="table-span">
+                          {" "}
+                          {"New Zealand"}
+                          <br />0{" "}
+                        </span>
+                      </TableCell>
+                      <TableCell></TableCell>
+
+                      <TableCell align="right">
+                        <div className="grey-box back2">
+                          2.34 <br />
+                          10.38k
+                        </div>
+                      </TableCell>
+                      <TableCell align="right">
+                        {" "}
+                        <div className="grey-box lay2">
+                          2.34 <br />
+                          10.38k
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                    {/* ))}  */}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </AccordionDetails>
+          </Accordion>
+          <div className="rtlcards">
+            <ExpandMore
+              expand={expanded.toString()}
+              onClick={() => setExpanded(!expanded)}
+              aria-expanded={expanded}
+              aria-label="show more"
+            ></ExpandMore>
+          </div>
+        </div>
+      </Row>
+      <div className="mt-3">
+        <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+          <div className="accordtion-header">
+            <AccordionSummary className="accortion-card" aria-controls="panel1d-content" id="panel1d-header">
+              <Typography>Normal</Typography>
+            </AccordionSummary>
+          </div>
+          <AccordionDetails>
+            <TableContainer>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">No</div>
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box lay2">Yes</div>
+                    </TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* {rows.map((row) => ( */}
+
+                  <TableRow
+                    // key={row.name}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      <span className="table-span">
+                        {" "}
+                        {"10 over runs AUS(IND vs AUS)adv"}
+                        <br />0{" "}
+                      </span>
+                    </TableCell>
+                    <TableCell></TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">
+                        56 <br />
+                        100
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <div className="grey-box lay2">
+                        58 <br />
+                        100
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      Min:100 <br />
+                      Max65k
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </AccordionDetails>
+        </Accordion>
+        <div className="rtlcards">
+          <ExpandMore
+            expand={expanded.toString()}
+            onClick={() => setExpanded(!expanded)}
+            aria-expanded={expanded}
+            aria-label="show more"
+          ></ExpandMore>
+        </div>
+      </div>
+      <div className="mt-3">
+        <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+          <div className="accordtion-header">
+            <AccordionSummary className="accortion-card" aria-controls="panel1d-content" id="panel1d-header">
+              <Typography>fancy</Typography>
+            </AccordionSummary>
+          </div>
+          <AccordionDetails>
+            <TableContainer>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">Back</div>
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box lay2">lay</div>
+                    </TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* {rows.map((row) => ( */}
+
+                  <TableRow
+                    // key={row.name}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      <span className="table-span">
+                        {" "}
+                        {"10 over runs AUS(IND vs AUS)adv"}
+                        <br />0{" "}
+                      </span>
+                    </TableCell>
+                    <TableCell></TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">
+                        197 <br />
+                        5L
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <div className="grey-box lay2">
+                        58 <br />
+                        100
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      Min:100 <br />
+                      Max65k
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </AccordionDetails>
+        </Accordion>
+        <div className="rtlcards">
+          <ExpandMore
+            expand={expanded.toString()}
+            onClick={() => setExpanded(!expanded)}
+            aria-expanded={expanded}
+            aria-label="show more"
+          ></ExpandMore>
+        </div>
+      </div>
+      <div className="mt-3">
+        <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+          <div className="accordtion-header">
+            <AccordionSummary className="accortion-card" aria-controls="panel1d-content" id="panel1d-header">
+              <Typography>Khado</Typography>
+            </AccordionSummary>
+          </div>
+          <AccordionDetails>
+            <TableContainer>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">Back</div>
+                    </TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* {rows.map((row) => ( */}
+
+                  <TableRow
+                    // key={row.name}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      <span className="table-span">
+                        {" "}
+                        {"10 over runs AUS(IND vs AUS)adv"}
+                        <br />0{" "}
+                      </span>
+                    </TableCell>
+                    <TableCell></TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <div className="grey-box lay2">
+                        58 <br />
+                        100
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      Min:100 <br />
+                      Max65k
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </AccordionDetails>
+        </Accordion>
+        <div className="rtlcards">
+          <ExpandMore
+            expand={expanded.toString()}
+            onClick={() => setExpanded(!expanded)}
+            aria-expanded={expanded}
+            aria-label="show more"
+          ></ExpandMore>
+        </div>
+      </div>
+      <div className="mt-3">
+        <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+          <div className="accordtion-header">
+            <AccordionSummary className="accortion-card" aria-controls="panel1d-content" id="panel1d-header">
+              <Typography>meter</Typography>
+            </AccordionSummary>
+          </div>
+          <AccordionDetails>
+            <TableContainer>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">No</div>
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box lay2">Yes</div>
+                    </TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* {rows.map((row) => ( */}
+
+                  <TableRow
+                    // key={row.name}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      <span className="table-span">
+                        {" "}
+                        {"10 over runs AUS(IND vs AUS)adv"}
+                        <br />0{" "}
+                      </span>
+                    </TableCell>
+                    <TableCell></TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">
+                        197 <br />
+                        5L
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <div className="grey-box lay2">
+                        58 <br />
+                        100
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      Min:100 <br />
+                      Max65k
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </AccordionDetails>
+        </Accordion>
+        <div className="rtlcards">
+          <ExpandMore
+            expand={expanded.toString()}
+            onClick={() => setExpanded(!expanded)}
+            aria-expanded={expanded}
+            aria-label="show more"
+          ></ExpandMore>
+        </div>
+      </div>
+      <div className="mt-3">
+        <Accordion expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+          <div className="accordtion-header">
+            <AccordionSummary className="accortion-card" aria-controls="panel1d-content" id="panel1d-header">
+              <Typography>oddeven</Typography>
+            </AccordionSummary>
+          </div>
+          <AccordionDetails>
+            <TableContainer>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">No</div>
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box lay2">Yes</div>
+                    </TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* {rows.map((row) => ( */}
+
+                  <TableRow
+                    // key={row.name}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      <span className="table-span">
+                        {" "}
+                        {"10 over runs AUS(IND vs AUS)adv"}
+                        <br />0{" "}
+                      </span>
+                    </TableCell>
+                    <TableCell></TableCell>
+                    <TableCell align="right">
+                      <div className="grey-box back2">
+                        197 <br />
+                        5L
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <div className="grey-box lay2">
+                        58 <br />
+                        100
+                      </div>
+                    </TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      Min:100 <br />
+                      Max65k
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </AccordionDetails>
+        </Accordion>
+        <div className="rtlcards">
+          <ExpandMore
+            expand={expanded.toString()}
+            onClick={() => setExpanded(!expanded)}
+            aria-expanded={expanded}
+            aria-label="show more"
+          ></ExpandMore>
+        </div>
+      </div>
     </Card>
   );
 }

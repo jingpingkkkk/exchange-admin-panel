@@ -1,4 +1,4 @@
-import { CButton, CCol, CForm, CSpinner, CFormLabel } from "@coreui/react";
+import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
@@ -6,10 +6,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
-import FormToggleSwitch from "../../../components/Common/FormComponents/FormToggleSwitch"; // Import the FormToggleSwitch component
-import { addCasinoGame, getCasinoGameDetailByID, updateCasinoGame } from "../casinoGameService";
-import { getAllCasino } from "../../Casino/casinoService";
 import { Notify } from "../../../utils/notify";
+import { getAllCasino } from "../../Casino/casinoService";
+import { addCasinoGame, getCasinoGameDetailByID, updateCasinoGame } from "../casinoGameService";
 
 const validationSchemaForCreate = Yup.object({
   name: Yup.string().required("Name is required"),
@@ -75,7 +74,7 @@ export default function CasinoGameForm() {
         response = await addCasinoGame(formData);
       }
 
-      if (response.data.success) {
+      if (response.success) {
         Notify.success(editMode ? "Casino game updated successfully" : "Casino game added successfully");
         navigate("/casino-game-list/");
       } else {
@@ -89,8 +88,12 @@ export default function CasinoGameForm() {
   };
 
   const fetchAndUpdateFormData = async () => {
-    Promise.all([getCasinoGameDetailByID(id), getAllCasino()]).then((results) => {
-      console.log(results);
+    Promise.all([
+      getCasinoGameDetailByID(id),
+      getAllCasino({
+        status: true,
+      }),
+    ]).then((results) => {
       const [fetchtedUser, allCasino] = results;
       if (fetchtedUser !== null) {
         const result = fetchtedUser;
@@ -200,8 +203,11 @@ export default function CasinoGameForm() {
             <CCol xs={12} className="pt-3">
               <div className="d-grid gap-2 d-md-block">
                 <CButton color="primary" type="submit" className="me-md-3">
-                  {loading ? <CSpinner size="sm" /> : editMode ? "Update" : "Create"}
+                  {loading ? <CSpinner size="sm" /> : "Save"}
                 </CButton>
+                <Link to={`${process.env.PUBLIC_URL}/casino-game-list`} className="btn btn-danger btn-icon text-white">
+                  Cancel
+                </Link>
               </div>
             </CCol>
           </CForm>

@@ -1,9 +1,11 @@
 import axios from "axios";
-import { decryptResponse, encryptRequest } from "./encryption";
+import { decryptResponse, encryptRequest, generateEncHeaders } from "./encryption";
 
 const BaseURL = process.env.REACT_APP_BASE_URL;
+
 const postData = async (url, body, token = null) => {
   const jwsToken = localStorage.getItem("jws_token");
+  const encHeaders = await generateEncHeaders();
 
   const response = await fetch(`${BaseURL}/${url}`, {
     method: "POST",
@@ -12,12 +14,13 @@ const postData = async (url, body, token = null) => {
       Authorization: token || jwsToken,
       "Content-Type": "application/json; charset=utf-8",
       Accept: "application/json",
+      ...encHeaders,
     },
-    body: encryptRequest(body),
+    body: await encryptRequest(body),
   });
 
   const result = await response.json();
-  const data = JSON.parse(decryptResponse(result));
+  const data = await decryptResponse(result);
 
   if ([200, 201].includes(response.status)) {
     return data;
@@ -34,16 +37,20 @@ const postData = async (url, body, token = null) => {
 
 const getData = async (url) => {
   const jwsToken = localStorage.getItem("jws_token");
+  const encHeaders = await generateEncHeaders();
+
   const response = await fetch(`${BaseURL}/${url}`, {
     method: "GET",
     mode: "cors",
     headers: {
       Authorization: jwsToken,
       "Content-Type": "application/json; charset=utf-8",
+      ...encHeaders,
     },
   });
 
   const result2 = await response.json();
+  const decrypted = await decryptResponse(result2);
 
   if (response.status === 401) {
     localStorage.clear();
@@ -59,19 +66,21 @@ const getData = async (url) => {
     // );
   }
 
-  return result2;
+  return decrypted;
 };
 
 const axiosPostData = async (url, formData) => {
+  const encHeaders = await generateEncHeaders();
   return axios
-    .post(`${BaseURL}/${url}`, encryptRequest(formData), {
+    .post(`${BaseURL}/${url}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: localStorage.getItem("jws_token"),
+        ...encHeaders,
       },
     })
-    .then((res) => {
-      return res;
+    .then(async ({ data }) => {
+      return await decryptResponse(data);
     })
     .catch((err) => {
       if (err.response.status === 401) {
@@ -89,4 +98,5 @@ const axiosPostData = async (url, formData) => {
       }
     });
 };
+
 export { axiosPostData, getData, postData };

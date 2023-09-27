@@ -62,7 +62,7 @@ export default function AgentForm() {
       }
     } catch (error) {
       // Handle error
-      Notify.error(error.message);
+      // Notify.error(error.message);
       setServerError(error.message);
     } finally {
       setLoading(false); // Set loading state to false
@@ -83,7 +83,9 @@ export default function AgentForm() {
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), null], "Passwords must match")
       .required("Confirm Password is required"),
-    mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+    mobileNumber: Yup.string()
+      .required("Mobile number is required")
+      .matches(/^\d{10}$/, "Mobile number must be 10 digits"),
     creditPoints: Yup.string()
       .required("Credit amount is required")
       .test("is-number", "Credit amount must be a valid number", function (value) {
@@ -92,7 +94,7 @@ export default function AgentForm() {
       .test("creditPoints", "Credit amount exceeds available balance " + loginUserData.balance, function (value) {
         const user = loginUserData;
         const creditPoints = user?.balance || 0;
-        if (user?.role !== "system_owner" && value > creditPoints) {
+        if (user?.role !== "system_owner" && Number(value) > creditPoints) {
           return false; // Validation failed
         }
         return true; // Validation passed
@@ -127,7 +129,9 @@ export default function AgentForm() {
       .test("passwords-match", "Passwords must match", function (value) {
         return this.parent.password === value;
       }),
-    mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+    mobileNumber: Yup.string()
+      .required("Mobile number is required")
+      .matches(/^\d{10}$/, "Mobile number must be 10 digits"),
     creditPoints: Yup.string()
       .required("Credit amount is required")
       .test("is-number", "Credit amount must be a valid number", function (value) {
@@ -136,7 +140,7 @@ export default function AgentForm() {
       .test("creditPoints", "Credit amount exceeds available balance " + loginUserData.balance, function (value) {
         const user = loginUserData;
         const creditPoints = user?.balance || 0;
-        if (user?.role !== "system_owner" && value > creditPoints) {
+        if (user?.role !== "system_owner" && Number(value) > creditPoints) {
           return false; // Validation failed
         }
         return true; // Validation passed

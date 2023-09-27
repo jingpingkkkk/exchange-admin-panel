@@ -246,6 +246,7 @@ export default function AccountList() {
         role: selectedRole === "all" ? allowedRoles : [selectedRole],
       });
 
+      console.log(result)
       setData(result.records);
       setTotalRows(result.totalRecords);
       setLoading(false);

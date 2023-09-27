@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import * as Switcherdata from "../data/Switcher/Switcherdata";
@@ -12,10 +12,12 @@ import TabToTop from "../layouts/TabToTop/TabToTop";
 
 export default function App() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    navigate("/dashboard");
+    navigate(location.pathname);
   }, []);
+
   return (
     <Fragment>
       <div className="horizontalMenucontainer">

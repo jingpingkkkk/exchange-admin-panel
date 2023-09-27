@@ -16,23 +16,18 @@ const menuItems = [
     icon: "users",
   },
   {
-    id: activeModules?.MULTI_LOGIN,
-    title: "Multi Login",
-    path: `${process.env.PUBLIC_URL}/multi-login`,
-    icon: "user",
-  },
-  {
-    id: activeModules?.EVENT_BET_MODULE,
-    title: "Event Bet",
-    path: `${process.env.PUBLIC_URL}/event-bet-detail`,
-    icon: "layers",
-  },
-  {
     id: activeModules?.USER_MODULE,
     title: "Users",
     path: `${process.env.PUBLIC_URL}/user-list`,
     icon: "user",
   },
+  {
+    id: activeModules?.MULTI_LOGIN,
+    title: "Multi Login",
+    path: `${process.env.PUBLIC_URL}/multi-login`,
+    icon: "user",
+  },
+
   {
     id: activeModules?.CURRENCIES,
     title: "Currencies",
@@ -58,6 +53,18 @@ const menuItems = [
     icon: "layers",
   },
   {
+    id: activeModules?.ADD_EVENT,
+    title: "Live Events",
+    path: `${process.env.PUBLIC_URL}/api-event-list`,
+    icon: "layers",
+  },
+  {
+    id: activeModules?.EVENT_BET_MODULE,
+    title: "Event Bet",
+    path: `${process.env.PUBLIC_URL}/event-bet-detail`,
+    icon: "layers",
+  },
+  {
     id: activeModules?.CASINO,
     title: "Casino",
     path: `${process.env.PUBLIC_URL}/casino-list`,
@@ -69,12 +76,7 @@ const menuItems = [
     path: `${process.env.PUBLIC_URL}/casino-game-list`,
     icon: "grid",
   },
-  {
-    id: activeModules?.ADD_EVENT,
-    title: "Add Event",
-    path: `${process.env.PUBLIC_URL}/api-event-list`,
-    icon: "layers",
-  },
+
   {
     id: activeModules?.THEME_USER_MODULE,
     title: "Theme Users",
@@ -99,10 +101,12 @@ const menuItems = [
     icon: "file-text",
     children: [
       {
+        id: activeModules?.REPORT_ACCOUNT_STATEMENT,
         title: "Account statement",
         path: `${process.env.PUBLIC_URL}/account-statement`,
       },
       {
+        id: activeModules?.REPORT_USER_HISTORY,
         title: "User history",
         path: `${process.env.PUBLIC_URL}/user-history`,
       },

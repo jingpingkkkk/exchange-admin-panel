@@ -1,12 +1,13 @@
-import { CButton, CCol, CForm, CSpinner, CFormLabel } from "@coreui/react";
+import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
-import { addCasino, getCasinoDetailByID, updateCasino } from "../casinoService";
+import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
 import { Notify } from "../../../utils/notify";
+import { addCasino, getCasinoDetailByID, updateCasino } from "../casinoService";
 
 const validationSchemaForCreate = Yup.object({
   name: Yup.string().required("Name is required"),
@@ -15,6 +16,11 @@ const validationSchemaForCreate = Yup.object({
 const validationSchemaForUpdate = Yup.object({
   name: Yup.string().required("Name is required"),
 });
+
+const casinoTypes = [
+  { value: "live", label: "Live" },
+  { value: "virtual", label: "Virtual" },
+];
 
 export default function CasinoForm() {
   const navigate = useNavigate();
@@ -67,7 +73,7 @@ export default function CasinoForm() {
         response = await addCasino(formData);
       }
 
-      if (response.data.success) {
+      if (response.success) {
         Notify.success(editMode ? "Casino updated successfully" : "Casino added successfully");
         navigate("/casino-list/");
       } else {
@@ -88,6 +94,7 @@ export default function CasinoForm() {
         formik.setValues((prevValues) => ({
           ...prevValues,
           name: result.name || "",
+          casinoType: result.casinoType || "",
         }));
         setCasinoImageUrl(fetchtedUser.image);
       }
@@ -135,14 +142,34 @@ export default function CasinoForm() {
               isRequired="true"
             />
 
-            <CCol md="2">
-              <CFormLabel htmlFor="">Casino Image</CFormLabel>
+            <FormSelectWithSearch
+              placeholder="Select casino type"
+              label="Casino Type"
+              name="casinoType"
+              value={formik.values.casinoType}
+              onChange={(name, selectedValue) => formik.setFieldValue("casinoType", selectedValue)}
+              onBlur={formik.handleBlur}
+              error={formik.touched.casinoId && formik.errors.casinoId}
+              isRequired="true"
+              width={3}
+              options={casinoTypes}
+            />
+
+            <CCol md="3">
+              <CFormLabel htmlFor="">Image</CFormLabel>
               <input
                 type="file"
                 accept="image/*"
                 className="form-control"
                 onChange={(event) => handleSingleImageUpload(event, "casinoImage")}
               />
+            </CCol>
+            <CCol md="2">
+              {casinoImageUrl && (
+                <div className="image-preview">
+                  <img src={casinoImageUrl} alt="Casino" />
+                </div>
+              )}
             </CCol>
 
             {/* <CCol md="2">
@@ -156,19 +183,15 @@ export default function CasinoForm() {
                 />
               </div>
             </CCol> */}
-            <CCol md="2">
-              {casinoImageUrl && (
-                <div className="image-preview">
-                  <img src={casinoImageUrl} alt="Casino image" />
-                </div>
-              )}
-            </CCol>
 
-            <CCol xs={12} className="pt-3">
+            <CCol xs={12} className="pt-4">
               <div className="d-grid gap-2 d-md-block">
                 <CButton color="primary" type="submit" className="me-md-3">
-                  {loading ? <CSpinner size="sm" /> : editMode ? "Update" : "Create"}
+                  {loading ? <CSpinner size="sm" /> : "Save"}
                 </CButton>
+                <Link to={`${process.env.PUBLIC_URL}/casino-list`} className="btn btn-danger btn-icon text-white">
+                  Cancel
+                </Link>
               </div>
             </CCol>
           </CForm>

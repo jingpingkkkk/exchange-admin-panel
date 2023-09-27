@@ -57,7 +57,7 @@ const validationSchemaForCreate = Yup.object({
   settlementDate: Yup.number().nullable(true),
   settlementDay: Yup.string().oneOf(days, "Invalid option selected").nullable(true),
   settlementTime: Yup.string().nullable(true),
-  transactionCode: Yup.string().required("Transaction code is required"),
+  // transactionCode: Yup.string().required("Transaction code is required"),
 });
 
 const validationSchemaForUpdate = Yup.object({
@@ -68,7 +68,9 @@ const validationSchemaForUpdate = Yup.object({
     .test("passwords-match", "Passwords must match", function (value) {
       return this.parent.password === value;
     }),
-  mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+  mobileNumber: Yup.string()
+    .required("Mobile number is required")
+    .matches(/^\d{10}$/, "Mobile number must be 10 digits"),
   creditPoints: Yup.string()
     .required("Credit amount is required")
     .test("is-number", "Credit amount must be a valid number", function (value) {
@@ -87,7 +89,7 @@ const validationSchemaForUpdate = Yup.object({
   settlementDate: Yup.number().nullable(true),
   settlementDay: Yup.string().oneOf(days, "Invalid option selected").nullable(true),
   settlementTime: Yup.string().nullable(true),
-  transactionCode: Yup.string().required("Transaction code is required"),
+  // transactionCode: Yup.string().required("Transaction code is required"),
 });
 
 export default function SuperAdminForm() {
@@ -125,7 +127,7 @@ export default function SuperAdminForm() {
     settlementTime: "",
     isCasinoAvailable: false,
     isAutoSettlement: false,
-    transactionCode: "",
+    // transactionCode: "",
   };
 
   const submitForm = async (values) => {
@@ -521,7 +523,7 @@ export default function SuperAdminForm() {
               width={3}
             />
 
-            <FormInput
+            {/* <FormInput
               label="Transaction Code"
               name="transactionCode"
               type="password"
@@ -531,7 +533,7 @@ export default function SuperAdminForm() {
               error={formik.touched.transactionCode && formik.errors.transactionCode}
               isRequired="true"
               width={3}
-            />
+            /> */}
 
             <CCol xs={12} className="pt-3">
               <div className="d-grid gap-2 d-md-block">

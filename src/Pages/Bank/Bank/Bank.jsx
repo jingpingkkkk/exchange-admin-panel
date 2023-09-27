@@ -58,9 +58,11 @@ export default function Bank() {
       // Example: await yourApiFunction(row, amount);
 
       const amount = row.amount || 0;
-      if (amount === 0) {
+      if (amount === 0 && transactionCode.length === 0) {
         let msg = "Please Enter amount";
+        let msg1 = "Please Enter Transaction Code";
         Notify.error(msg);
+        Notify.error(msg1);
         // No amounts to transfer
         return;
       }
@@ -194,19 +196,23 @@ export default function Bank() {
 
   const transferAmounts = async () => {
     const settlementData = data.filter((row) => row.amount > 0).map((row) => ({ _id: row._id, amount: row.amount }));
-    if (settlementData.length === 0) {
+    if (settlementData.length === 0 && !transactionCode) {
       let msg = "Please add amount";
-      Notify.error(msg);
+      let msg1 = "Please Enter Transaction Code";
+
+      Notify.error(msg,msg1);
+      Notify.error(msg1);
+
       // No amounts to transfer
       return;
     }
     console.log(transactionCode);
-    if (!transactionCode) {
-      let msg = "Please Enter Transaction Code";
-      Notify.error(msg);
+    // if (!transactionCode) {
+    //   let msg = "Please Enter Transaction Code";
+      // Notify.error(msg);
       // No amounts to transfer
-      return;
-    }
+    //   return;
+    // }
     try {
       let response = null;
       response = await settlement({
@@ -236,7 +242,6 @@ export default function Bank() {
         userId: _id,
         filterUserId: filterUserId,
       });
-
       setData(result.details);
       //setData(dummyDataArray);
       //setTotalRows(result.totalRecords);
@@ -268,6 +273,7 @@ export default function Bank() {
         EXPOSURE: item.exposure,
         "AVAILABLE PTS": item.balance,
         "ACCOUNT TYPE": item.role,
+        "STATUS":item.fromtoName
       }));
       exportToExcel(formattedData, "bank.xlsx"); // Utilize exportToExcel utility function
     } catch (error) {
@@ -285,7 +291,7 @@ export default function Bank() {
         filterUserId: filterUserId,
       });
 
-      const columns = ["USERNAME", "CR", "PTS", "CLIENT(P/L)", "EXPOSURE", "AVAILABLE PTS", "ACCOUNT TYPE"];
+      const columns = ["USERNAME", "CR", "PTS", "CLIENT(P/L)", "EXPOSURE", "AVAILABLE PTS", "ACCOUNT TYPE","STATUS"];
 
       const formattedData = result.details.map((item) => ({
         USERNAME: item.username,
@@ -295,6 +301,7 @@ export default function Bank() {
         EXPOSURE: item.exposure,
         "AVAILABLE PTS": item.balance,
         "ACCOUNT TYPE": item.role,
+        "STATUS":item.fromtoName
       }));
       exportToPDF(columns, formattedData, "book.pdf");
     } catch (error) {

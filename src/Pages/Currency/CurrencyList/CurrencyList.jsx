@@ -43,6 +43,12 @@ export default function CurrencyList() {
       sortable: true,
       sortField: "multiplier",
     },
+    {
+      name: "COUNTRY NAME",
+      selector: (row) => [row.countryName],
+      sortable: true,
+      sortField: "countryName",
+    },
     permission.CURRENCIES.ACTIVE && {
       name: "ACTION",
       cell: (row) => (
