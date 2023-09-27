@@ -30,6 +30,7 @@ export default function UserEditForm() {
     fullName: Yup.string().required("Full name is required"),
     mobileNumber: Yup.string().matches(/^\d{10}$/, "Mobile number must be 10 digits"),
     city: Yup.string(),
+    transactionCode: Yup.string().required("Transaction code is required"),
   });
 
   const passwordValidationSchema = Yup.object({
@@ -37,10 +38,12 @@ export default function UserEditForm() {
     confirmPassword: Yup.string()
       .required("Confirm Password is required")
       .oneOf([Yup.ref("password"), null], "Passwords must match"),
+    transactionCode: Yup.string().required("Transaction code is required"),
   });
 
   const userLockValidationSchema = Yup.object({
     // Define validation schema for User Lock tab (if needed)
+    transactionCode: Yup.string().required("Transaction code is required"),
   });
 
   const userSettingValidationSchema = Yup.object({
@@ -85,6 +88,7 @@ export default function UserEditForm() {
       }
       return schema;
     }),
+    transactionCode: Yup.string().required("Transaction code is required"),
   });
 
   const initialUserValue = {
@@ -106,6 +110,7 @@ export default function UserEditForm() {
     maxLoss: "",
     bonus: "",
     maxStake: "",
+    transactionCode: "",
   };
 
   const submitForm = async (values) => {
@@ -119,6 +124,7 @@ export default function UserEditForm() {
       response = await updateData({
         _id: id,
         ...values,
+        isTransactionCode: true,
       });
       if (response.success) {
         Notify.success("User updated successfully.");
@@ -159,13 +165,13 @@ export default function UserEditForm() {
           isBetLock: result.isBetLock || false,
           isActive: result.isActive || false,
           forcePasswordChange: result.forcePasswordChange || false,
-          exposureLimit: result.exposureLimit || "",
-          exposurePercentage: result.exposurePercentage || "",
-          stakeLimit: result.stakeLimit || "",
-          maxProfit: result.maxProfit || "",
-          maxLoss: result.maxLoss || "",
-          bonus: result.bonus || "",
-          maxStake: result.maxStake || "",
+          exposureLimit: result.exposureLimit || 0,
+          exposurePercentage: result.exposurePercentage || 0,
+          stakeLimit: result.stakeLimit || 0,
+          maxProfit: result.maxProfit || 0,
+          maxLoss: result.maxLoss || 0,
+          bonus: result.bonus || 0,
+          maxStake: result.maxStake || 0,
         }));
       }
     };
@@ -236,7 +242,7 @@ export default function UserEditForm() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.username && formik.errors.username}
-                                isRequired="true"
+                                isRequired="false"
                                 width={3}
                               />
 
@@ -276,7 +282,19 @@ export default function UserEditForm() {
                                 width={3}
                               />
 
-                              <CCol xs={12}>
+                              <FormInput
+                                label="Transaction Code"
+                                name="transactionCode"
+                                type="password"
+                                value={formik.values.transactionCode}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.transactionCode && formik.errors.transactionCode}
+                                isRequired="true"
+                                width={3}
+                              />
+
+                              <CCol xs={12} className="pt-3">
                                 <div className="d-grid gap-2 d-md-block">
                                   <CButton
                                     color="primary"
@@ -321,7 +339,7 @@ export default function UserEditForm() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.password && formik.errors.password}
-                                isRequired="true"
+                                isRequired="false"
                                 width={3}
                               />
 
@@ -333,11 +351,25 @@ export default function UserEditForm() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.confirmPassword && formik.errors.confirmPassword}
-                                isRequired="true"
+                                isRequired="false"
                                 width={3}
                               />
 
-                              <CCol xs={12}>
+                              <Row className="pt-3">
+                                <FormInput
+                                  label="Transaction Code"
+                                  name="transactionCode"
+                                  type="password"
+                                  value={formik.values.transactionCode}
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
+                                  error={formik.touched.transactionCode && formik.errors.transactionCode}
+                                  isRequired="true"
+                                  width={3}
+                                />
+                              </Row>
+
+                              <CCol xs={12} className="pt-3">
                                 <div className="d-grid gap-2 d-md-block">
                                   <CButton
                                     color="primary"
@@ -395,7 +427,21 @@ export default function UserEditForm() {
                                 />
                               </CCol>
 
-                              <CCol xs={12}>
+                              <Row className="pt-3">
+                                <FormInput
+                                  label="Transaction Code"
+                                  name="transactionCode"
+                                  type="password"
+                                  value={formik.values.transactionCode}
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
+                                  error={formik.touched.transactionCode && formik.errors.transactionCode}
+                                  isRequired="true"
+                                  width={3}
+                                />
+                              </Row>
+
+                              <CCol xs={12} className="pt-3">
                                 <div className="d-grid gap-2 d-md-block">
                                   <CButton
                                     color="primary"
@@ -449,7 +495,7 @@ export default function UserEditForm() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.exposureLimit && formik.errors.exposureLimit}
-                                isRequired="true"
+                                isRequired="false"
                                 width={2}
                               />
 
@@ -461,7 +507,7 @@ export default function UserEditForm() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.exposurePercentage && formik.errors.exposurePercentage}
-                                isRequired="true"
+                                isRequired="false"
                                 width={2}
                               />
 
@@ -473,7 +519,7 @@ export default function UserEditForm() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.stakeLimit && formik.errors.stakeLimit}
-                                isRequired="true"
+                                isRequired="false"
                                 width={2}
                               />
 
@@ -485,7 +531,7 @@ export default function UserEditForm() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.maxStake && formik.errors.maxStake}
-                                isRequired="true"
+                                isRequired="false"
                                 width={2}
                               />
 
@@ -498,7 +544,7 @@ export default function UserEditForm() {
                                   onChange={formik.handleChange}
                                   onBlur={formik.handleBlur}
                                   error={formik.touched.maxProfit && formik.errors.maxProfit}
-                                  isRequired="true"
+                                  isRequired="false"
                                   width={2}
                                 />
 
@@ -510,7 +556,7 @@ export default function UserEditForm() {
                                   onChange={formik.handleChange}
                                   onBlur={formik.handleBlur}
                                   error={formik.touched.maxLoss && formik.errors.maxLoss}
-                                  isRequired="true"
+                                  isRequired="false"
                                   width={2}
                                 />
 
@@ -522,12 +568,24 @@ export default function UserEditForm() {
                                   onChange={formik.handleChange}
                                   onBlur={formik.handleBlur}
                                   error={formik.touched.bonus && formik.errors.bonus}
-                                  isRequired="true"
+                                  isRequired="false"
                                   width={2}
                                 />
                               </Row>
 
-                              <CCol xs={12}>
+                              <FormInput
+                                label="Transaction Code"
+                                name="transactionCode"
+                                type="password"
+                                value={formik.values.transactionCode}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.transactionCode && formik.errors.transactionCode}
+                                isRequired="true"
+                                width={3}
+                              />
+
+                              <CCol xs={12} className="pt-3">
                                 <div className="d-grid gap-2 d-md-block">
                                   <CButton
                                     color="primary"

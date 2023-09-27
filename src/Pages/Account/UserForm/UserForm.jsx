@@ -1,12 +1,14 @@
 import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
+import FormSelect from "../../../components/Common/FormComponents/FormSelect";
 import FormToggleSwitch from "../../../components/Common/FormComponents/FormToggleSwitch"; // Import the FormToggleSwitch component
 import { Notify } from "../../../utils/notify";
+import { getAllCurrency } from "../../Currency/currencyService";
 import { addData } from "../accountService";
 
 const validationSchemaForCreate = Yup.object({
@@ -46,6 +48,7 @@ const validationSchemaForCreate = Yup.object({
   maxLoss: Yup.number(),
   bonus: Yup.number(),
   maxStake: Yup.number(),
+  transactionCode: Yup.string().required("Transaction code is required"),
 });
 
 export default function UserForm() {
@@ -53,6 +56,7 @@ export default function UserForm() {
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState(null); // State to hold the server error message
+  const [currencyList, setCurrencyList] = useState([]);
 
   const initialUserValue = {
     username: "",
@@ -73,6 +77,8 @@ export default function UserForm() {
     maxLoss: 0,
     bonus: 0,
     maxStake: 0,
+    currencyId: null,
+    transactionCode: "",
   };
 
   const submitForm = async (values) => {
@@ -89,6 +95,9 @@ export default function UserForm() {
         maxLoss: values.maxLoss || 0,
         bonus: values.bonus || 0,
         maxStake: values.maxStake || 0,
+        currencyId: values.currencyId || null,
+        transactionCode: values.transactionCode || "",
+        isTransactionCode: true,
       });
       if (response.success) {
         Notify.success("User added successfully.");
@@ -112,6 +121,14 @@ export default function UserForm() {
   });
 
   const formTitle = "CREATE USER";
+
+  useEffect(() => {
+    const fetchCurrencyList = async () => {
+      const { records = [] } = await getAllCurrency(0);
+      setCurrencyList(records.sort((a, b) => a.name.localeCompare(b.name)));
+    };
+    fetchCurrencyList();
+  }, []);
 
   return (
     <div>
@@ -218,6 +235,24 @@ export default function UserForm() {
                   isRequired="true"
                   width={3}
                 />
+
+                <FormSelect
+                  label="Currency"
+                  name="currencyId"
+                  value={formik.values.currencyId}
+                  onChange={(event) => formik.setFieldValue("currencyId", event.target.value)}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.currencyId && formik.errors.currencyId}
+                  isRequired="true"
+                  width={3}
+                >
+                  <option value="">Select Currency</option>
+                  {currencyList.map((currency, index) => (
+                    <option key={currency._id} value={currency._id}>
+                      {currency.name.toUpperCase()}
+                    </option>
+                  ))}
+                </FormSelect>
 
                 <input type="hidden" name="role" value={formik.values.role} />
 
@@ -351,17 +386,31 @@ export default function UserForm() {
                   />
                 </Row>
 
-                <CCol className="mt-5">
-                  <div className="d-grid gap-2 d-md-block">
-                    <CButton color="primary" type="submit" className="me-3">
-                      {loading ? <CSpinner size="sm" /> : "Save"}
-                    </CButton>
+                <FormInput
+                  label="Transaction Code"
+                  name="transactionCode"
+                  type="password"
+                  value={formik.values.transactionCode}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.transactionCode && formik.errors.transactionCode}
+                  isRequired="true"
+                  width={3}
+                />
 
-                    <Link to={`${process.env.PUBLIC_URL}/user-list`} className="btn btn-danger btn-icon text-white ">
-                      Cancel
-                    </Link>
-                  </div>
-                </CCol>
+                <Row>
+                  <CCol className="pt-5">
+                    <div className="d-grid gap-2 d-md-block">
+                      <CButton color="primary" type="submit" className="me-3">
+                        {loading ? <CSpinner size="sm" /> : "Save"}
+                      </CButton>
+
+                      <Link to={`${process.env.PUBLIC_URL}/user-list`} className="btn btn-danger btn-icon text-white ">
+                        Cancel
+                      </Link>
+                    </div>
+                  </CCol>
+                </Row>
               </CForm>
             </Card.Body>
           </Card>
