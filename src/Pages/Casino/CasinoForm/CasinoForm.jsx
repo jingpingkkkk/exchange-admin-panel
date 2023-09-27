@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
+import { checkImageExist } from "../../../utils/imageUtils";
 import { Notify } from "../../../utils/notify";
 import { addCasino, getCasinoDetailByID, updateCasino } from "../casinoService";
 
@@ -87,7 +88,7 @@ export default function CasinoForm() {
   };
 
   const fetchAndUpdateFormData = async () => {
-    Promise.all([getCasinoDetailByID(id)]).then((results) => {
+    Promise.all([getCasinoDetailByID(id)]).then(async (results) => {
       const [fetchtedUser] = results;
       if (fetchtedUser !== null) {
         const result = fetchtedUser;
@@ -96,7 +97,8 @@ export default function CasinoForm() {
           name: result.name || "",
           casinoType: result.casinoType || "",
         }));
-        setCasinoImageUrl(fetchtedUser.image);
+        const url = await checkImageExist(fetchtedUser.image);
+        setCasinoImageUrl(url);
       }
     });
   };
@@ -165,11 +167,11 @@ export default function CasinoForm() {
               />
             </CCol>
             <CCol md="2">
-              {casinoImageUrl && (
+              {casinoImageUrl ? (
                 <div className="image-preview">
                   <img src={casinoImageUrl} alt="Casino" />
                 </div>
-              )}
+              ) : null}
             </CCol>
 
             {/* <CCol md="2">
