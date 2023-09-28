@@ -1,5 +1,6 @@
 import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
 import { useFormik } from "formik";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -41,6 +42,9 @@ export default function CompetitionForm() {
     isActive: Yup.boolean().required("Status is required"),
     startDate: Yup.date()
       .required("Start Date is required")
+      .test("is-after-today", "Start date must be today or later", function (startDate) {
+        return moment(startDate).isAfter(moment().subtract(1, "days").startOf("day"));
+      })
       .test("is-start-date-valid", "Start date must be today", function (startDate) {
         const currentDate = new Date();
         if (!startDate) {
@@ -57,6 +61,9 @@ export default function CompetitionForm() {
       }),
     endDate: Yup.date()
       .required("End Date is required")
+      .test("is-after-today", "Start date must be today or later", function (startDate) {
+        return moment(startDate).isAfter(moment().subtract(1, "days").startOf("day"));
+      })
       .test("is-end-date-greater", "End date must be greater than the start date", function (endDate) {
         const startDate = this.parent.startDate;
         if (!startDate || !endDate) {
