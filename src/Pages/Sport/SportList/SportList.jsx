@@ -25,8 +25,8 @@ export default function SportList() {
   const [totalRows, setTotalRows] = useState(0);
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState("createdAt");
-  const [direction, setDirection] = useState("desc");
+  const [sortBy, setSortBy] = useState("positionIndex");
+  const [direction, setDirection] = useState("asc");
   const [sportStatus, setSportStatus] = useState({}); // status and loading state of each sport
 
   const updateSportStatus = (id, key, value) => {
@@ -65,6 +65,12 @@ export default function SportList() {
       selector: (row) => [row.betCategoryCount],
       sortable: false,
       cell: (row) => <span className="ms-2"> {row.betCategoryCount}</span>,
+    },
+    {
+      name: "POSITION INDEX",
+      selector: (row) => [row.positionIndex],
+      sortable: true,
+      sortField: "positionIndex",
     },
     permission.SPORTS.ACTIVE && {
       name: "STATUS",

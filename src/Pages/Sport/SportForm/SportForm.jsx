@@ -29,6 +29,7 @@ export default function SportForm() {
       name: "",
       apiSportId: "",
       betCategory: [],
+      positionIndex: null
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
@@ -42,7 +43,7 @@ export default function SportForm() {
       setLoading(true); // Set loading state to true
       try {
         let response = null;
-        const { name, betCategory, apiSportId } = values;
+        const { name, betCategory, apiSportId,positionIndex } = values;
         if (editMode) {
           response = await updateSport({
             _id: id,
@@ -80,6 +81,7 @@ export default function SportForm() {
           name: result.name || "",
           apiSportId: result.apiSportId || "",
           betCategory: result.betCategory || [],
+          positionIndex: result.positionIndex || "",
         }));
       }
 
@@ -151,6 +153,17 @@ export default function SportForm() {
                   error={formik.touched.betCategory && formik.errors.betCategory}
                   width={3}
                   isRequired="true"
+                />
+
+                <FormInput
+                  label="Position Index"
+                  name="positionIndex"
+                  type="number"
+                  value={formik.values.positionIndex}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.positionIndex && formik.errors.positionIndex}
+                  width={3}
                 />
 
                 <CCol xs={12}>
