@@ -57,7 +57,7 @@ const TransactionModal = ({ show, onHide, handleTransactionSubmit, rowData, tran
     setRemarks("");
     setTransactionCode("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowData, transactionType]);
+  }, [rowData, transactionType, onHide]);
 
   const handleAmountChange = (event) => {
     const { value } = event.target;
