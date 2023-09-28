@@ -33,7 +33,7 @@ export default function CompetitionForm() {
     betDelay: 0,
     isActive: true,
     completed: false,
-  }
+  };
   const validationSchemaForCreate = Yup.object({
     name: Yup.string().required("Name is required"),
     sportId: Yup.string().required("Sport is required"),
@@ -71,11 +71,8 @@ export default function CompetitionForm() {
     sportId: Yup.string().required("Sport is required"),
     betDelay: Yup.number().min(0).nullable(true),
     isActive: Yup.boolean().required("Status is required"),
-    startDate: Yup.date()
-      .required("Start Date is required"),
-    endDate: Yup.date()
-      .required("End Date is required")
-
+    startDate: Yup.date().required("Start Date is required"),
+    endDate: Yup.date().required("End Date is required"),
   });
 
   const formik = useFormik({
@@ -120,18 +117,15 @@ export default function CompetitionForm() {
       if (id) {
         const result = await getCompetitionDetailByID(id);
 
-        const startDateObj = new Date(result.startDate);
-        const startDateFormatted = startDateObj.toISOString().split("T")[0];
-
-        const endDateObj = new Date(result.endDate);
-        const endDateFormatted = endDateObj.toISOString().split("T")[0];
+        const startDateObj = result.startDate ? new Date(result.startDate).toISOString().split("T")[0] : null;
+        const endDateObj = result.endDate ? new Date(result.endDate).toISOString().split("T")[0] : null;
 
         formik.setValues((prevValues) => ({
           ...prevValues,
           name: result.name || "",
           sportId: result.sportId || "",
-          startDate: startDateFormatted,
-          endDate: endDateFormatted || "",
+          startDate: startDateObj,
+          endDate: endDateObj,
           betDelay: result.betDelay || 0,
           isActive: result.isActive === true,
           completed: result.completed || false,
