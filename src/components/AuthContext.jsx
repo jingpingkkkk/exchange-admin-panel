@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }) => {
       await Promise.all([fetchAppModules(jwtToken), fetchUserPermissions(result.data.user._id, jwtToken)]);
 
       if (result.data.user.forcePasswordChange) {
+        setLoginError("");
         navigate("/reset-password", {
           state: {
             id: result.data.user._id,
