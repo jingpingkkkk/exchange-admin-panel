@@ -435,7 +435,9 @@ export default function SuperAdminForm() {
                   id="forcePasswordChange"
                   name="forcePasswordChange"
                   checked={formik.values.forcePasswordChange}
-                  onChange={() => formik.setFieldValue("forcePasswordChange", !formik.values.forcePasswordChange)}
+                  onChange={() =>
+                    formik.setFieldValue("forcePasswordChange", editMode ? !formik.values.forcePasswordChange : true)
+                  }
                 />
               </div>
 
