@@ -349,7 +349,7 @@ export default function EventForm() {
                                       onClick={() => toggleEventStatus(event)}
                                       style={{ cursor: "pointer" }}
                                     >
-                                      {event.name}
+                                      {event.name} - ({formatMatchDate(event)})
                                     </li>
                                   );
                                 }
