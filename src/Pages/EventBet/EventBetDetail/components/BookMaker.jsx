@@ -39,6 +39,9 @@ const marketUrl = `${socketUrl}/market`;
 function BookMaker({ market }) {
   const socket = useMemo(() => io(marketUrl, { autoConnect: false }), []);
   const [runnerOdds, setRunnerOdds] = useState(emptyOdds);
+  const [min, setMin] = useState(market.minStake);
+  const [max, setMax] = useState(market.maxStake);
+
   useEffect(() => {
     socket.on("connect", () => {
       socket.emit("join:market", {
@@ -61,6 +64,8 @@ function BookMaker({ market }) {
           teamTwoData.lay.push(teamTwo.lay[i] || {});
         }
         setRunnerOdds({ 0: teamOneData, 1: teamTwoData });
+        setMin(data?.min || 0);
+        setMax(data?.max || 0);
       }
     });
 
@@ -79,11 +84,19 @@ function BookMaker({ market }) {
         <TableHead>
           <TableRow>
             <TableCell className="odds w-40"></TableCell>
-            <TableCell align="right" className="odds w-10"></TableCell>
-            <TableCell align="right" className="odds w-10"></TableCell>
-            <TableCell align="right" className="odds w-10"></TableCell>
             <TableCell align="right" className="odds w-10">
-              <span className="tableSpan"> 1.3L </span>
+              <span title={`Min:${shortNumber(min)}`}>
+                Min:<span>{shortNumber(min)}</span>
+              </span>
+            </TableCell>
+            <TableCell align="right" className="odds w-10">
+              <span className="tableSpan">
+                <span className="max-bet">
+                  <span className="ps-2" title={`Max:${shortNumber(max)}`}>
+                    Max:<span>{shortNumber(max)}</span>
+                  </span>
+                </span>
+              </span>
             </TableCell>
             <TableCell align="right" className="odds w-10">
               <div className="grey-box back2">Back</div>
@@ -91,6 +104,8 @@ function BookMaker({ market }) {
             <TableCell align="right" className="odds w-10">
               <div className="grey-box lay2">Lay</div>
             </TableCell>
+            <TableCell align="right" className="odds w-10"></TableCell>
+            <TableCell align="right" className="odds w-10"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
