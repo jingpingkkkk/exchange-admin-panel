@@ -9,7 +9,7 @@ import FormSelect from "../../../components/Common/FormComponents/FormSelect";
 import FormToggleSwitch from "../../../components/Common/FormComponents/FormToggleSwitch"; // Import the FormToggleSwitch component
 import { Notify } from "../../../utils/notify";
 import { getAllCurrency } from "../../Currency/currencyService";
-import { addData } from "../accountService";
+import { addData, getUserDetails } from "../accountService";
 
 const validationSchemaForCreate = Yup.object({
   username: Yup.string()
@@ -57,6 +57,7 @@ export default function UserForm() {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState(null); // State to hold the server error message
   const [currencyList, setCurrencyList] = useState([]);
+  const [loggedInUser, setLoggedInUser] = useState({}); // State to hold the logged in user details
 
   const initialUserValue = {
     username: "",
@@ -86,7 +87,7 @@ export default function UserForm() {
     setLoading(true); // Set loading state to true
     try {
       let response = null;
-      response = await addData({
+      const body = {
         ...values,
         exposureLimit: values.exposureLimit || 0,
         exposurePercentage: values.exposurePercentage || 0,
@@ -98,7 +99,12 @@ export default function UserForm() {
         currencyId: values.currencyId || null,
         transactionCode: values.transactionCode || "",
         isTransactionCode: true,
-      });
+      };
+      if (loggedInUser.role === "system_owner") {
+        delete body.transactionCode;
+        delete body.isTransactionCode;
+      }
+      response = await addData(body);
       if (response.success) {
         Notify.success("User added successfully.");
         navigate("/user-list/");
@@ -127,7 +133,11 @@ export default function UserForm() {
       const { records = [] } = await getAllCurrency(0);
       setCurrencyList(records.sort((a, b) => a.name.localeCompare(b.name)));
     };
-    fetchCurrencyList();
+    const fetchUserData = async () => {
+      const user = await getUserDetails({ role: 1 });
+      setLoggedInUser(user);
+    };
+    Promise.all([fetchCurrencyList(), fetchUserData()]);
   }, []);
 
   return (
@@ -386,17 +396,19 @@ export default function UserForm() {
                   />
                 </Row>
 
-                <FormInput
-                  label="Transaction Code"
-                  name="transactionCode"
-                  type="password"
-                  value={formik.values.transactionCode}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.transactionCode && formik.errors.transactionCode}
-                  isRequired="true"
-                  width={3}
-                />
+                {loggedInUser.role !== "system_owner" ? (
+                  <FormInput
+                    label="Transaction Code"
+                    name="transactionCode"
+                    type="password"
+                    value={formik.values.transactionCode}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.transactionCode && formik.errors.transactionCode}
+                    isRequired="true"
+                    width={3}
+                  />
+                ) : null}
 
                 <Row>
                   <CCol className="pt-5">

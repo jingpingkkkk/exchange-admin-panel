@@ -26,6 +26,11 @@ export const getDetailByID = async (id, fields = null) => {
   return result.success ? result.data.details : {};
 };
 
+export const getUserDetails = async (fields = null) => {
+  const result = await postData("users/getUserDetails", { fields });
+  return result.success ? result.data.details : {};
+};
+
 export const addData = async (request) => {
   const result = await postData("users/createUser", request);
   return result;

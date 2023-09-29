@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
 import FormToggleSwitch from "../../../components/Common/FormComponents/FormToggleSwitch"; // Import the FormToggleSwitch component
 import { Notify } from "../../../utils/notify";
-import { getDetailByID, updateData } from "../accountService";
+import { getDetailByID, getUserDetails, updateData } from "../accountService";
 
 import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
 import * as Yup from "yup";
@@ -16,6 +16,7 @@ export default function UserEditForm() {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState(null); // State to hold the server error message
   const [activeTab, setActiveTab] = useState("tab5");
+  const [loggedInUser, setLoggedInUser] = useState({}); // State to hold logged in user details
   const { id } = useParams();
 
   const profileValidationSchema = Yup.object({
@@ -32,7 +33,7 @@ export default function UserEditForm() {
       .required("Mobile number is required")
       .matches(/^\d{10}$/, "Mobile number must be 10 digits"),
     city: Yup.string(),
-    transactionCode: Yup.string().required("Transaction code is required"),
+    transactionCode: Yup.string(),
   });
 
   const passwordValidationSchema = Yup.object({
@@ -40,12 +41,12 @@ export default function UserEditForm() {
     confirmPassword: Yup.string()
       .required("Confirm Password is required")
       .oneOf([Yup.ref("password"), null], "Passwords must match"),
-    transactionCode: Yup.string().required("Transaction code is required"),
+    transactionCode: Yup.string(),
   });
 
   const userLockValidationSchema = Yup.object({
     // Define validation schema for User Lock tab (if needed)
-    transactionCode: Yup.string().required("Transaction code is required"),
+    transactionCode: Yup.string(),
   });
 
   const userSettingValidationSchema = Yup.object({
@@ -90,7 +91,7 @@ export default function UserEditForm() {
       }
       return schema;
     }),
-    transactionCode: Yup.string().required("Transaction code is required"),
+    transactionCode: Yup.string(),
   });
 
   const initialUserValue = {
@@ -123,11 +124,16 @@ export default function UserEditForm() {
       if (!values.password) {
         delete values.password;
       }
-      response = await updateData({
+      const body = {
         _id: id,
         ...values,
         isTransactionCode: true,
-      });
+      };
+      if (loggedInUser.role === "system_owner") {
+        delete body.isTransactionCode;
+        delete body.transactionCode;
+      }
+      response = await updateData(body);
       if (response.success) {
         Notify.success("User updated successfully.");
         navigate("/user-list/");
@@ -177,14 +183,21 @@ export default function UserEditForm() {
         }));
       }
     };
-    fetchData();
+
+    const fetchUserData = async () => {
+      const user = await getUserDetails({ role: 1 });
+      setLoggedInUser(user);
+    };
+
+    Promise.all([fetchData(), fetchUserData()]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, getDetailByID]);
 
   const formTitle = id ? "UPDATE USER" : "CREATE USER";
 
   // Handle tab selection and set validation schema accordingly
   const handleTabSelect = (tabKey) => {
-    setActiveTab(tabKey);
+    if (loggedInUser) setActiveTab(tabKey);
     if (tabKey === "tab5") {
       setValidationSchema(profileValidationSchema);
     } else if (tabKey === "tab6") {
@@ -284,17 +297,19 @@ export default function UserEditForm() {
                                 width={3}
                               />
 
-                              <FormInput
-                                label="Transaction Code"
-                                name="transactionCode"
-                                type="password"
-                                value={formik.values.transactionCode}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.transactionCode && formik.errors.transactionCode}
-                                isRequired="true"
-                                width={3}
-                              />
+                              {loggedInUser.role !== "system_owner" ? (
+                                <FormInput
+                                  label="Transaction Code"
+                                  name="transactionCode"
+                                  type="password"
+                                  value={formik.values.transactionCode}
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
+                                  error={formik.touched.transactionCode && formik.errors.transactionCode}
+                                  isRequired="true"
+                                  width={3}
+                                />
+                              ) : null}
 
                               <CCol xs={12} className="pt-3">
                                 <div className="d-grid gap-2 d-md-block">
@@ -358,17 +373,19 @@ export default function UserEditForm() {
                               />
 
                               <Row className="pt-3">
-                                <FormInput
-                                  label="Transaction Code"
-                                  name="transactionCode"
-                                  type="password"
-                                  value={formik.values.transactionCode}
-                                  onChange={formik.handleChange}
-                                  onBlur={formik.handleBlur}
-                                  error={formik.touched.transactionCode && formik.errors.transactionCode}
-                                  isRequired="true"
-                                  width={3}
-                                />
+                                {loggedInUser.role !== "system_owner" ? (
+                                  <FormInput
+                                    label="Transaction Code"
+                                    name="transactionCode"
+                                    type="password"
+                                    value={formik.values.transactionCode}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.transactionCode && formik.errors.transactionCode}
+                                    isRequired="true"
+                                    width={3}
+                                  />
+                                ) : null}
                               </Row>
 
                               <CCol xs={12} className="pt-3">
@@ -430,17 +447,19 @@ export default function UserEditForm() {
                               </CCol>
 
                               <Row className="pt-3">
-                                <FormInput
-                                  label="Transaction Code"
-                                  name="transactionCode"
-                                  type="password"
-                                  value={formik.values.transactionCode}
-                                  onChange={formik.handleChange}
-                                  onBlur={formik.handleBlur}
-                                  error={formik.touched.transactionCode && formik.errors.transactionCode}
-                                  isRequired="true"
-                                  width={3}
-                                />
+                                {loggedInUser.role !== "system_owner" ? (
+                                  <FormInput
+                                    label="Transaction Code"
+                                    name="transactionCode"
+                                    type="password"
+                                    value={formik.values.transactionCode}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.transactionCode && formik.errors.transactionCode}
+                                    isRequired="true"
+                                    width={3}
+                                  />
+                                ) : null}
                               </Row>
 
                               <CCol xs={12} className="pt-3">
@@ -575,17 +594,19 @@ export default function UserEditForm() {
                                 />
                               </Row>
 
-                              <FormInput
-                                label="Transaction Code"
-                                name="transactionCode"
-                                type="password"
-                                value={formik.values.transactionCode}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.transactionCode && formik.errors.transactionCode}
-                                isRequired="true"
-                                width={3}
-                              />
+                              {loggedInUser.role !== "system_owner" ? (
+                                <FormInput
+                                  label="Transaction Code"
+                                  name="transactionCode"
+                                  type="password"
+                                  value={formik.values.transactionCode}
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
+                                  error={formik.touched.transactionCode && formik.errors.transactionCode}
+                                  isRequired="true"
+                                  width={3}
+                                />
+                              ) : null}
 
                               <CCol xs={12} className="pt-3">
                                 <div className="d-grid gap-2 d-md-block">
