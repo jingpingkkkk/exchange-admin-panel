@@ -1,8 +1,9 @@
+import { CSpinner } from "@coreui/react";
 import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Dropdown, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import "react-data-table-component-extensions/dist/index.css";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
 import SearchInput from "../../../components/Common/FormComponents/SearchInput"; // Import the FormInput component
 import { permission } from "../../../lib/user-permissions";
@@ -10,42 +11,19 @@ import { showAlert } from "../../../utils/alertUtils";
 import { downloadCSV } from "../../../utils/csvUtils";
 import { Notify } from "../../../utils/notify";
 import TransactionModal from "../TransactionModal";
-import { createTransaction, deleteData, getAllData } from "../accountService";
+import { createTransaction, deleteData, getAllData, getUserDetails } from "../accountService";
+
+const Export = ({ onExport }) => (
+  <Button className="btn btn-secondary" onClick={(e) => onExport(e.target.value)}>
+    Export
+  </Button>
+);
 
 export default function AccountList() {
-  let login_user_id = "";
-  const user = JSON.parse(localStorage.getItem("user_info"));
-  login_user_id = user._id;
-
-  const { id } = useParams();
-  const parentId = id ? id : user.isClone ? user.cloneParentId : login_user_id;
-  const { role } = JSON.parse(localStorage.getItem("user_info")) || {};
-
-  const roleHierarchy = {
-    system_owner: ["super_admin"],
-    super_admin: ["admin", "super_master", "master", "agent"],
-    admin: ["super_master", "master", "agent"],
-    super_master: ["master", "agent"],
-    master: ["agent"],
-  };
-  const allowedRoles = roleHierarchy[role] || [];
-  const allowedRoleOptions = ["all", ...allowedRoles].map((role) => ({
-    label: role
-      .split("_")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" "),
-    value: role,
-  }));
-
-  const Export = ({ onExport }) => (
-    <Button className="btn btn-secondary" onClick={(e) => onExport(e.target.value)}>
-      Export
-    </Button>
-  );
-
   const [searchQuery, setSearchQuery] = React.useState("");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [parentLoading, setParentLoading] = useState(false); // for loading parent data
   const [totalRows, setTotalRows] = useState(0);
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,6 +40,42 @@ export default function AccountList() {
   const [filters, setFilters] = useState({
     role: "",
   });
+
+  const [loggedInUser, setLoggedInUser] = useState({});
+  const [allowedRoles, setAllowedRoles] = useState([]);
+  const [allowedRoleOptions, setAllowedRoleOptions] = useState([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      setParentLoading(true);
+      const user = await getUserDetails({ parentId: 1, isClone: 1, cloneParentId: 1, role: 1 });
+      const roleHierarchy = {
+        system_owner: ["super_admin"],
+        super_admin: ["admin", "super_master", "master", "agent"],
+        admin: ["super_master", "master", "agent"],
+        super_master: ["master", "agent"],
+        master: ["agent"],
+      };
+      const roles = roleHierarchy[user.role] || [];
+      const options = ["all", ...allowedRoles].map((role) => ({
+        label: role
+          .split("_")
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(" "),
+        value: role,
+      }));
+      setAllowedRoles(roles);
+      setAllowedRoleOptions(options);
+      setLoggedInUser(user);
+      setParentLoading(false);
+    };
+
+    getData();
+
+    return () => {
+      setLoggedInUser({});
+    };
+  }, []);
 
   const columns = [
     {
@@ -242,7 +256,7 @@ export default function AccountList() {
         sortBy: sortBy,
         direction: direction,
         searchQuery: searchQuery,
-        parentId: parentId,
+        parentId: loggedInUser.parentId,
         role: selectedRole === "all" ? allowedRoles : [selectedRole],
       });
 
@@ -300,7 +314,7 @@ export default function AccountList() {
       sortBy,
       direction,
       searchQuery,
-      parentId,
+      parentId: loggedInUser.parentId,
       role: selectedRole === "all" ? allowedRoles : [selectedRole],
     };
     await downloadCSV("users/getAllUsers", params, "account.csv");
@@ -311,9 +325,17 @@ export default function AccountList() {
   };
 
   const handleTransactionSubmit = async (amount, remarks, transactionCode, transactionType, userId) => {
+    console.log(
+      "amount, remarks, transactionCode, transactionType, userId",
+      amount,
+      remarks,
+      transactionCode,
+      transactionType,
+      userId
+    );
     try {
       const result = await createTransaction({
-        userId: login_user_id,
+        userId: loggedInUser._id,
         fromId: userId,
         points: amount,
         type: transactionType,
@@ -323,9 +345,9 @@ export default function AccountList() {
       if (!result.success) {
         throw new Error(result.message);
       } else {
-        Notify.success("Transaction Done!!!.");
+        Notify.success("Transaction successful.");
         setShowTransactionModal(false);
-        fetchData(currentPage, sortBy, direction, searchQuery, parentId); // fetch page 1 of users
+        fetchData(currentPage, sortBy, direction, searchQuery, loggedInUser.parentId); // fetch page 1 of users
       }
     } catch (error) {
       Notify.error(error.message);
@@ -372,122 +394,134 @@ export default function AccountList() {
   useEffect(() => {
     setData([]);
     if (searchQuery !== "") {
-      fetchData(currentPage, sortBy, direction, searchQuery, parentId); // fetch page 1 of users
+      fetchData(currentPage, sortBy, direction, searchQuery, loggedInUser.parentId); // fetch page 1 of users
     } else {
-      fetchData(currentPage, sortBy, direction, searchQuery, parentId); // fetch page 1 of users
+      fetchData(currentPage, sortBy, direction, searchQuery, loggedInUser.parentId); // fetch page 1 of users
     }
     return () => {
       setData([]);
     };
-  }, [perPage, searchQuery, parentId, selectedRole]);
+  }, [perPage, searchQuery, loggedInUser.parentId, selectedRole]);
 
   return (
-    <div>
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">ALL ACCOUNTS</h1>
+    <>
+      {parentLoading ? (
+        <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
+          <CSpinner />
         </div>
-        <div className="ms-auto pageheader-btn">
-          {role === "system_owner" && permission.ACCOUNT_MODULE.CREATE && (
-            <Link
-              to={`${process.env.PUBLIC_URL}/super-admin-form`}
-              className="btn btn-primary btn-icon text-white me-3"
-            >
-              <span>
-                <i className="fe fe-plus"></i>&nbsp;
-              </span>
-              CREATE ACCOUNT
-            </Link>
-          )}
-          {role !== "system_owner" && permission.ACCOUNT_MODULE.CREATE && (
-            <Dropdown className="dropdown btn-group">
-              <Dropdown.Toggle variant="" type="button" className="btn btn-primary dropdown-toggle">
-                <i className="fe fe-plus"></i>&nbsp;CREATE ACCOUNT
-              </Dropdown.Toggle>
-              <Dropdown.Menu className="dropdown-menu">
-                {allowedRoles.includes("admin") && (
-                  <Dropdown.Item className="dropdown-item" as={Link} to={`${process.env.PUBLIC_URL}/admin-form`}>
-                    Admin
-                  </Dropdown.Item>
-                )}
+      ) : (
+        <>
+          <div className="page-header">
+            <div>
+              <h1 className="page-title">ALL ACCOUNTS</h1>
+            </div>
+            <div className="ms-auto pageheader-btn">
+              {loggedInUser.role === "system_owner" && permission.ACCOUNT_MODULE.CREATE && (
+                <Link
+                  to={`${process.env.PUBLIC_URL}/super-admin-form`}
+                  className="btn btn-primary btn-icon text-white me-3"
+                >
+                  <span>
+                    <i className="fe fe-plus"></i>&nbsp;
+                  </span>
+                  CREATE ACCOUNT
+                </Link>
+              )}
+              {loggedInUser?.role !== "system_owner" && permission.ACCOUNT_MODULE.CREATE && (
+                <Dropdown className="dropdown btn-group">
+                  <Dropdown.Toggle variant="" type="button" className="btn btn-primary dropdown-toggle">
+                    <i className="fe fe-plus"></i>&nbsp;CREATE ACCOUNT
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu className="dropdown-menu">
+                    {allowedRoles.includes("admin") && (
+                      <Dropdown.Item className="dropdown-item" as={Link} to={`${process.env.PUBLIC_URL}/admin-form`}>
+                        Admin
+                      </Dropdown.Item>
+                    )}
 
-                {allowedRoles.includes("super_master") && (
-                  <Dropdown.Item className="dropdown-item" as={Link} to={`${process.env.PUBLIC_URL}/super-master-form`}>
-                    Super Master
-                  </Dropdown.Item>
-                )}
+                    {allowedRoles.includes("super_master") && (
+                      <Dropdown.Item
+                        className="dropdown-item"
+                        as={Link}
+                        to={`${process.env.PUBLIC_URL}/super-master-form`}
+                      >
+                        Super Master
+                      </Dropdown.Item>
+                    )}
 
-                {allowedRoles.includes("master") && (
-                  <Dropdown.Item className="dropdown-item" as={Link} to={`${process.env.PUBLIC_URL}/master-form`}>
-                    Master
-                  </Dropdown.Item>
-                )}
+                    {allowedRoles.includes("master") && (
+                      <Dropdown.Item className="dropdown-item" as={Link} to={`${process.env.PUBLIC_URL}/master-form`}>
+                        Master
+                      </Dropdown.Item>
+                    )}
 
-                {allowedRoles.includes("agent") && (
-                  <Dropdown.Item className="dropdown-item" as={Link} to={`${process.env.PUBLIC_URL}/agent-form`}>
-                    Agent
-                  </Dropdown.Item>
-                )}
-              </Dropdown.Menu>
-            </Dropdown>
-          )}
-          {/* <Link to="#" className="btn btn-success btn-icon text-white">
+                    {allowedRoles.includes("agent") && (
+                      <Dropdown.Item className="dropdown-item" as={Link} to={`${process.env.PUBLIC_URL}/agent-form`}>
+                        Agent
+                      </Dropdown.Item>
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
+              )}
+              {/* <Link to="#" className="btn btn-success btn-icon text-white">
             <span>
               <i className="fe fe-log-in"></i>&nbsp;
             </span>
             Export
           </Link> */}
-        </div>
-      </div>
+            </div>
+          </div>
 
-      <Row className="row-sm">
-        <Col lg={12}>
-          <Card>
-            <Card.Header className="px-3">
-              <FormSelectWithSearch
-                placeholder="Select Role"
-                value={selectedRole}
-                onChange={(name, selectedValue) => setSelectedRole(selectedValue)}
-                width={3}
-                options={allowedRoleOptions}
-              />
-            </Card.Header>
+          <Row className="row-sm">
+            <Col lg={12}>
+              <Card>
+                <Card.Header className="px-3">
+                  <FormSelectWithSearch
+                    placeholder="Select Role"
+                    value={selectedRole}
+                    onChange={(name, selectedValue) => setSelectedRole(selectedValue)}
+                    width={3}
+                    options={allowedRoleOptions}
+                  />
+                </Card.Header>
 
-            <Card.Body>
-              <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} loading={loading} />
+                <Card.Body>
+                  <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} loading={loading} />
 
-              <div className="table-responsive export-table">
-                <DataTable
-                  columns={columns}
-                  data={data}
-                  actions={actionsMemo}
-                  contextActions={contextActions}
-                  // onSelectedRowsChange={handleRowSelected}
-                  // clearSelectedRows={toggleCleared}
-                  //selectableRows
-                  pagination
-                  highlightOnHover
-                  progressPending={loading}
-                  paginationServer
-                  paginationTotalRows={totalRows}
-                  onChangeRowsPerPage={handlePerRowsChange}
-                  onChangePage={handlePageChange}
-                  sortServer
-                  onSort={handleSort}
-                />
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+                  <div className="table-responsive export-table">
+                    <DataTable
+                      columns={columns}
+                      data={data}
+                      actions={actionsMemo}
+                      contextActions={contextActions}
+                      // onSelectedRowsChange={handleRowSelected}
+                      // clearSelectedRows={toggleCleared}
+                      //selectableRows
+                      pagination
+                      highlightOnHover
+                      progressPending={loading}
+                      paginationServer
+                      paginationTotalRows={totalRows}
+                      onChangeRowsPerPage={handlePerRowsChange}
+                      onChangePage={handlePageChange}
+                      sortServer
+                      onSort={handleSort}
+                    />
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
 
-      <TransactionModal
-        show={showTransactionModal}
-        onHide={() => setShowTransactionModal(false)}
-        handleTransactionSubmit={handleTransactionSubmit}
-        rowData={rowData}
-        transactionType={transactionType}
-      />
-    </div>
+          <TransactionModal
+            show={showTransactionModal}
+            onHide={() => setShowTransactionModal(false)}
+            handleTransactionSubmit={handleTransactionSubmit}
+            rowData={rowData}
+            transactionType={transactionType}
+          />
+        </>
+      )}
+    </>
   );
 }

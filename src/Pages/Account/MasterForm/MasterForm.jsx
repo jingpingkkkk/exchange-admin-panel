@@ -377,7 +377,7 @@ export default function MasterForm() {
                 <CCol xs={12} className="pt-3">
                   <div className="d-grid gap-2 d-md-block">
                     <CButton color="primary" type="submit" className="me-3">
-                      {loading ? <CSpinner size="sm" /> : "Save"}
+                      {loading ? <CSpinner size="sm" /> : editMode ? "Update" : "Create"}
                     </CButton>
                     <Link to={`${process.env.PUBLIC_URL}/account-list`} className="btn btn-danger btn-icon text-white ">
                       Cancel

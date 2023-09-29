@@ -3,124 +3,111 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { getDetailByID } from "./accountService";
 
-const TransactionModal = ({ show, onHide, handleTransactionSubmit, rowData, transactionType }) => {
-  const [userId, setUserId] = useState();
+const fetchUserBalance = async (id = null) => {
+  if (!id) return {};
+  const user = await getDetailByID(id, { balance: 1, exposure: 1 });
+  return user;
+};
 
-  const [parentName, setParentName] = useState();
+const TransactionModal = ({ show, onHide, handleTransactionSubmit, rowData, transactionType }) => {
+  const modalHeaderClass = transactionType === "credit" ? "bg-success" : "bg-danger";
+  const transactionText = transactionType === "credit" ? "Deposit" : "Withdraw";
+
   const [parentBalance, setParentBalance] = useState(0);
   const [parentNewBalance, setParentNewBalance] = useState(0);
-  const [clickedUserName, setClickedUserName] = useState();
   const [clickedUserBalance, setClickedUserBalance] = useState(0);
   const [clickedUserNewBalance, setClickedUserNewBalance] = useState(0);
-  const [clickedUserProfit, setClickedUserProfit] = useState(0);
-  const [clickedUserNewProfit, setClickedUserNewProfit] = useState(0);
-  const [transactionCode, setTransactionCode] = useState("");
+  const [withdrawCapacity, setWithdrawCapacity] = useState(0);
+
   const [amount, setAmount] = useState(0);
   const [remarks, setRemarks] = useState("");
+  const [transactionCode, setTransactionCode] = useState("");
+
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({
-    amount: "",
-    remarks: "",
-    transactionCode: "",
-  });
+  const [errors, setErrors] = useState({ amount: "", remarks: "", transactionCode: "" });
 
-  const fetchParent = async () => {
-    if (!rowData) return {};
-    const user = await getDetailByID(rowData.parentId, { balance: 1 });
-    return user;
-  };
-
-  const fetchUser = async () => {
-    if (!rowData) return {};
-    const user = await getDetailByID(rowData._id, { balance: 1 });
-    return user;
-  };
-
-  useEffect(() => {
-    if (rowData) {
-      setParentName(rowData.parentUser.username);
-      setClickedUserName(rowData.username);
-      setUserId(rowData._id);
-      setLoading(true);
-      Promise.all([fetchParent(), fetchUser()])
-        .then(([parent, user]) => {
-          setParentBalance(parent.balance);
-          setClickedUserBalance(user.balance);
-          setClickedUserProfit(user.profit ?? 0);
-        })
-        .finally(() => setLoading(false));
-    }
-    setClickedUserNewProfit(0);
+  const resetForm = () => {
+    setTransactionCode("");
+    setWithdrawCapacity(0);
+    setClickedUserBalance(0);
     setClickedUserNewBalance(0);
+    setParentBalance(0);
     setParentNewBalance(0);
     setAmount("");
     setRemarks("");
     setTransactionCode("");
+    setErrors({ amount: "", remarks: "", transactionCode: "" });
+  };
+
+  const handleModalClose = () => {
+    resetForm();
+    onHide();
+  };
+
+  useEffect(() => {
+    if (rowData) {
+      setLoading(true);
+      Promise.all([fetchUserBalance(rowData?.parentId), fetchUserBalance(rowData?._id)])
+        .then(([parent, user]) => {
+          setParentBalance(parent.balance);
+          setClickedUserBalance(user.balance);
+          setWithdrawCapacity(Number(user.balance) - Number(user.exposure));
+        })
+        .finally(() => setLoading(false));
+    }
+    return () => {
+      resetForm();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowData, transactionType, onHide]);
+  }, [rowData._id, transactionType, onHide]);
 
   const handleAmountChange = (event) => {
-    const { value } = event.target;
-    const Amount = parseFloat(value) && parseFloat(value) > 0 ? parseFloat(value) : 0;
+    const amount = event.target.value ? Number(event.target.value) : "";
+    setAmount(amount);
+    if (amount === "") {
+      return;
+    }
     let newParentBalance = 0;
     let clickedUserNewBalance = 0;
-    let clickedUserNewProfit = 0;
-
-    // Calculate the new parent balance and profit
     if (transactionType === "credit") {
-      newParentBalance = Number(parentBalance) - Amount;
-      clickedUserNewBalance = Number(clickedUserBalance) + Amount;
-      clickedUserNewProfit = Number(clickedUserProfit) + Amount;
+      newParentBalance = Number(parentBalance) - amount;
+      clickedUserNewBalance = Number(clickedUserBalance) + amount;
     } else {
-      newParentBalance = Number(parentBalance) + Amount;
-      clickedUserNewBalance = Number(clickedUserBalance) - Amount;
-      clickedUserNewProfit = clickedUserProfit ? Number(clickedUserProfit) - Amount : 0;
+      newParentBalance = Number(parentBalance) + amount;
+      clickedUserNewBalance = Number(clickedUserBalance) - amount;
+      if (amount > withdrawCapacity) {
+        setErrors({ ...errors, amount: `Amount cannot be greater than ${withdrawCapacity}` });
+      } else {
+        setErrors({ ...errors, amount: "" });
+      }
     }
-
-    setAmount(Amount);
     setParentNewBalance(newParentBalance);
     setClickedUserNewBalance(clickedUserNewBalance);
-    setClickedUserNewProfit(clickedUserNewProfit);
   };
-  const modalHeaderClass = transactionType === "credit" ? "bg-success" : "bg-danger";
-  const transactionText = transactionType === "credit" ? "Deposit" : "Withdraw";
 
   const validateForm = () => {
     let hasErrors = false;
     const currentErrors = { ...errors };
-
     if (!amount) {
       currentErrors.amount = "Amount is required";
       hasErrors = true;
     } else {
       currentErrors.amount = "";
     }
-
     if (!remarks) {
       currentErrors.remarks = "Remarks is required";
       hasErrors = true;
     } else {
       currentErrors.remarks = "";
     }
-
     if (!transactionCode) {
       currentErrors.transactionCode = "Transaction Code is required";
       hasErrors = true;
     } else {
       currentErrors.transactionCode = "";
     }
-
     setErrors(currentErrors);
-
     return hasErrors;
-  };
-
-  const handleModalClose = () => {
-    setAmount("");
-    setRemarks("");
-    setTransactionCode("");
-    setErrors({ amount: "", remarks: "", transactionCode: "" });
-    onHide();
   };
 
   const handleSubmit = () => {
@@ -128,7 +115,7 @@ const TransactionModal = ({ show, onHide, handleTransactionSubmit, rowData, tran
     if (hasErrors) {
       return;
     }
-    handleTransactionSubmit(amount, remarks, transactionCode, transactionType, userId);
+    handleTransactionSubmit(amount, remarks, transactionCode, transactionType, rowData._id);
   };
 
   return (
@@ -146,81 +133,50 @@ const TransactionModal = ({ show, onHide, handleTransactionSubmit, rowData, tran
           <Form className="form-horizontal">
             <div className="row mb-4">
               <Form.Label htmlFor="inputName" className="col-md-4 form-label fw-semibold text-end">
-                {parentName}
+                {rowData?.parentUser?.username}
               </Form.Label>
               <div className="col-md-4">
-                <Form.Control
-                  type="number"
-                  value={parentBalance}
-                  onChange={(e) => setParentBalance(e.target.value)}
-                  readOnly
-                />
+                <Form.Control type="number" value={parentBalance} readOnly />
               </div>
               <div className="col-md-4">
-                <Form.Control
-                  type="number"
-                  value={parentNewBalance}
-                  onChange={(e) => setParentNewBalance(e.target.value)}
-                  readOnly
-                />
+                <Form.Control type="number" value={parentNewBalance} readOnly />
               </div>
             </div>
 
             <div className="row mb-4">
               <Form.Label htmlFor="inputName" className="col-md-4 form-label fw-semibold text-end">
-                {clickedUserName}
+                {rowData?.username}
               </Form.Label>
               <div className="col-md-4">
-                <Form.Control
-                  type="number"
-                  value={clickedUserBalance}
-                  onChange={(e) => setClickedUserBalance(e.target.value)}
-                  readOnly
-                />
+                <Form.Control type="number" value={clickedUserBalance} readOnly />
               </div>
               <div className="col-md-4">
-                <Form.Control
-                  type="number"
-                  value={clickedUserNewBalance}
-                  onChange={(e) => setClickedUserNewBalance(e.target.value)}
-                  readOnly
-                />
+                <Form.Control type="number" value={clickedUserNewBalance} readOnly />
               </div>
             </div>
 
-            <div className=" row mb-4">
-              <Form.Label htmlFor="inputName" className="col-md-4 form-label text-end">
-                Profit/Loss
-              </Form.Label>
-              <div className="col-md-4">
-                <Form.Control
-                  type="number"
-                  value={clickedUserProfit}
-                  onChange={(e) => setClickedUserProfit(e.target.value)}
-                  readOnly
-                />
+            {transactionType === "debit" ? (
+              <div className="row mb-4">
+                <Form.Label htmlFor="inputName" className="col-md-4 form-label text-end">
+                  Withdraw Capacity
+                </Form.Label>
+                <div className="col-md-8">
+                  <Form.Control type="number" value={withdrawCapacity} readOnly />
+                </div>
               </div>
-              <div className="col-md-4">
-                <Form.Control
-                  type="number"
-                  value={clickedUserNewProfit}
-                  onChange={(e) => setClickedUserNewProfit(e.target.value)}
-                  readOnly
-                />
-              </div>
-            </div>
+            ) : null}
 
-            <div className=" row mb-4">
+            <div className="row mb-4">
               <Form.Label htmlFor="inputName" className="col-md-4 form-label text-end">
                 Amount <span className="text-danger">*</span>
               </Form.Label>
               <div className="col-md-8">
-                <Form.Control type="number" value={amount} onChange={handleAmountChange} autoComplete="off" />
+                <Form.Control type="number" value={amount} onChange={handleAmountChange} />
                 {errors.amount && <p className="text-danger">{errors.amount}</p>}
               </div>
             </div>
 
-            <div className=" row mb-4">
+            <div className="row mb-4">
               <Form.Label htmlFor="inputName" className="col-md-4 form-label text-end">
                 Remarks <span className="text-danger">*</span>
               </Form.Label>
@@ -236,7 +192,7 @@ const TransactionModal = ({ show, onHide, handleTransactionSubmit, rowData, tran
               </div>
             </div>
 
-            <div className=" row mb-4">
+            <div className="row mb-4">
               <Form.Label htmlFor="inputName" className="col-md-4 form-label text-end">
                 Transaction Code <span className="text-danger">*</span>
               </Form.Label>
