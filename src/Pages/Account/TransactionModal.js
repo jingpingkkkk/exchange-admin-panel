@@ -77,6 +77,8 @@ const TransactionModal = ({ show, onHide, handleTransactionSubmit, rowData, tran
       clickedUserNewBalance = Number(clickedUserBalance) - amount;
       if (amount > withdrawCapacity) {
         setErrors({ ...errors, amount: `Amount cannot be greater than ${withdrawCapacity}` });
+      } else {
+        setErrors({ ...errors, amount: "" });
       }
     }
     setParentNewBalance(newParentBalance);
