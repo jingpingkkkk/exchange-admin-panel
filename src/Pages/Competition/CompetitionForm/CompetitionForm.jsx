@@ -1,5 +1,6 @@
 import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
 import { useFormik } from "formik";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -33,7 +34,7 @@ export default function CompetitionForm() {
     betDelay: 0,
     isActive: true,
     completed: false,
-  }
+  };
   const validationSchemaForCreate = Yup.object({
     name: Yup.string().required("Name is required"),
     sportId: Yup.string().required("Sport is required"),
@@ -41,6 +42,9 @@ export default function CompetitionForm() {
     isActive: Yup.boolean().required("Status is required"),
     startDate: Yup.date()
       .required("Start Date is required")
+      .test("is-after-today", "Start date must be today or later", function (startDate) {
+        return moment(startDate).isAfter(moment().subtract(1, "days").startOf("day"));
+      })
       .test("is-start-date-valid", "Start date must be today", function (startDate) {
         const currentDate = new Date();
         if (!startDate) {
@@ -57,6 +61,9 @@ export default function CompetitionForm() {
       }),
     endDate: Yup.date()
       .required("End Date is required")
+      .test("is-after-today", "Start date must be today or later", function (startDate) {
+        return moment(startDate).isAfter(moment().subtract(1, "days").startOf("day"));
+      })
       .test("is-end-date-greater", "End date must be greater than the start date", function (endDate) {
         const startDate = this.parent.startDate;
         if (!startDate || !endDate) {
@@ -71,11 +78,8 @@ export default function CompetitionForm() {
     sportId: Yup.string().required("Sport is required"),
     betDelay: Yup.number().min(0).nullable(true),
     isActive: Yup.boolean().required("Status is required"),
-    startDate: Yup.date()
-      .required("Start Date is required"),
-    endDate: Yup.date()
-      .required("End Date is required")
-
+    startDate: Yup.date().required("Start Date is required"),
+    endDate: Yup.date().required("End Date is required"),
   });
 
   const formik = useFormik({
@@ -120,18 +124,15 @@ export default function CompetitionForm() {
       if (id) {
         const result = await getCompetitionDetailByID(id);
 
-        const startDateObj = new Date(result.startDate);
-        const startDateFormatted = startDateObj.toISOString().split("T")[0];
-
-        const endDateObj = new Date(result.endDate);
-        const endDateFormatted = endDateObj.toISOString().split("T")[0];
+        const startDateObj = result.startDate ? new Date(result.startDate).toISOString().split("T")[0] : null;
+        const endDateObj = result.endDate ? new Date(result.endDate).toISOString().split("T")[0] : null;
 
         formik.setValues((prevValues) => ({
           ...prevValues,
           name: result.name || "",
           sportId: result.sportId || "",
-          startDate: startDateFormatted,
-          endDate: endDateFormatted || "",
+          startDate: startDateObj,
+          endDate: endDateObj,
           betDelay: result.betDelay || 0,
           isActive: result.isActive === true,
           completed: result.completed || false,
