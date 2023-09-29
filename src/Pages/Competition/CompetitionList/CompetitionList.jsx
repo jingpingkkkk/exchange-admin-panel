@@ -108,7 +108,6 @@ export default function CompetitionList() {
       selector: (row) => <div title={row.name}>{row.name}</div>,
       sortable: true,
       sortField: "name",
-      width: "200px",
     },
     {
       name: "SPORT",
@@ -160,10 +159,11 @@ export default function CompetitionList() {
       sortField: "startDate",
     },
     {
-      name: "COMPETITION STAGE",
+      name: "STAGE",
       selector: (row) => <div title={row.competitionStatus}>{row.competitionStatus}</div>,
       sortable: true,
       sortField: "competitionStatus",
+      width: "100px",
     },
     permission.COMPETITIONS.ACTIVE && {
       name: "STATUS",
@@ -190,7 +190,7 @@ export default function CompetitionList() {
     },
     {
       name: "TOTAL EVENTS",
-      width: "125px",
+      width: "150px",
       cell: (row) => (
         <div>
           <OverlayTrigger placement="top" overlay={<Tooltip> Click here to see events</Tooltip>}>
@@ -214,6 +214,7 @@ export default function CompetitionList() {
       sortField: "betDelay",
     },
     permission.COMPETITIONS.ACTIVE && {
+      width: "125px",
       name: "ACTION",
       cell: (row) => (
         <div>
