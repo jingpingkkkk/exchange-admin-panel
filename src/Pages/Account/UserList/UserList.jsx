@@ -3,32 +3,37 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Col, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import DataTable from "react-data-table-component";
 import "react-data-table-component-extensions/dist/index.css";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import SearchInput from "../../../components/Common/FormComponents/SearchInput"; // Import the FormInput component
 import { permission } from "../../../lib/user-permissions";
 import { showAlert } from "../../../utils/alertUtils";
 import { downloadCSV } from "../../../utils/csvUtils";
 import { Notify } from "../../../utils/notify";
 import TransactionModal from "../TransactionModal";
-import { createTransaction, deleteData, getAllData, updateUserStatus } from "../accountService";
+import { createTransaction, deleteData, getAllData, getUserDetails, updateUserStatus } from "../accountService";
+
+const Export = ({ onExport }) => (
+  <Button className="btn btn-secondary" onClick={(e) => onExport(e.target.value)}>
+    Export
+  </Button>
+);
 
 export default function UserList() {
-  const location = useLocation();
-  let login_user_id = "";
-  const user = JSON.parse(localStorage.getItem("user_info"));
-  if (user.role !== "system_owner") {
-    login_user_id = user._id;
-  }
+  const [parentLoading, setParentLoading] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState({});
 
-  //console.log(permission);
-  const { id } = useParams();
-  const initialParentId = id ? id : user.isClone ? user.cloneParentId : login_user_id;
-  const [parentId, setParentId] = useState(initialParentId);
-  const Export = ({ onExport }) => (
-    <Button className="btn btn-secondary" onClick={(e) => onExport(e.target.value)}>
-      Export
-    </Button>
-  );
+  useEffect(() => {
+    const getData = async () => {
+      setParentLoading(true);
+      const user = await getUserDetails({ parentId: 1, isClone: 1, cloneParentId: 1, role: 1 });
+      setLoggedInUser(user);
+      setParentLoading(false);
+    };
+    getData();
+    return () => {
+      setLoggedInUser({});
+    };
+  }, []);
 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [data, setData] = useState([]);
@@ -90,7 +95,7 @@ export default function UserList() {
   const handleTransactionSubmit = async (amount, remarks, transactionCode, transactionType, userId) => {
     try {
       const result = await createTransaction({
-        userId: login_user_id,
+        userId: loggedInUser._id,
         fromId: userId,
         points: amount,
         type: transactionType,
@@ -102,7 +107,7 @@ export default function UserList() {
       } else {
         Notify.success("Transaction Done!!!.");
         setShowTransactionModal(false);
-        fetchData(currentPage, sortBy, direction, searchQuery, parentId); // fetch page 1 of users
+        fetchData(currentPage, sortBy, direction, searchQuery, loggedInUser.parentId); // fetch page 1 of users
       }
     } catch (error) {
       Notify.error(error.message);
@@ -215,7 +220,7 @@ export default function UserList() {
           </OverlayTrigger>
 
           <OverlayTrigger placement="top" overlay={<Tooltip> Click here to edit</Tooltip>}>
-            <Link to={`${process.env.PUBLIC_URL}/user-edit/` + row._id} className="btn btn-primary btn-lg">
+            <Link to="/user-edit" state={{ id: row._id }} className="btn btn-primary btn-lg">
               <i className="fa fa-edit"></i>
             </Link>
           </OverlayTrigger>
@@ -265,7 +270,7 @@ export default function UserList() {
         sortBy: sortBy,
         direction: direction,
         searchQuery: searchQuery,
-        parentId: parentId,
+        parentId: loggedInUser.parentId,
         role: allowedRoles,
       });
 
@@ -323,7 +328,11 @@ export default function UserList() {
   };
 
   const handleDownload = async () => {
-    await downloadCSV("users/getAllUsers", { searchQuery, parentId, role: ["user"] }, "users.csv");
+    await downloadCSV(
+      "users/getAllUsers",
+      { searchQuery, parentId: loggedInUser.parentId, role: ["user"] },
+      "users.csv"
+    );
   };
 
   const handleDelete = (id) => {
@@ -333,75 +342,83 @@ export default function UserList() {
   useEffect(() => {
     setData([]);
     if (searchQuery !== "") {
-      fetchData(currentPage, sortBy, direction, searchQuery, parentId); // fetch page 1 of users
+      fetchData(currentPage, sortBy, direction, searchQuery, loggedInUser.parentId); // fetch page 1 of users
     } else {
-      fetchData(currentPage, sortBy, direction, searchQuery, parentId); // fetch page 1 of users
+      fetchData(currentPage, sortBy, direction, searchQuery, loggedInUser.parentId); // fetch page 1 of users
     }
     return () => {
       setData([]);
     };
-  }, [perPage, searchQuery, parentId]);
+  }, [perPage, searchQuery, loggedInUser.parentId]);
 
   return (
-    <div>
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">ALL USERS</h1>
+    <>
+      {parentLoading ? (
+        <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
+          <CSpinner />
         </div>
-        <div className="ms-auto pageheader-btn">
-          {permission.USER_MODULE.CREATE && (
-            <Link to={`${process.env.PUBLIC_URL}/user-form`} className="btn btn-primary btn-icon text-white me-3">
-              <span>
-                <i className="fe fe-plus"></i>&nbsp;
-              </span>
-              CREATE USER
-            </Link>
-          )}
-          {/* <Link to="#" className="btn btn-success btn-icon text-white">
+      ) : (
+        <>
+          <div className="page-header">
+            <div>
+              <h1 className="page-title">ALL USERS</h1>
+            </div>
+            <div className="ms-auto pageheader-btn">
+              {permission.USER_MODULE.CREATE && (
+                <Link to={`${process.env.PUBLIC_URL}/user-form`} className="btn btn-primary btn-icon text-white me-3">
+                  <span>
+                    <i className="fe fe-plus"></i>&nbsp;
+                  </span>
+                  CREATE USER
+                </Link>
+              )}
+              {/* <Link to="#" className="btn btn-success btn-icon text-white">
             <span>
               <i className="fe fe-log-in"></i>&nbsp;
             </span>
             Export
           </Link> */}
-        </div>
-      </div>
+            </div>
+          </div>
 
-      <Row className=" row-sm">
-        <Col lg={12}>
-          <Card>
-            <Card.Body>
-              <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} loading={loading} />
-              <div className="table-responsive export-table">
-                <DataTable
-                  columns={columns}
-                  data={data}
-                  actions={actionsMemo}
-                  contextActions={contextActions}
-                  // onSelectedRowsChange={handleRowSelected}
-                  // clearSelectedRows={toggleCleared}
-                  //selectableRows
-                  pagination
-                  highlightOnHover
-                  progressPending={loading}
-                  paginationServer
-                  paginationTotalRows={totalRows}
-                  onChangeRowsPerPage={handlePerRowsChange}
-                  onChangePage={handlePageChange}
-                  sortServer
-                  onSort={handleSort}
-                />
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      <TransactionModal
-        show={showTransactionModal}
-        onHide={() => setShowTransactionModal(false)}
-        handleTransactionSubmit={handleTransactionSubmit}
-        rowData={rowData}
-        transactionType={transactionType}
-      />
-    </div>
+          <Row className=" row-sm">
+            <Col lg={12}>
+              <Card>
+                <Card.Body>
+                  <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} loading={loading} />
+                  <div className="table-responsive export-table">
+                    <DataTable
+                      columns={columns}
+                      data={data}
+                      actions={actionsMemo}
+                      contextActions={contextActions}
+                      // onSelectedRowsChange={handleRowSelected}
+                      // clearSelectedRows={toggleCleared}
+                      //selectableRows
+                      pagination
+                      highlightOnHover
+                      progressPending={loading}
+                      paginationServer
+                      paginationTotalRows={totalRows}
+                      onChangeRowsPerPage={handlePerRowsChange}
+                      onChangePage={handlePageChange}
+                      sortServer
+                      onSort={handleSort}
+                    />
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+          <TransactionModal
+            show={showTransactionModal}
+            onHide={() => setShowTransactionModal(false)}
+            handleTransactionSubmit={handleTransactionSubmit}
+            rowData={rowData}
+            transactionType={transactionType}
+          />
+        </>
+      )}
+    </>
   );
 }

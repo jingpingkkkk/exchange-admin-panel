@@ -1,7 +1,7 @@
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Card, Col, Row, Tab, Tabs } from "react-bootstrap";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
 import FormToggleSwitch from "../../../components/Common/FormComponents/FormToggleSwitch"; // Import the FormToggleSwitch component
 import { Notify } from "../../../utils/notify";
@@ -12,12 +12,15 @@ import * as Yup from "yup";
 
 export default function UserEditForm() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const id = location.state ? location.state.id : null;
+
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState(null); // State to hold the server error message
   const [activeTab, setActiveTab] = useState("tab5");
   const [loggedInUser, setLoggedInUser] = useState({}); // State to hold logged in user details
-  const { id } = useParams();
 
   const profileValidationSchema = Yup.object({
     username: Yup.string()
@@ -120,6 +123,10 @@ export default function UserEditForm() {
     setServerError(null); // Reset server error state
     setLoading(true); // Set loading state to true
     try {
+      if (id) {
+        Notify.error("id not found!");
+        navigate("/user-list");
+      }
       let response = null;
       if (!values.password) {
         delete values.password;

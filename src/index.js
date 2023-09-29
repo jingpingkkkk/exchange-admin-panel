@@ -1,11 +1,11 @@
 import React, { Fragment, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import EventBetMetchods from "./Pages/EventBetMatchods/component";
 import { AuthProvider } from "./components/AuthContext";
 import "./index.scss";
 import { permission } from "./lib/user-permissions";
 import { handshake } from "./utils/encryption";
-import EventBetMetchods from "./Pages/EventBetMatchods/component";
 
 //const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 //App
@@ -242,7 +242,7 @@ const Root = () => {
                     <Route path={`${process.env.PUBLIC_URL}/user-list`} element={<UserList />} />
                   </Route>
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.USER_MODULE.UPDATE} />}>
-                    <Route path={`${process.env.PUBLIC_URL}/user-edit/:id`} element={<UserEditForm />} />
+                    <Route path={`${process.env.PUBLIC_URL}/user-edit`} element={<UserEditForm />} />
                   </Route>
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.MULTI_LOGIN.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/multi-login`} element={<MultiLogin />} />

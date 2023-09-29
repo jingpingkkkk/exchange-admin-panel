@@ -404,7 +404,7 @@ export default function AccountList() {
   }, [perPage, searchQuery, loggedInUser.parentId, selectedRole]);
 
   return (
-    <div>
+    <>
       {parentLoading ? (
         <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
           <CSpinner />
@@ -522,6 +522,6 @@ export default function AccountList() {
           />
         </>
       )}
-    </div>
+    </>
   );
 }
