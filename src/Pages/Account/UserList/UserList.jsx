@@ -147,7 +147,7 @@ export default function UserList() {
       sortField: "city",
     },
     permission.USER_MODULE.USER_BET_UPDATE && {
-      name: "B STATUS",
+      name: "BET LOCK",
       selector: (row) => [row.betCategory],
       sortable: false,
       cell: (row) => (
@@ -170,7 +170,7 @@ export default function UserList() {
       ),
     },
     permission.USER_MODULE.USER_STATUS_UPDATE && {
-      name: "U STATUS",
+      name: "USER LOCK",
       selector: (row) => [row.betCategory],
       sortable: false,
       cell: (row) => (
