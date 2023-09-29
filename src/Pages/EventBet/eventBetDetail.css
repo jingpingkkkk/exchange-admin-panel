@@ -44,6 +44,7 @@
   align-items: center;
   flex-flow: wrap;
   justify-content: center;
+  height: 48px;
 }
 
 .grey-box span {
@@ -56,28 +57,60 @@
   width: 100%;
 }
 
-.back0 {
-  background-color: #72bbefa3;
-}
-
-.back1 {
-  background-color: #72bbefcc;
-}
-
-.back2 {
+.back {
   background-color: #72bbef;
 }
+.back:hover {
+  background-color: #52a5e0;
+}
+.back:active {
+  background-color: #4c9bd3;
+}
+.back1 {
+  background-color: #72bbefcc !important;
+}
+.back1:hover {
+  background-color: #56adec !important;
+}
+.back1:active {
+  background-color: #4c9bd3 !important;
+}
+.back2 {
+  background-color: #72bbefa3 !important;
+}
+.back2:hover {
+  background-color: #56adec !important;
+}
+.back2:active {
+  background-color: #4c9bd3 !important;
+}
 
-.lay0 {
+.lay {
   background-color: #f994ba;
 }
-
-.lay1 {
-  background-color: #f994bacc;
+.lay:hover {
+  background-color: #ed7fa9;
 }
-
+.lay:active {
+  background-color: #e16f9a;
+}
+.lay1 {
+  background-color: #f994bacc !important;
+}
+.lay1:hover {
+  background-color: #ed7fa9 !important;
+}
+.lay1:active {
+  background-color: #e16f9a !important;
+}
 .lay2 {
-  background-color: #f994baa3;
+  background-color: #f994baa3 !important;
+}
+.lay2:hover {
+  background-color: #ed7fa9 !important;
+}
+.lay2:active {
+  background-color: #e16f9a !important;
 }
 
 .bg-green {
@@ -147,4 +180,39 @@
 }
 .odds {
   padding: 0.15rem !important;
+}
+.grey-box-1 {
+  display: inline-block;
+  border-radius: 10px;
+  padding: 5px 10px;
+}
+.odd-price {
+  color: #000;
+  font-weight: bold !important;
+}
+.suspendedtext {
+  position: relative;
+  pointer-events: none;
+}
+.suspendedtext:after {
+  content: attr(data-title);
+  text-transform: uppercase;
+  background-color: #131313c2;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  height: 96%;
+  width: 95%;
+  right: 2px;
+  top: 2px;
+  color: #fc4242;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  display: -webkit-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  cursor: not-allowed;
+  pointer-events: none;
 }

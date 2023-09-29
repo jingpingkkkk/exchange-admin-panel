@@ -31,60 +31,43 @@ const emptyOdds = {
       { price: 0, level: 2 },
     ],
   },
-  2: {
-    back: [
-      { price: 0, level: 0 },
-      { price: 0, level: 1 },
-      { price: 0, level: 2 },
-    ],
-    lay: [
-      { price: 0, level: 0 },
-      { price: 0, level: 1 },
-      { price: 0, level: 2 },
-    ],
-  },
 };
 
 const socketUrl = process.env.REACT_APP_SOCKET_URL;
 const marketUrl = `${socketUrl}/market`;
 
-function MatchOdds({ market }) {
+function BookMaker({ market }) {
   const socket = useMemo(() => io(marketUrl, { autoConnect: false }), []);
   const [runnerOdds, setRunnerOdds] = useState(emptyOdds);
-
   useEffect(() => {
     socket.on("connect", () => {
       socket.emit("join:market", {
         id: market.marketId,
-        type: "match_odds",
+        type: "bookamkers",
       });
     });
-
     socket.on(`market:data:${market.marketId}`, (data) => {
       if (data) {
         const { matchOdds } = data;
-        const [teamOne, teamTwo, teamThree] = matchOdds;
+        const [teamOne, teamTwo] = matchOdds;
 
         const teamOneData = { back: [], lay: [] };
         const teamTwoData = { back: [], lay: [] };
-        const teamThreeData = { back: [], lay: [] };
 
         for (let i = 0; i < 3; i++) {
           teamOneData.back.push(teamOne.back[i] || {});
           teamOneData.lay.push(teamOne.lay[i] || {});
           teamTwoData.back.push(teamTwo.back[i] || {});
           teamTwoData.lay.push(teamTwo.lay[i] || {});
-          teamThreeData.back.push(teamThree?.back[i] || {});
-          teamThreeData.lay.push(teamThree?.lay[i] || {});
         }
-        setRunnerOdds({ 0: teamOneData, 1: teamTwoData, 2: teamThreeData });
+        setRunnerOdds({ 0: teamOneData, 1: teamTwoData });
       }
     });
 
     socket.connect();
     return () => {
       socket.off("connect");
-      socket.off(`market:data:${market.marketId}`);
+      socket.off(`market:data:${market.apiMarketId}`);
       socket.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -97,6 +80,8 @@ function MatchOdds({ market }) {
           <TableRow>
             <TableCell className="odds w-40"></TableCell>
             <TableCell align="right" className="odds w-10"></TableCell>
+            <TableCell align="right" className="odds w-10"></TableCell>
+            <TableCell align="right" className="odds w-10"></TableCell>
             <TableCell align="right" className="odds w-10">
               <span className="tableSpan"> 1.3L </span>
             </TableCell>
@@ -106,8 +91,6 @@ function MatchOdds({ market }) {
             <TableCell align="right" className="odds w-10">
               <div className="grey-box lay2">Lay</div>
             </TableCell>
-            <TableCell align="right" className="odds w-10"></TableCell>
-            <TableCell align="right" className="odds w-10"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -122,13 +105,16 @@ function MatchOdds({ market }) {
                 </TableCell>
                 {runnerOdds[index]?.back
                   ?.map((odd, i) => (
-                    <TableCell align="right" className="odds" key={i}>
-                      <div className={`grey-box back back${odd?.level || i}`}>
+                    <TableCell
+                      align="right"
+                      className={`odds ${runner?.matchOdds?.status === "SUSPENDED" ? "suspendedtext" : ""}`}
+                      key={i}
+                      data-title={runner?.matchOdds?.status}
+                    >
+                      <div className="grey-box back2">
                         {odd?.price && odd.price !== 0 ? (
                           <>
-                            <span className="d-block odd-price">
-                              {odd?.price ? parseFloat(odd.price.toFixed(2)) : "-"}
-                            </span>
+                            <span className="d-block odds">{odd?.price ? parseFloat(odd.price.toFixed(2)) : "-"}</span>
                             <span className="d-block">{odd?.size ? shortNumber(odd.size, 2) : 0}</span>
                           </>
                         ) : (
@@ -141,13 +127,16 @@ function MatchOdds({ market }) {
 
                 {runnerOdds[index]?.lay
                   ?.map((odd, i) => (
-                    <TableCell align="right" className="odds" key={i}>
-                      <div className={`grey-box lay lay${odd?.level || i}`}>
+                    <TableCell
+                      align="right"
+                      className={`odds ${runner?.matchOdds?.status === "SUSPENDED" ? "suspendedtext" : ""}`}
+                      key={i}
+                      data-title={runner?.matchOdds?.status}
+                    >
+                      <div className="grey-box lay2">
                         {odd?.price && odd.price !== 0 ? (
                           <>
-                            <span className="d-block odd-price">
-                              {odd?.price ? parseFloat(odd.price.toFixed(2)) : "-"}
-                            </span>
+                            <span className="d-block odds">{odd?.price ? parseFloat(odd.price.toFixed(2)) : "-"}</span>
                             <span className="d-block">{odd?.size ? shortNumber(odd.size, 2) : 0}</span>
                           </>
                         ) : (
@@ -166,4 +155,4 @@ function MatchOdds({ market }) {
   );
 }
 
-export default MatchOdds;
+export default BookMaker;
