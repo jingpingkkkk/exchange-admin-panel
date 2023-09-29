@@ -6,7 +6,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import FormInput from "../../../components/Common/FormComponents/FormInput"; // Import the FormInput component
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
-import { checkImageExist } from "../../../utils/imageUtils";
 import { Notify } from "../../../utils/notify";
 import { addCasino, getCasinoDetailByID, updateCasino } from "../casinoService";
 
@@ -100,8 +99,7 @@ export default function CasinoForm() {
           name: result.name || "",
           casinoType: result.casinoType || "",
         }));
-        const url = await checkImageExist(fetchtedUser.image);
-        setCasinoImageUrl(url);
+        setCasinoImageUrl(fetchtedUser.image);
       }
     });
   };

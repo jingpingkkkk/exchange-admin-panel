@@ -323,7 +323,7 @@ export default function UserList() {
   };
 
   const handleDownload = async () => {
-    await downloadCSV("users/getAllUsers", searchQuery, "account.csv");
+    await downloadCSV("users/getAllUsers", { searchQuery, parentId, role: ["user"] }, "users.csv");
   };
 
   const handleDelete = (id) => {
