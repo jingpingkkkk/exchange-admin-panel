@@ -39,3 +39,7 @@ export const getMatchWinLoss = async (id) => {
   });
   return result.success ? result.data.details : [];
 };
+export const completeBet = async (request) => {
+  const result = await postData("bet/betComplete", request);
+  return result;
+};
