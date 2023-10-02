@@ -36,7 +36,7 @@ const emptyOdds = {
 const socketUrl = process.env.REACT_APP_SOCKET_URL;
 const marketUrl = `${socketUrl}/market`;
 
-function BookMaker({ market }) {
+function BookMaker({ market, matchWinLoss }) {
   const socket = useMemo(() => io(marketUrl, { autoConnect: false }), []);
   const [runnerOdds, setRunnerOdds] = useState(emptyOdds);
   const [min, setMin] = useState(market.minStake);
@@ -110,12 +110,17 @@ function BookMaker({ market }) {
         </TableHead>
         <TableBody>
           {market?.market_runner?.map((runner, index) => {
+            const totalWin =
+              matchWinLoss
+                ?.find((match) => match?._id === market?._id)
+                ?.market_runner?.find((market_runer) => market_runer?._id === runner?._id)?.totalWin || 0;
             return (
               <TableRow key={runner._id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                 <TableCell component="th" scope="row" className="odds">
                   <span className="table-span">
                     {runner?.runnerName}
-                    <br />0
+                    <br />
+                    <span className="text-success">{totalWin}</span>
                   </span>
                 </TableCell>
                 {runnerOdds[index]?.back
