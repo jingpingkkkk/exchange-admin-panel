@@ -166,7 +166,7 @@ export default function CompetitionList() {
       width: "100px",
     },
     permission.COMPETITIONS.ACTIVE && {
-      name: "STATUS",
+      name: "IS ACTIVE",
       width: "100px",
       selector: (row) => [row.betCategory],
       sortable: false,

@@ -31,6 +31,7 @@ const BetLockModal = ({ show, onHide, betList }) => {
                     <tr>
                       <th>Sr No.</th>
                       <th>UserName</th>
+                      <th>Type</th>
                       <th>Nation</th>
                       <th className="text-right">Rate</th>
                       <th className="text-right">Amount</th>
@@ -45,6 +46,7 @@ const BetLockModal = ({ show, onHide, betList }) => {
                       <tr key={bet_index} className={`${bet.isBack ? "back0" : "lay2"}`}>
                         <td className="text-right">{bet_index + 1}</td>
                         <td className="text-right">{bet.userName}</td>
+                        <td className="text-right">{bet.marketName}</td>
                         <td className="text-right">{bet.runnerName}</td>
                         <td className="text-right">{bet.odds}</td>
                         <td className="text-right">{bet.stake}</td>

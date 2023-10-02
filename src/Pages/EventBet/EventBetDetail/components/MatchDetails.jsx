@@ -1,7 +1,7 @@
 import { CCol } from "@coreui/react";
 import React, { useEffect, useState } from "react";
 import { Row, Spinner } from "react-bootstrap";
-import { getEventMatchData } from "../../eventBetService";
+import { getEventMatchData, getMatchWinLoss } from "../../eventBetService";
 import UserBets from "./UserBets";
 import MuiAccordion from "@mui/material/Accordion";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
@@ -43,12 +43,21 @@ function MatchDetails({ eventId }) {
   const [marketId, setMarketId] = useState(null);
   const [expanded, setExpanded] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [matchWinLoss, setMatchWinLoss] = useState([]);
 
   const handleChange = (panel, isExpanded) => {
     setExpanded((prevExpanded) =>
       isExpanded ? [...prevExpanded, panel] : prevExpanded.filter((item) => item !== panel)
     );
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await getMatchWinLoss(eventId);
+      setMatchWinLoss(result);
+    };
+    fetchData();
+  }, [eventId]);
 
   useEffect(() => {
     setLoading(true);
@@ -98,7 +107,7 @@ function MatchDetails({ eventId }) {
                       </AccordionSummary>
                     </div>
                     <AccordionDetails>
-                      <Market market={market} />
+                      <Market market={market} matchWinLoss={matchWinLoss} />
                     </AccordionDetails>
                   </Accordion>
                 ))
