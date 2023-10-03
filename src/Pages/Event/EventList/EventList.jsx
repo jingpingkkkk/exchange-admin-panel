@@ -162,6 +162,15 @@ export default function EventList() {
             </Link>
           </OverlayTrigger>
           {/* <button onClick={(e) => handleDelete(row._id)} className="btn btn-danger btn-lg ms-2"><i className="fa fa-trash"></i></button> */}
+          <OverlayTrigger placement="top" overlay={<Tooltip> Click here</Tooltip>}>
+            <Link
+              to={`${process.env.PUBLIC_URL}/event-bet-metchods`}
+              state={{ id: row._id }}
+              className="btn btn-primary btn-lg ms-1"
+            >
+              <i className="fa fa-gear"></i>
+            </Link>
+          </OverlayTrigger>
         </div>
       ),
     },
