@@ -48,6 +48,7 @@ function EventBetMetchods() {
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [fancyExpanded, setFancyExpanded] = useState([]);
 
   const handleChange = (panel, isExpanded) => {
     setExpanded((prevExpanded) =>
@@ -60,6 +61,8 @@ function EventBetMetchods() {
       const eventData = await getEventMatchData(eventId);
       setSelectedEvent(eventData);
       setExpanded(eventData?.market?.map((mkt) => mkt._id));
+      const { market_runner } = eventData?.market?.filter((mrt) => mrt.name === "Normal")[0];
+      setFancyExpanded(market_runner?.map((mkt) => mkt._id));
       setLoading(false);
     };
 
@@ -88,28 +91,58 @@ function EventBetMetchods() {
                 {selectedEvent?.competitionName} {" > "} {selectedEvent?.name}
               </h4>
               {selectedEvent && selectedEvent?.market?.length
-                ? selectedEvent.market.map((market) => (
-                    <Accordion
-                      expanded={expanded?.includes(market?._id)}
-                      key={market?._id}
-                      onChange={(e, isExpanded) => handleChange(market?._id, isExpanded)}
-                      className="ps-0 pe-0"
-                    >
-                      <div className="accordtion-header">
-                        <AccordionSummary
-                          className="accortion-card"
-                          aria-controls={`${market?._id}d-content`}
-                          id={`${market?._id}d-header`}
+                ? selectedEvent.market.map((market) =>
+                    market?.name === "Normal" ? (
+                      market?.market_runner?.map((fancy) => (
+                        <Accordion
+                          expanded={fancyExpanded?.includes(fancy?._id)}
+                          key={fancy?._id}
+                          onChange={(e, isExpanded) => {
+                            setFancyExpanded((prevExpanded) =>
+                              isExpanded
+                                ? [...prevExpanded, fancy?._id]
+                                : prevExpanded.filter((item) => item !== fancy?._id)
+                            );
+                          }}
+                          className="ps-0 pe-0"
                         >
-                          <Typography>{market?.name}</Typography>
-                        </AccordionSummary>
-                      </div>
-                      <AccordionDetails>
-                        {market?.name === "Match Odds" ? <MatchOddsForm market={market} /> : ""}
-                        {market?.name === "Bookmaker" ? <MatchOddsForm market={market} /> : ""}
-                      </AccordionDetails>
-                    </Accordion>
-                  ))
+                          <div className="accordtion-header">
+                            <AccordionSummary
+                              className="accortion-card"
+                              aria-controls={`${fancy?._id}d-content`}
+                              id={`${fancy?._id}d-header`}
+                            >
+                              <Typography>{fancy?.runnerName}</Typography>
+                            </AccordionSummary>
+                          </div>
+                          <AccordionDetails>
+                            <MatchOddsForm market={market} runnerId={fancy?._id} />
+                          </AccordionDetails>
+                        </Accordion>
+                      ))
+                    ) : (
+                      <Accordion
+                        expanded={expanded?.includes(market?._id)}
+                        key={market?._id}
+                        onChange={(e, isExpanded) => handleChange(market?._id, isExpanded)}
+                        className="ps-0 pe-0"
+                      >
+                        <div className="accordtion-header">
+                          <AccordionSummary
+                            className="accortion-card"
+                            aria-controls={`${market?._id}d-content`}
+                            id={`${market?._id}d-header`}
+                          >
+                            <Typography>{market?.name}</Typography>
+                          </AccordionSummary>
+                        </div>
+                        <AccordionDetails>
+                          {market?.name === "Match Odds" ? <MatchOddsForm market={market} /> : ""}
+                          {market?.name === "Bookmaker" ? <MatchOddsForm market={market} /> : ""}
+                        </AccordionDetails>
+                      </Accordion>
+                    )
+                  )
                 : ""}
             </Row>
           )}

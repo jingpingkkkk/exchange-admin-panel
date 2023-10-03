@@ -43,3 +43,7 @@ export const completeBet = async (request) => {
   const result = await postData("bet/betComplete", request);
   return result;
 };
+export const completeFancyBet = async (request) => {
+  const result = await postData("bet/betCompleteFancy", request);
+  return result;
+};

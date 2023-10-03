@@ -9,16 +9,18 @@ import FormToggleSwitch from "../../../components/Common/FormComponents/FormTogg
 import moment from "moment";
 import { updateMarket } from "../marketService";
 import { Divider } from "@mui/material";
-import { completeBet } from "../../EventBet/eventBetService";
+import { completeBet, completeFancyBet } from "../../EventBet/eventBetService";
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
+import { Notify } from "../../../utils/notify";
 
-const MatchOddsForm = ({ market }) => {
+const MatchOddsForm = ({ market, runnerId }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState(null);
   const [runners, setRunners] = useState([]);
   const [winRunner, setWinRunner] = useState("");
   const [resultLoading, setResultLoading] = useState(false);
+  const [winScore, setWinScore] = useState(0);
 
   const formik = useFormik({
     initialValues: {
@@ -103,12 +105,18 @@ const MatchOddsForm = ({ market }) => {
   const onCompleteBet = async () => {
     setResultLoading(true);
     try {
+      let res = "";
       const body = {
         marketId: market?._id,
         winRunnerId: winRunner,
       };
-      const res = await completeBet(body);
+      if (market?.name === "Normal") {
+        res = await completeFancyBet({ marketRunnerId: runnerId, winScore: winScore });
+      } else {
+        res = await completeBet(body);
+      }
       if (res.success) {
+        Notify.success("Bet completed successfully");
         navigate("/event-list/");
       } else {
         setServerError(res.message);
@@ -265,19 +273,37 @@ const MatchOddsForm = ({ market }) => {
       <Divider light />
       <div className="mt-5 mb-3">
         <Row className="w-100">
-          <FormSelectWithSearch
-            placeholder="Select Runner"
-            label="Runner"
-            name="winRunner"
-            value={winRunner} // Set the selectedCompetition as the value
-            onChange={(name, selectedValue) => setWinRunner(selectedValue)} // Update the selectedCompetition
-            onBlur={() => {}} // Add an empty function as onBlur prop
-            error=""
-            width={3}
-            options={runners}
-          />
+          {market?.name === "Normal" ? (
+            <FormInput
+              label="Win Score"
+              name="winScore"
+              type="number"
+              value={winScore}
+              onChange={(event) => setWinScore(event.target.value)} // Use event.target.value to get the updated value
+              onBlur={() => {}}
+              width={3}
+            />
+          ) : (
+            <FormSelectWithSearch
+              placeholder="Select Runner"
+              label="Runner"
+              name="winRunner"
+              value={winRunner} // Set the selectedCompetition as the value
+              onChange={(name, selectedValue) => setWinRunner(selectedValue)} // Update the selectedCompetition
+              onBlur={() => {}} // Add an empty function as onBlur prop
+              error=""
+              width={3}
+              options={runners}
+            />
+          )}
           <CCol md="3" className="mt-6">
-            <CButton color="primary" type="button" className="me-2" onClick={onCompleteBet} disabled={!winRunner}>
+            <CButton
+              color="primary"
+              type="button"
+              className="mt-1"
+              onClick={onCompleteBet}
+              disabled={market?.name !== "Normal" && !winRunner}
+            >
               {resultLoading ? <CSpinner size="sm" /> : "Generate Result"}
             </CButton>
           </CCol>
