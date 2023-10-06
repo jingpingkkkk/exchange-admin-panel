@@ -189,6 +189,12 @@ export default function BetCategoryList(props) {
           </Breadcrumb> */}
         </div>
         <div className="ms-auto pageheader-btn">
+          <Link to="/sport-list" className="btn btn-dark btn-icon text-white fw-semibold">
+            <span>
+              <i className="fe fe-chevron-left"></i>&nbsp;
+            </span>
+            Go Back
+          </Link>
           {/* <Link to={`${process.env.PUBLIC_URL}/sport-add`} className="btn btn-primary btn-icon text-white me-3">
             <span>
               <i className="fe fe-plus"></i>&nbsp;

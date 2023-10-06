@@ -325,6 +325,13 @@ export default function EventForm() {
                                     style={{ cursor: "pointer" }}
                                   >
                                     {event.name} - ({formatMatchDate(event)})
+                                    <Link
+                                      to={`${process.env.PUBLIC_URL}/event-bet-metchods`}
+                                      state={{ id: event._id }}
+                                      className="badgetext badge bg-default"
+                                    >
+                                      <i className="fa fa-gear"></i>
+                                    </Link>
                                   </li>
                                 ) : null
                               )}

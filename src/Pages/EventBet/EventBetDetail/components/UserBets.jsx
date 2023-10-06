@@ -59,6 +59,7 @@ function UserBets({ eventId }) {
               <thead>
                 <tr>
                   <th>UserName</th>
+                  <th>Type</th>
                   <th>Nation</th>
                   <th className="text-right">Rate</th>
                   <th className="text-right">Amount</th>
@@ -68,6 +69,7 @@ function UserBets({ eventId }) {
                 {betList.map((bet, bet_index) => (
                   <tr key={bet_index} className={`${bet.isBack ? "back0" : "lay2"}`}>
                     <td className="text-center">{bet.userName}</td>
+                    <td className="text-center">{bet.marketName}</td>
                     <td className="text-center">{bet.runnerName}</td>
                     <td className="text-center">{bet.odds}</td>
                     <td className="text-center">{bet.stake}</td>

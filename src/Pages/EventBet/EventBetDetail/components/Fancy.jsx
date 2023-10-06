@@ -37,7 +37,7 @@ const emptyOdds = {
 const socketUrl = process.env.REACT_APP_SOCKET_URL;
 const marketUrl = `${socketUrl}/market`;
 
-function Fancy({ market }) {
+function Fancy({ market, matchWinLoss }) {
   const socket = useMemo(() => io(marketUrl, { autoConnect: false }), []);
   const [runnerOdds, setRunnerOdds] = useState(emptyOdds);
   const [fancyRunners, setFancyRunners] = useState([]);
@@ -103,6 +103,10 @@ function Fancy({ market }) {
           ) : fancyRunners?.length ? (
             fancyRunners?.map((runner) => {
               const odds = runnerOdds?.length ? runnerOdds?.find((item) => item?.runnerId === runner?.runnerId) : {};
+              const totalWin =
+                matchWinLoss
+                  ?.find((match) => match?._id === market?._id)
+                  ?.market_runner?.find((market_runer) => market_runer?._id === runner?._id)?.totalWin || 0;
               return (
                 <TableRow
                   key={runner.runnerId}
@@ -112,7 +116,8 @@ function Fancy({ market }) {
                   <TableCell component="th" scope="row" className="odds">
                     <span className="table-span">
                       {runner?.RunnerName || ""}
-                      <br />0
+                      <br />
+                      <span className="text-success">{totalWin}</span>
                     </span>
                   </TableCell>
                   <TableCell className="odds"></TableCell>
