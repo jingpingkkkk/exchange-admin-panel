@@ -48,7 +48,14 @@ const validationSchemaForCreate = Yup.object({
   maxLoss: Yup.number(),
   bonus: Yup.number(),
   maxStake: Yup.number(),
-  transactionCode: Yup.string().required("Transaction code is required"),
+  transactionCode: Yup.string().test("transactionCode", "Transaction code is required", function (value) {
+    const user = JSON.parse(localStorage.getItem("user_info"));
+    if (user?.role !== "system_owner" && value==undefined) {
+      return false; // Validation failed
+    }
+    return true; // Validation passed
+  }),
+  currencyId: Yup.string().required("Currency is required"),
 });
 
 export default function UserForm() {
