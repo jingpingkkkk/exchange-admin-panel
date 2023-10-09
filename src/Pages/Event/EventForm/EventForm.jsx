@@ -43,6 +43,7 @@ export default function EventForm() {
       betDeleted: false,
       betLock: false,
       isLive: false,
+      videoStreamId: null,
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
@@ -66,6 +67,7 @@ export default function EventForm() {
         })
       ),
       betDelay: Yup.number(),
+      videoStreamId: Yup.string().nullable(),
     }),
     onSubmit: async (values) => {
       if ((values.minStake || values.maxStake) && values.minStake > values.maxStake) {
@@ -85,6 +87,7 @@ export default function EventForm() {
           minStakeSession: values.minStakeSession || 0,
           maxStakeSession: values.maxStakeSession || 0,
           betDelay: values.betDelay || 0,
+          videoStreamId: values.videoStreamId || null,
         };
         if (id) {
           body._id = id;
@@ -137,6 +140,7 @@ export default function EventForm() {
           betDelay: result.betDelay,
           betLock: result.betLock || false,
           isLive: result.isLive || false,
+          videoStreamId: result.videoStreamId || null,
         }));
 
         competitionBody.competitionId = result.competitionId;
@@ -328,6 +332,18 @@ export default function EventForm() {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     error={formik.touched.betDelay && formik.errors.betDelay}
+                    width={3}
+                  />
+
+                  <FormInput
+                    className="mt-3"
+                    label="Video Stream ID"
+                    name="videoStreamId"
+                    type="text"
+                    value={formik.values.videoStreamId}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.videoStreamId && formik.errors.videoStreamId}
                     width={3}
                   />
                 </Row>
