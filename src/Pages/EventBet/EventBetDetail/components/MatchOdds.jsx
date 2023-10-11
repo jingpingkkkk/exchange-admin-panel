@@ -158,24 +158,22 @@ function MatchOdds({ market, matchWinLoss }) {
                   ))
                   .reverse()}
 
-                {runnerOdds[index]?.lay
-                  ?.map((odd, i) => (
-                    <TableCell align="right" className="odds" key={i}>
-                      <div className={`grey-box lay lay${odd?.level || i}`}>
-                        {odd?.price && odd.price !== 0 ? (
-                          <>
-                            <span className="d-block odd-price">
-                              {odd?.price ? parseFloat(odd.price.toFixed(2)) : "-"}
-                            </span>
-                            <span className="d-block">{odd?.size ? shortNumber(odd.size, 2) : 0}</span>
-                          </>
-                        ) : (
-                          <span>-</span>
-                        )}
-                      </div>
-                    </TableCell>
-                  ))
-                  .reverse()}
+                {runnerOdds[index]?.lay?.map((odd, i) => (
+                  <TableCell align="right" className="odds" key={i}>
+                    <div className={`grey-box lay lay${odd?.level || i}`}>
+                      {odd?.price && odd.price !== 0 ? (
+                        <>
+                          <span className="d-block odd-price">
+                            {odd?.price ? parseFloat(odd.price.toFixed(2)) : "-"}
+                          </span>
+                          <span className="d-block">{odd?.size ? shortNumber(odd.size, 2) : 0}</span>
+                        </>
+                      ) : (
+                        <span>-</span>
+                      )}
+                    </div>
+                  </TableCell>
+                ))}
               </TableRow>
             );
           })}
