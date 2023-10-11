@@ -8,6 +8,7 @@ import { permission } from "./lib/user-permissions";
 import { handshake } from "./utils/encryption";
 
 //const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
+
 //App
 const App = React.lazy(() => import("./components/app"));
 
