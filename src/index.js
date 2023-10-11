@@ -89,6 +89,9 @@ const Errorpage503 = React.lazy(() => import("./components/ErrorPages/ErrorPages
 const ProtectedRoutes = React.lazy(() => import("./components/ProtectedRoutes"));
 const PublicRoutes = React.lazy(() => import("./components/PublicRoutes"));
 
+//Sync Data
+const SyncData = React.lazy(() => import("./Pages/SyncData/SyncData/SyncData"));
+
 const Loaderimg = () => {
   return (
     <div id="global-loader">
@@ -258,6 +261,10 @@ const Root = () => {
                   </Route>
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.BANK_MODULE.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/bank`} element={<Bank />} />
+                  </Route>
+                  {/* Sync Data */}
+                  <Route path="/sync-data" element={<ProtectedRoutes allowedRoles={permission.SYNC_DATA.ACTIVE} />}>
+                    <Route path={`${process.env.PUBLIC_URL}/sync-data`} element={<SyncData />} />
                   </Route>
                 </Route>
               </Route>
