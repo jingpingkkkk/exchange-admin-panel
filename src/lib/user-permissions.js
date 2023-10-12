@@ -161,4 +161,7 @@ export const permission = {
   ADD_EVENT: {
     ACTIVE: hasPermission(activeModules?.ADD_EVENT),
   },
+  SYNC_DATA: {
+    ACTIVE: true,
+  },
 };

@@ -131,7 +131,7 @@ function BookMaker({ market, matchWinLoss }) {
                       key={i}
                       data-title={runner?.matchOdds?.status}
                     >
-                      <div className="grey-box back2">
+                      <div className={`grey-box back back${odd?.level || i}`}>
                         {odd?.price && odd.price !== 0 ? (
                           <>
                             <span className="d-block odds">{odd?.price ? parseFloat(odd.price.toFixed(2)) : "-"}</span>
@@ -145,27 +145,25 @@ function BookMaker({ market, matchWinLoss }) {
                   ))
                   .reverse()}
 
-                {runnerOdds[index]?.lay
-                  ?.map((odd, i) => (
-                    <TableCell
-                      align="right"
-                      className={`odds ${runner?.matchOdds?.status === "SUSPENDED" ? "suspendedtext" : ""}`}
-                      key={i}
-                      data-title={runner?.matchOdds?.status}
-                    >
-                      <div className="grey-box lay2">
-                        {odd?.price && odd.price !== 0 ? (
-                          <>
-                            <span className="d-block odds">{odd?.price ? parseFloat(odd.price.toFixed(2)) : "-"}</span>
-                            <span className="d-block">{odd?.size ? shortNumber(odd.size, 2) : 0}</span>
-                          </>
-                        ) : (
-                          <span>-</span>
-                        )}
-                      </div>
-                    </TableCell>
-                  ))
-                  .reverse()}
+                {runnerOdds[index]?.lay?.map((odd, i) => (
+                  <TableCell
+                    align="right"
+                    className={`odds ${runner?.matchOdds?.status === "SUSPENDED" ? "suspendedtext" : ""}`}
+                    key={i}
+                    data-title={runner?.matchOdds?.status}
+                  >
+                    <div className={`grey-box lay lay${odd?.level || i}`}>
+                      {odd?.price && odd.price !== 0 ? (
+                        <>
+                          <span className="d-block odds">{odd?.price ? parseFloat(odd.price.toFixed(2)) : "-"}</span>
+                          <span className="d-block">{odd?.size ? shortNumber(odd.size, 2) : 0}</span>
+                        </>
+                      ) : (
+                        <span>-</span>
+                      )}
+                    </div>
+                  </TableCell>
+                ))}
               </TableRow>
             );
           })}

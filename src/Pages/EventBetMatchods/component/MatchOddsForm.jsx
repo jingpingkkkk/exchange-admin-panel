@@ -12,6 +12,7 @@ import { Divider } from "@mui/material";
 import { completeBet, completeFancyBet } from "../../EventBet/eventBetService";
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
 import { Notify } from "../../../utils/notify";
+import { showConfirmAlert } from "../../../utils/confirmUtils";
 
 const MatchOddsForm = ({ market, runnerId }) => {
   const navigate = useNavigate();
@@ -75,7 +76,7 @@ const MatchOddsForm = ({ market, runnerId }) => {
         response = await updateMarket(body);
 
         if (response.success) {
-          navigate("/event-list/");
+          // navigate("/event-list/");
         } else {
           setServerError(response.message);
         }
@@ -128,6 +129,14 @@ const MatchOddsForm = ({ market, runnerId }) => {
     } finally {
       setResultLoading(false);
     }
+  };
+
+  const onConfirmBetResult = () => {
+    showConfirmAlert("Are you sure you want to generate result?", onCompleteBet);
+  };
+
+  const onConfirmRevertResult = () => {
+    showConfirmAlert("Are you sure you want to revert result?", console.log("Revert Result"));
   };
 
   return (
@@ -301,10 +310,14 @@ const MatchOddsForm = ({ market, runnerId }) => {
               color="primary"
               type="button"
               className="mt-1"
-              onClick={onCompleteBet}
+              onClick={onConfirmBetResult}
               disabled={market?.name !== "Normal" && !winRunner}
             >
               {resultLoading ? <CSpinner size="sm" /> : "Generate Result"}
+            </CButton>
+
+            <CButton color="primary" type="button" className="mt-1 ms-3" onClick={onConfirmRevertResult}>
+              Revert Result
             </CButton>
           </CCol>
         </Row>
