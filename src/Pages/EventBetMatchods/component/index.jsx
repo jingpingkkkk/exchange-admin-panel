@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Row, Spinner } from "react-bootstrap";
 import { CardActions, IconButton, Typography } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import { getEventMatchData } from "../../EventBet/eventBetService";
+import { getAllBetResultData } from "../../EventBetMatchods/marketService";
 import MatchOddsForm from "./MatchOddsForm";
 import MuiAccordion from "@mui/material/Accordion";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
@@ -58,9 +58,11 @@ function EventBetMetchods() {
   useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
-      const eventData = await getEventMatchData(eventId);
+      const eventData = await getAllBetResultData(eventId);
+      console.log(eventId);
       setSelectedEvent(eventData);
       setExpanded(eventData?.market?.map((mkt) => mkt._id));
+      console.log(eventData);
       const { market_runner } = eventData?.market?.filter((mrt) => mrt.name === "Normal")[0];
       setFancyExpanded(market_runner?.map((mkt) => mkt._id));
       setLoading(false);
