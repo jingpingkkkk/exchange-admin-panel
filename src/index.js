@@ -51,10 +51,10 @@ const ThemeUserForm = React.lazy(() => import("./Pages/ThemeUser/ThemeUserForm/T
 
 // Transaction Panel User
 const TransactionPanelUserList = React.lazy(() =>
-  import("./Pages/TransactionPanelUser/TransactionPanelUserList/TransactionPanelUserList")
+  import("./Pages/TransactionPanelUser/TransactionPanelUserList/TransactionPanelUserList"),
 );
 const TransactionPanelUserForm = React.lazy(() =>
-  import("./Pages/TransactionPanelUser/TransactionPanelUserForm/TransactionPanelUserForm")
+  import("./Pages/TransactionPanelUser/TransactionPanelUserForm/TransactionPanelUserForm"),
 );
 
 // All User Accounts
