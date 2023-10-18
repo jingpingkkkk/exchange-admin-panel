@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import EventMarketSettings from "./Pages/Event/EventMarketSettings";
 import EventBetMetchods from "./Pages/EventBetMatchods/component";
 import { AuthProvider } from "./components/AuthContext";
 import "./index.scss";
@@ -51,10 +52,10 @@ const ThemeUserForm = React.lazy(() => import("./Pages/ThemeUser/ThemeUserForm/T
 
 // Transaction Panel User
 const TransactionPanelUserList = React.lazy(() =>
-  import("./Pages/TransactionPanelUser/TransactionPanelUserList/TransactionPanelUserList"),
+  import("./Pages/TransactionPanelUser/TransactionPanelUserList/TransactionPanelUserList")
 );
 const TransactionPanelUserForm = React.lazy(() =>
-  import("./Pages/TransactionPanelUser/TransactionPanelUserForm/TransactionPanelUserForm"),
+  import("./Pages/TransactionPanelUser/TransactionPanelUserForm/TransactionPanelUserForm")
 );
 
 // All User Accounts
@@ -189,6 +190,9 @@ const Root = () => {
                   </Route>
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.EVENT_BET.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/event-bet-metchods/`} element={<EventBetMetchods />} />
+                  </Route>
+                  <Route path="/" element={<ProtectedRoutes allowedRoles={permission.EVENT_BET.ACTIVE} />}>
+                    <Route path={`${process.env.PUBLIC_URL}/event-settings`} element={<EventMarketSettings />} />
                   </Route>
 
                   {/* Theme User route  */}
