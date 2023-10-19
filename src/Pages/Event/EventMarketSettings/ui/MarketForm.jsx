@@ -1,16 +1,19 @@
 import React from "react";
+import { MARKET_TYPES } from "../data/constants";
 import FancyForm from "./fancy-form";
 import MatchOddsForm from "./match-odds-form";
 
-function MarketForm({ market = {} }) {
+function MarketForm(props) {
+  const { market = {} } = props;
+
   const FormComponent = {
-    "Match Odds": <MatchOddsForm market={market} />,
-    Bookmaker: <MatchOddsForm market={market} />,
-    Normal: <FancyForm market={market} />,
-    Fancy1: <FancyForm market={market} />,
+    [MARKET_TYPES.MATCH_ODDS]: <MatchOddsForm {...props} />,
+    [MARKET_TYPES.BOOKMAKER]: <MatchOddsForm {...props} />,
+    [MARKET_TYPES.NORMAL]: <FancyForm {...props} />,
+    [MARKET_TYPES.FANCY1]: <FancyForm {...props} />,
   };
 
-  return FormComponent[market?.name] || <div className="text-red">Component not found!</div>;
+  return FormComponent[market?.type] || <div className="text-red">Component not found!</div>;
 }
 
 export default MarketForm;

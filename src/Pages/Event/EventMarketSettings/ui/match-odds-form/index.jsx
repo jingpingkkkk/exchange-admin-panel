@@ -1,55 +1,67 @@
 import { CButton, CCol, CForm, CFormLabel } from "@coreui/react";
 import { useFormik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import { Row } from "react-bootstrap";
 import * as Yup from "yup";
 import FormInput from "../../../../../components/Common/FormComponents/FormInput";
 import FormToggleSwitch from "../../../../../components/Common/FormComponents/FormToggleSwitch";
+import { Notify } from "../../../../../utils/notify";
+import { updateMarket } from "../../../../EventBetMatchods/marketService";
+import Loader from "../Loader";
 import MatchOddsResultForm from "./MatchOddsResultForm";
 
-function MatchOddsForm({ market = {} }) {
+function MatchOddsForm({ market = {}, onResultGenerate = () => {}, onResultRevert = () => {} }) {
+  const [loading, setLoading] = useState(false);
+
   const initialValues = {
-    name: market.name,
     minStake: market.minStake || 0,
     maxStake: market.maxStake || 0,
     betDelay: market.betDelay || 0,
-    minBetLiability: market.minBetLiability || 0,
     maxBetLiability: market.maxBetLiability || 0,
+    maxMarketLiability: market.maxMarketLiability || 0,
     maxMarketProfit: market.maxMarketProfit || 0,
     visibleToPlayer: market.visibleToPlayer || false,
   };
 
   const validationSchema = Yup.object({
-    name: Yup.string(),
     minStake: Yup.number(),
     maxStake: Yup.number(),
     betDelay: Yup.number(),
-    minBetLiability: Yup.number(),
     maxBetLiability: Yup.number(),
+    maxMarketLiability: Yup.number(),
     maxMarketProfit: Yup.number(),
     visibleToPlayer: Yup.boolean(),
   });
 
-  const onSubmit = async (values) => {};
+  const onSubmit = async (values) => {
+    setLoading(true);
+    const result = await updateMarket({
+      name: market?.name,
+      minStake: values.minStake || 0,
+      maxStake: values.maxStake || 0,
+      betDelay: values.betDelay || 0,
+      maxBetLiability: values.maxBetLiability || 0,
+      maxMarketLiability: values.maxMarketLiability || 0,
+      maxMarketProfit: values?.maxMarketProfit || 0,
+      _id: market?._id,
+    });
+    setLoading(false);
+    if (result.success) {
+      Notify.success(`${market?.name} updated.`);
+    } else {
+      Notify.error(`Error: ${result.message || "Something went wrong!"}`);
+    }
+  };
 
   const formik = useFormik({ initialValues, validationSchema, onSubmit });
 
-  return (
+  return loading ? (
+    <Loader text="Updating Market..." />
+  ) : (
     <>
       <CForm onSubmit={formik.handleSubmit}>
         <Row>
-          <FormInput
-            label="Market Name"
-            name="name"
-            type="text"
-            readOnly
-            value={formik.values.name}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.name && formik.errors.name}
-            width={3}
-            isRequired="true"
-          />
+          <FormInput label="Market Name" name="name" type="text" readOnly value={market.type} width={3} />
 
           <FormInput
             label="Min Stake"
@@ -60,7 +72,6 @@ function MatchOddsForm({ market = {} }) {
             onBlur={formik.handleBlur}
             error={formik.touched.minStake && formik.errors.minStake}
             width={3}
-            isRequired="true"
           />
 
           <FormInput
@@ -72,7 +83,6 @@ function MatchOddsForm({ market = {} }) {
             onBlur={formik.handleBlur}
             error={formik.touched.maxStake && formik.errors.maxStake}
             width={3}
-            isRequired="true"
           />
 
           <FormInput
@@ -84,19 +94,6 @@ function MatchOddsForm({ market = {} }) {
             onBlur={formik.handleBlur}
             error={formik.touched.betDelay && formik.errors.betDelay}
             width={3}
-            isRequired="true"
-          />
-
-          <FormInput
-            label="Min Bet Liability"
-            name="minBetLiability"
-            type="number"
-            value={formik.values.minBetLiability}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.minBetLiability && formik.errors.minBetLiability}
-            width={3}
-            isRequired="true"
           />
 
           <FormInput
@@ -108,7 +105,28 @@ function MatchOddsForm({ market = {} }) {
             onBlur={formik.handleBlur}
             error={formik.touched.maxBetLiability && formik.errors.maxBetLiability}
             width={3}
-            isRequired="true"
+          />
+
+          <FormInput
+            label="Max Market Liability"
+            name="maxMarketLiability"
+            type="number"
+            value={formik.values.maxMarketLiability}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.maxMarketLiability && formik.errors.maxMarketLiability}
+            width={3}
+          />
+
+          <FormInput
+            label="Max Market Profit"
+            name="maxMarketProfit"
+            type="number"
+            value={formik.values.maxMarketProfit}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.maxMarketProfit && formik.errors.maxMarketProfit}
+            width={3}
           />
 
           <CCol md={3}>
@@ -136,7 +154,7 @@ function MatchOddsForm({ market = {} }) {
 
       <hr className="mt-4 mb-0" />
 
-      <MatchOddsResultForm market={market} />
+      <MatchOddsResultForm market={market} onResultGenerate={onResultGenerate} onResultRevert={onResultRevert} />
     </>
   );
 }

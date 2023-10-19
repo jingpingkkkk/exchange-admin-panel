@@ -2,7 +2,7 @@ import { CCol, CFormLabel } from "@coreui/react";
 import React from "react";
 import Select from "react-select";
 
-const FormMultiSelect = ({ label, name, value, onChange, options, error, onBlur, width, isRequired }) => {
+const FormMultiSelect = ({ label, name, value, onChange, options, error, onBlur = () => {}, width, isRequired }) => {
   const handleMultiSelectChange = (selectedOptions) => {
     const selectedValues = selectedOptions.map((option) => option.value);
     onChange(name, selectedValues);

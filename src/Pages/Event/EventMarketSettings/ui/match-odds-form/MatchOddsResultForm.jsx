@@ -3,10 +3,13 @@ import React, { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
 import FormSelectWithSearch from "../../../../../components/Common/FormComponents/FormSelectWithSearch";
 import { showConfirmAlert } from "../../../../../utils/confirmUtils";
+import { Notify } from "../../../../../utils/notify";
+import { generateMatchOddsResult, revertMarketResult } from "../../../../EventBet/eventBetService";
 
-function MatchOddsResultForm({ market }) {
+function MatchOddsResultForm({ market, onResultGenerate, onResultRevert }) {
   const [runnerOptions, setRunnerOptions] = useState([]);
-  const [selectedRunner, setSelectedRunner] = useState(null);
+  const [selectedRunner, setSelectedRunner] = useState(market?.winnerRunnerId || null);
+  const [resultDeclared, setResultDeclared] = useState(!!market?.winnerRunnerId);
 
   useEffect(() => {
     const options = market?.market_runner?.map((runner) => ({
@@ -14,22 +17,36 @@ function MatchOddsResultForm({ market }) {
       label: runner.runnerName,
     }));
     setRunnerOptions(options);
-    const winnerRunner = market.winnerRunnerId
-      ? options.find((runner) => runner.value === market.winnerRunnerId)
-      : null;
-    setSelectedRunner(winnerRunner);
     return () => {
       setRunnerOptions([]);
       setSelectedRunner(null);
     };
-  }, [market, market?.market_runner, market.winnerRunnerId]);
+  }, [market, market?.market_runner, market?.winnerRunnerId]);
 
   const generateResult = async () => {
-    console.log("result generated");
+    const result = await generateMatchOddsResult({
+      marketId: market._id,
+      winRunnerId: selectedRunner,
+    });
+    if (result.success) {
+      Notify.success(`Result Generated for ${market.name}.`);
+      onResultGenerate({ marketId: market._id, runnerId: selectedRunner });
+      setResultDeclared(true);
+    } else {
+      Notify.error(`Error: ${result.message || "Something went wrong!"}`);
+    }
   };
 
   const revertResult = async () => {
-    console.log("result reverted");
+    const result = await revertMarketResult({ marketId: market._id });
+    if (result.success) {
+      Notify.success(`Result Reverted for ${market.name}.`);
+      setSelectedRunner(null);
+      onResultRevert({ marketId: market._id });
+      setResultDeclared(false);
+    } else {
+      Notify.error(`Error: ${result.message || "Something went wrong!"}`);
+    }
   };
 
   const handleGenerateResult = () => {
@@ -43,7 +60,7 @@ function MatchOddsResultForm({ market }) {
   return (
     <Row className="pb-1">
       <FormSelectWithSearch
-        label="Select Runner"
+        label="Winner Runner"
         value={selectedRunner}
         onChange={(name, selectedValue) => setSelectedRunner(selectedValue)}
         onBlur={() => {}}
@@ -53,10 +70,22 @@ function MatchOddsResultForm({ market }) {
       />
 
       <CCol md={6} className="d-flex align-items-center mt-6 pt-1">
-        <CButton color="blue" type="submit" className="me-3 py-1 fw-bolder" onClick={handleGenerateResult}>
+        <CButton
+          disabled={!selectedRunner || resultDeclared}
+          color="blue"
+          type="submit"
+          className="me-3 py-1 fw-bolder"
+          onClick={handleGenerateResult}
+        >
           <i className="fa fa-bar-chart-o me-1" /> GENERATE RESULT
         </CButton>
-        <CButton color="danger" type="reset" className="py-1 fw-bolder" onClick={handleRevertResult}>
+        <CButton
+          disabled={!resultDeclared}
+          color="danger"
+          type="reset"
+          className="py-1 fw-bolder"
+          onClick={handleRevertResult}
+        >
           <i className="fa fa-history me-1" /> REVERT RESULT
         </CButton>
       </CCol>

@@ -11,8 +11,8 @@ import FormSelectWithSearch from "../../../components/Common/FormComponents/Form
 import FormToggleSwitch from "../../../components/Common/FormComponents/FormToggleSwitch";
 import { showConfirmAlert } from "../../../utils/confirmUtils";
 import { Notify } from "../../../utils/notify";
-import { completeBet, completeFancyBet } from "../../EventBet/eventBetService";
 import { updateMarket } from "../marketService";
+import { generateFancyResult, generateMatchOddsResult } from "../../EventBet/eventBetService";
 
 const MatchOddsForm = ({ market, runnerId }) => {
   const navigate = useNavigate();
@@ -112,9 +112,9 @@ const MatchOddsForm = ({ market, runnerId }) => {
         winRunnerId: winRunner,
       };
       if (market?.name === "Normal") {
-        res = await completeFancyBet({ marketId: market._id, marketRunnerId: runnerId, winScore });
+        res = await generateFancyResult({ marketId: market._id, marketRunnerId: runnerId, winScore });
       } else {
-        res = await completeBet(body);
+        res = await generateMatchOddsResult(body);
       }
       if (res.success) {
         Notify.success("Bet completed successfully");

@@ -10,11 +10,10 @@ import MatchOddsResultForm from "./FancyResultForm";
 
 function FancyForm({ market = {} }) {
   const initialValues = {
-    name: market.name,
     minStake: market.minStake || 0,
     maxStake: market.maxStake || 0,
     betDelay: market.betDelay || 0,
-    minBetLiability: market.minBetLiability || 0,
+    maxMarketLiability: market.maxMarketLiability || 0,
     maxBetLiability: market.maxBetLiability || 0,
     maxMarketProfit: market.maxMarketProfit || 0,
     startDate: market.startDate ? moment(market.startDate).format("YYYY-MM-DD") : "",
@@ -23,11 +22,10 @@ function FancyForm({ market = {} }) {
   };
 
   const validationSchema = Yup.object({
-    name: Yup.string(),
     minStake: Yup.number(),
     maxStake: Yup.number(),
     betDelay: Yup.number(),
-    minBetLiability: Yup.number(),
+    maxMarketLiability: Yup.number(),
     maxBetLiability: Yup.number(),
     maxMarketProfit: Yup.number(),
     visibleToPlayer: Yup.boolean(),
@@ -42,18 +40,7 @@ function FancyForm({ market = {} }) {
     <>
       <CForm onSubmit={formik.handleSubmit}>
         <Row>
-          <FormInput
-            label="Market Name"
-            name="name"
-            type="text"
-            readOnly
-            value={formik.values.name}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.name && formik.errors.name}
-            width={3}
-            isRequired="true"
-          />
+          <FormInput label="Market Name" name="name" type="text" readOnly value={market.type} width={3} />
 
           <FormInput
             label="Min Stake"
@@ -92,18 +79,6 @@ function FancyForm({ market = {} }) {
           />
 
           <FormInput
-            label="Min Bet Liability"
-            name="minBetLiability"
-            type="number"
-            value={formik.values.minBetLiability}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.minBetLiability && formik.errors.minBetLiability}
-            width={3}
-            isRequired="true"
-          />
-
-          <FormInput
             label="Max Bet Liability"
             name="maxBetLiability"
             type="number"
@@ -111,6 +86,30 @@ function FancyForm({ market = {} }) {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={formik.touched.maxBetLiability && formik.errors.maxBetLiability}
+            width={3}
+            isRequired="true"
+          />
+
+          <FormInput
+            label="Max Market Liability"
+            name="maxMarketLiability"
+            type="number"
+            value={formik.values.maxMarketLiability}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.maxMarketLiability && formik.errors.maxMarketLiability}
+            width={3}
+            isRequired="true"
+          />
+
+          <FormInput
+            label="Max Market Profit"
+            name="maxMar"
+            type="number"
+            value={formik.values.maxMar}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.maxMar && formik.errors.maxMar}
             width={3}
             isRequired="true"
           />
