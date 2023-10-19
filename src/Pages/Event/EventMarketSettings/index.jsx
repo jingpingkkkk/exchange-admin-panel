@@ -23,7 +23,7 @@ function EventMarketSettings() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const eventId = location?.state?.eventId || "652cf70687c9a04540e94504";
+  const eventId = location?.state?.eventId;
 
   const [loading, setLoading] = useState(false);
   const [event, setEvent] = useState({});
