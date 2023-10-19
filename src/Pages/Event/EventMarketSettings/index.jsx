@@ -1,4 +1,5 @@
 import { CButton, CCol } from "@coreui/react";
+import CryptoJS from "crypto-js";
 import React, { useEffect, useState } from "react";
 import { Accordion, Card, Row } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,6 +16,7 @@ import NoData from "./ui/NoData";
 
 const marketTypeOptions = Object.values(MARKET_TYPES).map((type) => ({ value: type, label: type }));
 const resultTypeOptions = [
+  { value: "all", label: "All" },
   { value: "declared", label: "Declared" },
   { value: "pending", label: "Pending" },
 ];
@@ -23,7 +25,19 @@ function EventMarketSettings() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const eventId = location?.state?.eventId;
+  let eventId = null;
+
+  if (location?.state?.eventId) {
+    eventId = location?.state?.eventId;
+    const encrypted = CryptoJS.AES.encrypt(eventId, process.env.REACT_APP_PERMISSIONS_AES_SECRET);
+    localStorage.setItem("evsId", encrypted.toString());
+  } else {
+    const storedId = localStorage.getItem("evsId");
+    if (storedId) {
+      const decrypted = CryptoJS.AES.decrypt(storedId, process.env.REACT_APP_PERMISSIONS_AES_SECRET);
+      eventId = decrypted.toString(CryptoJS.enc.Utf8);
+    }
+  }
 
   const [loading, setLoading] = useState(false);
   const [event, setEvent] = useState({});
@@ -32,44 +46,35 @@ function EventMarketSettings() {
   const [expanded, setExpanded] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMarketType, setSelectedMarketType] = useState([]);
-  const [selectedResultType, setSelectedResultType] = useState(null);
+  const [selectedResultType, setSelectedResultType] = useState("all");
 
-  const handleSearch = (e) => {
-    const { value } = e.target;
-    setSearchQuery(value);
-    if (value) {
-      setMarkets(originalMarkets.filter((market) => market.name.toLowerCase().includes(value.toLowerCase())));
-    } else {
-      setMarkets(originalMarkets);
-    }
-  };
-
-  const handleMarketTypeChange = (name, selectedValue) => {
-    setSelectedMarketType(selectedValue);
-    if (selectedValue.length) {
-      setMarkets(originalMarkets.filter((market) => selectedValue.includes(market.type)));
-    } else {
-      setMarkets(originalMarkets);
-    }
-  };
-
-  const handleResultTypeChange = (name, selectedValue) => {
-    setSelectedResultType(selectedValue);
-    if (selectedValue) {
-      setMarkets(
-        originalMarkets.filter((market) =>
-          selectedValue === "declared" ? !!market?.winnerRunnerId || !!market?.winScore : false
-        )
+  const filterMarkets = () => {
+    let filteredMarkets = originalMarkets;
+    if (selectedResultType) {
+      filteredMarkets = filteredMarkets.filter((market) =>
+        selectedResultType === "declared" ? market.resultDeclared : !market.resultDeclared
       );
-    } else {
-      setMarkets(originalMarkets);
     }
+    if (selectedMarketType.length) {
+      filteredMarkets = filteredMarkets.filter((market) => selectedMarketType.includes(market.type));
+    }
+    if (searchQuery) {
+      filteredMarkets = filteredMarkets.filter((market) =>
+        market.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    setMarkets(filteredMarkets);
   };
 
-  const handleClearFilter = () => {
+  useEffect(() => {
+    filterMarkets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, selectedMarketType, selectedResultType]);
+
+  const handleClearFilters = () => {
     setSearchQuery("");
-    setSelectedMarketType(null);
-    setSelectedResultType(null);
+    setSelectedMarketType([]);
+    setSelectedResultType("all");
     setMarkets(originalMarkets);
   };
 
@@ -88,7 +93,7 @@ function EventMarketSettings() {
       setEvent(result);
       const markets = result.market.flatMap((market) => {
         if ([MARKET_TYPES.MATCH_ODDS, MARKET_TYPES.BOOKMAKER].includes(market?.name)) {
-          return [{ ...market, type: market?.name }];
+          return [{ ...market, type: market?.name, resultDeclared: !!market?.winnerRunnerId }];
         } else if ([MARKET_TYPES.NORMAL, MARKET_TYPES.FANCY1].includes(market?.name)) {
           return market.market_runner.map((runner) => ({
             ...market,
@@ -96,6 +101,7 @@ function EventMarketSettings() {
             marketId: market._id,
             type: market?.name,
             name: runner?.runnerName,
+            resultDeclared: !!market?.winScore,
           }));
         }
         return [];
@@ -110,7 +116,7 @@ function EventMarketSettings() {
     fetchData();
 
     return () => {
-      handleClearFilter();
+      handleClearFilters();
       setEvent({});
       setMarkets([]);
       setOriginalMarkets([]);
@@ -122,9 +128,9 @@ function EventMarketSettings() {
     const updatedMarkets = markets.map((market) => {
       if (market._id === marketId) {
         if ([MARKET_TYPES.MATCH_ODDS, MARKET_TYPES.BOOKMAKER].includes(market?.name)) {
-          return { ...market, winnerRunnerId: runnerId };
+          return { ...market, winnerRunnerId: runnerId, resultDeclared: true };
         } else if ([MARKET_TYPES.NORMAL, MARKET_TYPES.FANCY1].includes(market?.name)) {
-          return { ...market, winScore };
+          return { ...market, winScore, resultDeclared: true };
         }
       }
       return market;
@@ -137,10 +143,10 @@ function EventMarketSettings() {
     const updatedMarkets = markets.map((market) => {
       if (market._id === marketId) {
         if ([MARKET_TYPES.MATCH_ODDS, MARKET_TYPES.BOOKMAKER].includes(market?.name)) {
-          return { ...market, winnerRunnerId: null };
+          return { ...market, winnerRunnerId: null, resultDeclared: false };
         }
         if ([MARKET_TYPES.NORMAL, MARKET_TYPES.FANCY1].includes(market?.name)) {
-          return { ...market, winScore: null };
+          return { ...market, winScore: null, resultDeclared: false };
         }
       }
       return market;
@@ -169,7 +175,7 @@ function EventMarketSettings() {
               name="searchQuery"
               type="text"
               value={searchQuery}
-              onChange={handleSearch}
+              onChange={(e) => setSearchQuery(e.target.value)}
               width={3}
               isRequired="false"
             />
@@ -181,7 +187,7 @@ function EventMarketSettings() {
               label="Market Types"
               name="marketType"
               value={selectedMarketType}
-              onChange={handleMarketTypeChange}
+              onChange={(name, selectedValue) => setSelectedMarketType(selectedValue)}
               width={3}
               options={marketTypeOptions}
             />
@@ -192,13 +198,13 @@ function EventMarketSettings() {
               label="Result Type"
               name="resultType"
               value={selectedResultType}
-              onChange={handleResultTypeChange}
+              onChange={(name, selectedValue) => setSelectedResultType(selectedValue)}
               width={3}
               options={resultTypeOptions}
             />
 
             <CCol md={3} className="pt-1">
-              <CButton disabled={loading} color="primary" className="mt-6 py-1 fw-bolder" onClick={handleClearFilter}>
+              <CButton disabled={loading} color="primary" className="mt-6 py-1 fw-bolder" onClick={handleClearFilters}>
                 <i className="fa fa-times me-1" /> CLEAR FILTERS
               </CButton>
             </CCol>

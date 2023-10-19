@@ -5,8 +5,8 @@ import Select from "react-select";
 const FormSelectWithSearch = ({
   label,
   name,
-  value,
-  onChange,
+  value = null,
+  onChange = () => {},
   onBlur = () => {},
   error,
   options,
