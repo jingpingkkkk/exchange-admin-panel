@@ -2,7 +2,6 @@ import React, { Fragment, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import EventMarketSettings from "./Pages/Event/EventMarketSettings";
-import EventBetMetchods from "./Pages/EventBetMatchods/component";
 import { AuthProvider } from "./components/AuthContext";
 import "./index.scss";
 import { permission } from "./lib/user-permissions";
@@ -187,9 +186,6 @@ const Root = () => {
                   {/* Event Bet  */}
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.EVENT_BET.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/event-bet-detail`} element={<EventBetDetail />} />
-                  </Route>
-                  <Route path="/" element={<ProtectedRoutes allowedRoles={permission.EVENT_BET.ACTIVE} />}>
-                    <Route path={`${process.env.PUBLIC_URL}/event-bet-metchods/`} element={<EventBetMetchods />} />
                   </Route>
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.EVENT_BET.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/event-settings`} element={<EventMarketSettings />} />
