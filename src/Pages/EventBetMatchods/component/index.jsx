@@ -1,17 +1,15 @@
-import { ExpandMore } from "@mui/icons-material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import React, { useEffect, useState } from "react";
-import { Card, Row, Spinner } from "react-bootstrap";
-import { CardActions, IconButton, Typography } from "@mui/material";
-import { useLocation } from "react-router-dom";
-import { getAllBetResultData } from "../../EventBetMatchods/marketService";
-import MatchOddsForm from "./MatchOddsForm";
+import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
+import { Typography } from "@mui/material";
 import MuiAccordion from "@mui/material/Accordion";
+import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import { styled } from "@mui/material/styles";
-import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
-import MuiAccordionDetails from "@mui/material/AccordionDetails";
+import React, { useEffect, useState } from "react";
+import { Card, Row, Spinner } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 import "../../EventBet/eventBetDetail.css";
+import { getAllBetResultData } from "../../EventBetMatchods/marketService";
+import MatchOddsForm from "./MatchOddsForm";
 
 const Accordion = styled((props) => <MuiAccordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
@@ -63,7 +61,7 @@ function EventBetMetchods() {
       setSelectedEvent(eventData);
       setExpanded(eventData?.market?.map((mkt) => mkt._id));
       console.log(eventData);
-      const { market_runner } = eventData?.market?.filter((mrt) => mrt.name === "Normal")[0];
+      const { market_runner = [] } = eventData?.market?.filter((mrt) => mrt.name === "Normal")[0];
       setFancyExpanded(market_runner?.map((mkt) => mkt._id));
       setLoading(false);
     };

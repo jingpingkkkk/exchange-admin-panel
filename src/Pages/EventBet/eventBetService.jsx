@@ -1,4 +1,4 @@
-import { postData, getData } from "../../utils/fetch-services";
+import { postData } from "../../utils/fetch-services";
 const { _id } = JSON.parse(localStorage.getItem("user_info")) || {};
 
 export const getAllActiveCompetitionEvents = async (page, perPage, sortBy, direction, searchQuery) => {
@@ -39,11 +39,15 @@ export const getMatchWinLoss = async (id) => {
   });
   return result.success ? result.data.details : [];
 };
-export const completeBet = async (request) => {
+export const generateMatchOddsResult = async (request) => {
   const result = await postData("bet/betComplete", request);
   return result;
 };
-export const completeFancyBet = async (request) => {
+export const generateFancyResult = async (request) => {
   const result = await postData("bet/betCompleteFancy", request);
+  return result;
+};
+export const revertMarketResult = async (request) => {
+  const result = await postData("bet/revertResult", request);
   return result;
 };
