@@ -5,9 +5,9 @@ import Select from "react-select";
 const FormSelectWithSearch = ({
   label,
   name,
-  value,
-  onChange,
-  onBlur,
+  value = null,
+  onChange = () => {},
+  onBlur = () => {},
   error,
   options,
   isRequired,
@@ -30,7 +30,7 @@ const FormSelectWithSearch = ({
         id={name}
         name={name}
         value={options.find((option) => option.value === value)}
-        onChange={(selectedOption) => onChange(name, selectedOption.value)}
+        onChange={(selectedOption) => onChange(name, selectedOption?.value)}
         onBlur={() => onBlur(name)}
         className={error ? "is-invalid" : ""}
         options={options}

@@ -14,4 +14,3 @@ export const getAllBetResultData = async (id) => {
   });
   return result.success ? result.data.details : [];
 };
-

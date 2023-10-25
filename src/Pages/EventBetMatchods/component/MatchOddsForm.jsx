@@ -1,18 +1,18 @@
+import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
+import { Divider } from "@mui/material";
 import { useFormik } from "formik";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
+import { Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import { CButton, CCol, CForm, CFormLabel, CSpinner } from "@coreui/react";
-import { Row } from "react-bootstrap";
 import FormInput from "../../../components/Common/FormComponents/FormInput";
-import FormToggleSwitch from "../../../components/Common/FormComponents/FormToggleSwitch";
-import moment from "moment";
-import { updateMarket } from "../marketService";
-import { Divider } from "@mui/material";
-import { completeBet, completeFancyBet } from "../../EventBet/eventBetService";
 import FormSelectWithSearch from "../../../components/Common/FormComponents/FormSelectWithSearch";
-import { Notify } from "../../../utils/notify";
+import FormToggleSwitch from "../../../components/Common/FormComponents/FormToggleSwitch";
 import { showConfirmAlert } from "../../../utils/confirmUtils";
+import { Notify } from "../../../utils/notify";
+import { updateMarket } from "../marketService";
+import { generateFancyResult, generateMatchOddsResult } from "../../EventBet/eventBetService";
 
 const MatchOddsForm = ({ market, runnerId }) => {
   const navigate = useNavigate();
@@ -112,9 +112,9 @@ const MatchOddsForm = ({ market, runnerId }) => {
         winRunnerId: winRunner,
       };
       if (market?.name === "Normal") {
-        res = await completeFancyBet({ marketRunnerId: runnerId, winScore: winScore });
+        res = await generateFancyResult({ marketId: market._id, marketRunnerId: runnerId, winScore });
       } else {
-        res = await completeBet(body);
+        res = await generateMatchOddsResult(body);
       }
       if (res.success) {
         Notify.success("Bet completed successfully");
