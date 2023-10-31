@@ -27,6 +27,7 @@ export const matchOddsDetail = async (id) => {
 export const getAllBet = async (id) => {
   const result = await postData("bet/getAllBet", {
     eventId: id,
+    loginUserId: _id,
   });
   //return result.success ? result.data : [];
 
