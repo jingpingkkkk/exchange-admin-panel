@@ -155,6 +155,9 @@ export const permission = {
   CASINO_GAME: {
     ACTIVE: hasPermission(activeModules?.EVENTS),
   },
+  PROMOTION: {
+    ACTIVE: hasPermission(activeModules?.EVENTS),
+  },
   EVENTS: {
     ACTIVE: hasPermission(activeModules?.EVENTS),
   },

@@ -37,6 +37,10 @@ const CasinoForm = React.lazy(() => import("./Pages/Casino/CasinoForm/CasinoForm
 const CasinoGameList = React.lazy(() => import("./Pages/CasinoGame/CasinoGameList/CasinoGameList"));
 const CasinoGameForm = React.lazy(() => import("./Pages/CasinoGame/CasinoGameForm/CasinoGameForm"));
 
+// Promotion Module
+const PromotionList = React.lazy(() => import("./Pages/Promotion/PromotionList/PromotionList"));
+const PromotionForm = React.lazy(() => import("./Pages/Promotion/PromotionForm/PromotionForm"));
+
 // Event Module
 const EventList = React.lazy(() => import("./Pages/Event/EventList/EventList"));
 const EventForm = React.lazy(() => import("./Pages/Event/EventForm/EventForm"));
@@ -172,6 +176,14 @@ const Root = () => {
                   </Route>
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.CASINO_GAME.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/casino-game-list`} element={<CasinoGameList />} />
+                  </Route>
+                  {/* Promotion route  */}
+                  <Route path="/" element={<ProtectedRoutes allowedRoles={permission.CASINO.ACTIVE} />}>
+                    {" "}
+                    <Route path={`${process.env.PUBLIC_URL}/promotion-form`} element={<PromotionForm />} />{" "}
+                  </Route>
+                  <Route path="/" element={<ProtectedRoutes allowedRoles={permission.CASINO.ACTIVE} />}>
+                    <Route path={`${process.env.PUBLIC_URL}/promotion-list`} element={<PromotionList />} />
                   </Route>
                   {/* Event route  */}
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.EVENTS.ACTIVE} />}>
