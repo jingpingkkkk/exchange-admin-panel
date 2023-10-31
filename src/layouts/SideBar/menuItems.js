@@ -1,7 +1,6 @@
 import { appModules } from "../../lib/user-permissions";
 
 const activeModules = appModules();
-
 const menuItems = [
   {
     id: activeModules?.DASHBOARD,
@@ -76,7 +75,12 @@ const menuItems = [
     path: `${process.env.PUBLIC_URL}/casino-game-list`,
     icon: "grid",
   },
-
+  {
+    id: activeModules?.PROMOTION,
+    title: "Promotion",
+    path: `${process.env.PUBLIC_URL}/promotion-list`,
+    icon: "grid",
+  },
   {
     id: activeModules?.THEME_USER_MODULE,
     title: "Theme Users",
