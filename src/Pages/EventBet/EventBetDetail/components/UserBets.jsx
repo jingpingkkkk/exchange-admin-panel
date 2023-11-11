@@ -79,6 +79,12 @@ function UserBets({ eventId }) {
                       <Spinner animation="border" />
                     </td>
                   </tr>
+                ) : !betList?.lenght ? (
+                  <tr>
+                    <td colSpan={5} align="center">
+                      No Data
+                    </td>
+                  </tr>
                 ) : (
                   betList.map((bet, bet_index) => (
                     <tr key={bet_index} className={`${bet.isBack ? "back0" : "lay2"}`}>
