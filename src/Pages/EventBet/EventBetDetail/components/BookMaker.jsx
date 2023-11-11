@@ -109,29 +109,53 @@ function BookMaker({ market, matchWinLoss }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {market?.market_runner?.map((runner, index) => {
-            const totalWin =
-              matchWinLoss
-                ?.find((match) => match?._id === market?._id)
-                ?.market_runner?.find((market_runer) => market_runer?._id === runner?._id)?.totalWin || 0;
-            return (
-              <TableRow key={runner._id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                <TableCell component="th" scope="row" className="odds">
-                  <span className="table-span">
-                    {runner?.runnerName}
-                    <br />
-                    <span className="text-success">{totalWin}</span>
-                  </span>
-                </TableCell>
-                {runnerOdds[index]?.back
-                  ?.map((odd, i) => (
+          {market?.market_runner
+            ?.map((runner, index) => {
+              const totalWin =
+                matchWinLoss
+                  ?.find((match) => match?._id === market?._id)
+                  ?.market_runner?.find((market_runer) => market_runer?._id === runner?._id)?.totalWin || 0;
+              return (
+                <TableRow key={runner._id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                  <TableCell component="th" scope="row" className="odds">
+                    <span className="table-span">
+                      {runner?.runnerName}
+                      <br />
+                      <span className="text-success">{totalWin}</span>
+                    </span>
+                  </TableCell>
+                  {runnerOdds[index]?.back
+                    ?.map((odd, i) => (
+                      <TableCell
+                        align="right"
+                        className={`odds ${runner?.matchOdds?.status === "SUSPENDED" ? "suspendedtext" : ""}`}
+                        key={i}
+                        data-title={runner?.matchOdds?.status}
+                      >
+                        <div className={`grey-box back back${odd?.level || i}`}>
+                          {odd?.price && odd.price !== 0 ? (
+                            <>
+                              <span className="d-block odds">
+                                {odd?.price ? parseFloat(odd.price.toFixed(2)) : "-"}
+                              </span>
+                              <span className="d-block">{odd?.size ? shortNumber(odd.size, 2) : 0}</span>
+                            </>
+                          ) : (
+                            <span>-</span>
+                          )}
+                        </div>
+                      </TableCell>
+                    ))
+                    .reverse()}
+
+                  {runnerOdds[index]?.lay?.map((odd, i) => (
                     <TableCell
                       align="right"
                       className={`odds ${runner?.matchOdds?.status === "SUSPENDED" ? "suspendedtext" : ""}`}
                       key={i}
                       data-title={runner?.matchOdds?.status}
                     >
-                      <div className={`grey-box back back${odd?.level || i}`}>
+                      <div className={`grey-box lay lay${odd?.level || i}`}>
                         {odd?.price && odd.price !== 0 ? (
                           <>
                             <span className="d-block odds">{odd?.price ? parseFloat(odd.price.toFixed(2)) : "-"}</span>
@@ -142,31 +166,11 @@ function BookMaker({ market, matchWinLoss }) {
                         )}
                       </div>
                     </TableCell>
-                  ))
-                  .reverse()}
-
-                {runnerOdds[index]?.lay?.map((odd, i) => (
-                  <TableCell
-                    align="right"
-                    className={`odds ${runner?.matchOdds?.status === "SUSPENDED" ? "suspendedtext" : ""}`}
-                    key={i}
-                    data-title={runner?.matchOdds?.status}
-                  >
-                    <div className={`grey-box lay lay${odd?.level || i}`}>
-                      {odd?.price && odd.price !== 0 ? (
-                        <>
-                          <span className="d-block odds">{odd?.price ? parseFloat(odd.price.toFixed(2)) : "-"}</span>
-                          <span className="d-block">{odd?.size ? shortNumber(odd.size, 2) : 0}</span>
-                        </>
-                      ) : (
-                        <span>-</span>
-                      )}
-                    </div>
-                  </TableCell>
-                ))}
-              </TableRow>
-            );
-          })}
+                  ))}
+                </TableRow>
+              );
+            })
+            ?.reverse()}
         </TableBody>
       </Table>
     </TableContainer>
