@@ -124,25 +124,25 @@ export default function Bank() {
     },
     {
       name: "PTS",
-      selector: (row) => [row.points],
+      selector: (row) => [row.points.toFixed(2)],
       sortable: true,
       sortField: "points",
     },
     {
       name: "CLIENT(P/L)",
-      selector: (row) => [row.userPl],
+      selector: (row) => [row.userPl?.toFixed(2)],
       sortable: true,
       sortField: "userPl",
     },
     {
       name: "EXPOSURE",
-      selector: (row) => [row.exposure],
+      selector: (row) => [row.exposure?.toFixed(2)],
       sortable: true,
       sortField: "exposure",
     },
     {
       name: "AVAILABLE PTS",
-      selector: (row) => [row.balance],
+      selector: (row) => [row.balance?.toFixed(2)],
       sortable: true,
       sortField: "balance",
     },
@@ -200,7 +200,7 @@ export default function Bank() {
       let msg = "Please add amount";
       let msg1 = "Please Enter Transaction Code";
 
-      Notify.error(msg,msg1);
+      Notify.error(msg, msg1);
       Notify.error(msg1);
 
       // No amounts to transfer
@@ -209,8 +209,8 @@ export default function Bank() {
     console.log(transactionCode);
     // if (!transactionCode) {
     //   let msg = "Please Enter Transaction Code";
-      // Notify.error(msg);
-      // No amounts to transfer
+    // Notify.error(msg);
+    // No amounts to transfer
     //   return;
     // }
     try {
@@ -273,7 +273,7 @@ export default function Bank() {
         EXPOSURE: item.exposure,
         "AVAILABLE PTS": item.balance,
         "ACCOUNT TYPE": item.role,
-        "STATUS":item.fromtoName
+        STATUS: item.fromtoName,
       }));
       exportToExcel(formattedData, "bank.xlsx"); // Utilize exportToExcel utility function
     } catch (error) {
@@ -291,7 +291,7 @@ export default function Bank() {
         filterUserId: filterUserId,
       });
 
-      const columns = ["USERNAME", "CR", "PTS", "CLIENT(P/L)", "EXPOSURE", "AVAILABLE PTS", "ACCOUNT TYPE","STATUS"];
+      const columns = ["USERNAME", "CR", "PTS", "CLIENT(P/L)", "EXPOSURE", "AVAILABLE PTS", "ACCOUNT TYPE", "STATUS"];
 
       const formattedData = result.details.map((item) => ({
         USERNAME: item.username,
@@ -301,7 +301,7 @@ export default function Bank() {
         EXPOSURE: item.exposure,
         "AVAILABLE PTS": item.balance,
         "ACCOUNT TYPE": item.role,
-        "STATUS":item.fromtoName
+        STATUS: item.fromtoName,
       }));
       exportToPDF(columns, formattedData, "book.pdf");
     } catch (error) {

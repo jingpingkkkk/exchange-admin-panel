@@ -136,7 +136,7 @@ function MatchOdds({ market, matchWinLoss }) {
                   <span className="table-span">
                     {runner?.runnerName}
                     <br />
-                    <span className="text-success">{totalWin}</span>
+                    <span className="text-success">{totalWin.toFixed(2)}</span>
                   </span>
                 </TableCell>
                 {runnerOdds[index]?.back

@@ -2,7 +2,7 @@ import { ExpandMore } from "@mui/icons-material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { CardActions, Collapse, IconButton } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Spinner } from "react-bootstrap";
 import BetLockModal from "../../BetLockModal";
 import { getAllBet } from "../../eventBetService";
 
@@ -11,20 +11,27 @@ function UserBets({ eventId }) {
   const [expanded, setExpanded] = useState(true);
   const [show, setShow] = useState(true);
   const [showBetLockModal, setShowBetLockModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     const fetchData = async () => {
       const betData = await getAllBet(eventId);
       setBetList(betData);
+      setLoading(false);
     };
 
-    fetchData();
+    const interval = setInterval(async () => {
+      await fetchData();
+    }, 1000 * 10);
+    return () => {
+      clearInterval(interval);
+    };
   }, [eventId]);
 
   return (
     <Card className="card ms-2">
       <BetLockModal show={showBetLockModal} onHide={() => setShowBetLockModal(false)} betList={betList} />
-
       <CardActions className="card-header bg-primary br-tr-3 br-tl-3">
         <h3 className="card-title text-white">MY BETS</h3>
 
@@ -53,7 +60,7 @@ function UserBets({ eventId }) {
       </CardActions>
 
       <Collapse in={expanded} timeout="auto">
-        <div className="card-body">
+        <div className="card-body" style={{ overflowY: "auto", height: `calc(70% - 10px)`, minHeight: "200px" }}>
           <div className="table-responsive">
             <table className="table coupon-table mb-0">
               <thead>
@@ -66,15 +73,29 @@ function UserBets({ eventId }) {
                 </tr>
               </thead>
               <tbody>
-                {betList.map((bet, bet_index) => (
-                  <tr key={bet_index} className={`${bet.isBack ? "back0" : "lay2"}`}>
-                    <td className="text-center">{bet.userName}</td>
-                    <td className="text-center">{bet.marketName}</td>
-                    <td className="text-center">{bet.runnerName}</td>
-                    <td className="text-center">{bet.odds}</td>
-                    <td className="text-center">{bet.stake}</td>
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} align="center">
+                      <Spinner animation="border" />
+                    </td>
                   </tr>
-                ))}
+                ) : !betList?.lenght ? (
+                  <tr>
+                    <td colSpan={5} align="center">
+                      No Data
+                    </td>
+                  </tr>
+                ) : (
+                  betList.map((bet, bet_index) => (
+                    <tr key={bet_index} className={`${bet.isBack ? "back0" : "lay2"}`}>
+                      <td className="text-center">{bet.userName}</td>
+                      <td className="text-center">{bet.marketName}</td>
+                      <td className="text-center">{bet.runnerName}</td>
+                      <td className="text-center">{bet.odds}</td>
+                      <td className="text-center">{bet.stake}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
