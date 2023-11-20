@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Spinner } from "react-bootstrap";
 import BetLockModal from "../../BetLockModal";
 import { getAllBet } from "../../eventBetService";
+import "./userbets.css";
 
 function UserBets({ eventId }) {
   const [betList, setBetList] = useState([]);
@@ -45,22 +46,24 @@ function UserBets({ eventId }) {
             onClick={() => setExpanded(!expanded)}
             aria-expanded={expanded}
             aria-label="show more"
+            className=" text-white"
+            style={{ cursor: "pointer" }}
           >
             <ExpandMoreIcon className=" text-white" />
           </ExpandMore>
 
-          <IconButton
+          {/* <IconButton
             size="small"
             edge="start"
             color="inherit"
             onClick={() => setShow(false)}
             aria-label="close"
-          ></IconButton>
+          ></IconButton> */}
         </div>
       </CardActions>
 
       <Collapse in={expanded} timeout="auto">
-        <div className="card-body" style={{ overflowY: "auto", height: `calc(70% - 10px)`, minHeight: "200px" }}>
+        <div className="card-body coupon-table-card">
           <div className="table-responsive">
             <table className="table coupon-table mb-0">
               <thead>
@@ -68,8 +71,8 @@ function UserBets({ eventId }) {
                   <th>UserName</th>
                   <th>Type</th>
                   <th>Nation</th>
-                  <th className="text-right">Rate</th>
-                  <th className="text-right">Amount</th>
+                  <th className="text-end">Rate</th>
+                  <th className="text-end">Amount</th>
                 </tr>
               </thead>
               <tbody>
@@ -79,7 +82,7 @@ function UserBets({ eventId }) {
                       <Spinner animation="border" />
                     </td>
                   </tr>
-                ) : !betList?.lenght ? (
+                ) : !betList?.length ? (
                   <tr>
                     <td colSpan={5} align="center">
                       No Data
@@ -87,12 +90,12 @@ function UserBets({ eventId }) {
                   </tr>
                 ) : (
                   betList.map((bet, bet_index) => (
-                    <tr key={bet_index} className={`${bet.isBack ? "back0" : "lay2"}`}>
-                      <td className="text-center">{bet.userName}</td>
-                      <td className="text-center">{bet.marketName}</td>
-                      <td className="text-center">{bet.runnerName}</td>
-                      <td className="text-center">{bet.odds}</td>
-                      <td className="text-center">{bet.stake}</td>
+                    <tr key={bet_index} className={`${bet.isBack ? "back2" : "lay2"}`}>
+                      <td className="text-cente">{bet.userName}</td>
+                      <td className="text-cente">{bet.marketName}</td>
+                      <td className="text-cente">{bet.runnerName}</td>
+                      <td className="text-end">{bet.odds}</td>
+                      <td className="text-end">{bet.stake}</td>
                     </tr>
                   ))
                 )}

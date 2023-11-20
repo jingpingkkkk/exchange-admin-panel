@@ -26,7 +26,7 @@ const BetLockModal = ({ show, onHide, betList }) => {
           <Form className="form-horizontal">
             <div className="row mb-4">
               <div className="table-responsive">
-                <table className="table coupon-table mb-0">
+                <table className="table coupon-table-detail mb-0">
                   <thead>
                     <tr>
                       <th>Sr No.</th>
@@ -43,7 +43,7 @@ const BetLockModal = ({ show, onHide, betList }) => {
                   </thead>
                   <tbody>
                     {betList.map((bet, bet_index) => (
-                      <tr key={bet_index} className={`${bet.isBack ? "back" : "lay2"}`}>
+                      <tr key={bet_index} className={`${bet.isBack ? "back2" : "lay2"}`}>
                         <td className="text-right">{bet_index + 1}</td>
                         <td className="text-right">{bet.userName}</td>
                         <td className="text-right">{bet.marketName}</td>
