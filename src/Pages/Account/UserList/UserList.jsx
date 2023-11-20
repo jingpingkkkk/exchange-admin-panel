@@ -151,6 +151,18 @@ export default function UserList() {
       sortable: true,
       sortField: "city",
     },
+    {
+      name: "PL",
+      selector: (row) => [row.userPl],
+      sortable: true,
+      sortField: "userPl",
+    },
+    {
+      name: "EXPOSURE",
+      selector: (row) => [row.exposure],
+      sortable: true,
+      sortField: "exposure",
+    },
     permission.USER_MODULE.USER_BET_UPDATE && {
       name: "BET LOCK",
       selector: (row) => [row.betCategory],
