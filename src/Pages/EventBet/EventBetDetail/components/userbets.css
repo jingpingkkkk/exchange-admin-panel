@@ -1,0 +1,21 @@
+.coupon-table.table thead th,
+.coupon-table.table tbody td {
+  padding: 10px 5px;
+}
+.coupon-table.table tbody td,
+.coupon-table-detail.table tbody td {
+  border-bottom: 1px solid #ddd;
+}
+.coupon-table-detail.table thead th,
+.coupon-table-detail.table tbody td {
+  padding: 10px;
+}
+.coupon-table-card {
+  overflow-y: auto;
+  max-height: calc(100% - 10px);
+  min-height: 200px;
+  padding: 10px;
+}
+.MuiCardActions-root {
+  padding-left: 10px !important;
+}
