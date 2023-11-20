@@ -240,6 +240,14 @@ export function Header() {
                         <i className="dropdown-icon fe fe-alert-triangle"></i>
                         Need help?p??
                       </Dropdown.Item> */}
+                      {user?.role === "system_owner" ? (
+                        <Dropdown.Item href={`${process.env.PUBLIC_URL}/sync-data`}>
+                          <i className="dropdown-icon fe fe-refresh-cw"></i>
+                          Sync Data
+                        </Dropdown.Item>
+                      ) : (
+                        ""
+                      )}
                       <Dropdown.Item onClick={() => signout()}>
                         <i className="dropdown-icon fe fe-alert-circle"></i>
                         Sign out
