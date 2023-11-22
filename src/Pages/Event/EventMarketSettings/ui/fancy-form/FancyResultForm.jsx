@@ -39,7 +39,7 @@ function FancyResultForm({ market, onResultGenerate, onResultRevert }) {
   };
 
   const handleGenerateResult = () => {
-    if (!(winScore && winScore > 0)) {
+    if (winScore === "" || winScore < 0) {
       setError("Invalid Win Score");
       return;
     }
@@ -68,7 +68,7 @@ function FancyResultForm({ market, onResultGenerate, onResultRevert }) {
 
       <CCol md={6} className="d-flex align-items-center mt-6 pt-1">
         <CButton
-          disabled={!winScore || resultDeclared}
+          disabled={winScore === "" || resultDeclared}
           color="blue"
           type="submit"
           className="me-3 py-1 fw-bolder"
