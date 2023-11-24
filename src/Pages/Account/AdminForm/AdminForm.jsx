@@ -183,7 +183,7 @@ export default function AdminForm() {
             role: result.role || "",
             isBetLock: result.isBetLock || false,
             isActive: result.isActive || false,
-            forcePasswordChange: result.forcePasswordChange || false,
+            forcePasswordChange: result.forcePasswordChange || false
           }));
         }
         setLoginUserData(loginUserData);
