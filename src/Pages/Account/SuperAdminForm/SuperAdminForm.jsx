@@ -11,7 +11,7 @@ import FormToggleSwitch from "../../../components/Common/FormComponents/FormTogg
 import { Notify } from "../../../utils/notify";
 import { getAllCurrency } from "../../Currency/currencyService";
 import { getAllSport } from "../../Sport/sportService";
-import { addData, getDetailByID, updateData } from "../accountService";
+import { addData, getDetailByID, updateData, getSuperAdminMasters } from "../accountService";
 
 const settlementDurationOptions = [
   { value: "daily", label: "Daily" },
@@ -103,6 +103,7 @@ export default function SuperAdminForm() {
   const [currencyList, setCurrencyList] = useState([]);
   const [moduleList, setmoduleList] = useState([]);
   const [serverError, setServerError] = useState(null);
+  const [masterList, setMasterList] = useState([]);
 
   const user = {
     username: "",
@@ -173,9 +174,9 @@ export default function SuperAdminForm() {
     const fetchData = async () => {
       // !!! IMPORTANT NOTE: The order of the promises in the array must match the order of the results in the results array
       setLoading(true);
-      Promise.all([getDetailByID(id), getAllCurrency(0), getAllSport(0)])
+      Promise.all([getDetailByID(id), getAllCurrency(0), getAllSport(0), getSuperAdminMasters(id)])
         .then((results) => {
-          const [fetchtedUser, fetchedCurrencies, fetchedModules] = results;
+          const [fetchtedUser, fetchedCurrencies, fetchedModules, fetchMasters] = results;
 
           if (fetchtedUser !== null) {
             const result = fetchtedUser;
@@ -201,6 +202,7 @@ export default function SuperAdminForm() {
               settlementTime: result.settlementTime || "",
               isCasinoAvailable: result.isCasinoAvailable || false,
               isAutoSettlement: result.isAutoSettlement || false,
+              defaultMasterUserId: result.defaultMasterUserId || false,
             }));
           }
 
@@ -212,6 +214,8 @@ export default function SuperAdminForm() {
               label: option.name,
             }))
           );
+
+          setMasterList(fetchMasters.records);
         })
         .finally(() => setLoading(false));
     };
@@ -532,7 +536,25 @@ export default function SuperAdminForm() {
                 isRequired="false"
                 width={3}
               />
-
+              {editMode && (
+                <FormSelect
+                  label="Default Master"
+                  name="defaultMasterUserId"
+                  value={formik.values.defaultMasterUserId}
+                  onChange={(event) => formik.setFieldValue("defaultMasterUserId", event.target.value)}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.defaultMasterUserId && formik.errors.defaultMasterUserId}
+                  isRequired="true"
+                  width={3}
+                >
+                  <option value="">Select Master</option>
+                  {masterList.map((master, index) => (
+                    <option key={master._id} value={master._id}>
+                      {master.username.toUpperCase()}
+                    </option>
+                  ))}
+                </FormSelect>
+              )}
               {/* <FormInput
               label="Transaction Code"
               name="transactionCode"
