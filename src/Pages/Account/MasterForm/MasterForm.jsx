@@ -36,6 +36,7 @@ export default function MasterForm() {
     isBetLock: false,
     isActive: false,
     forcePasswordChange: true,
+    defaultMaster: false,
     transactionCode: "",
   };
   const validationSchemaForCreate = Yup.object({
@@ -180,6 +181,7 @@ export default function MasterForm() {
             isBetLock: result.isBetLock || false,
             isActive: result.isActive || false,
             forcePasswordChange: result.forcePasswordChange || false,
+            defaultMaster: result.defaultMaster || false
           }));
         }
         setLoginUserData(loginUserData);
@@ -360,6 +362,22 @@ export default function MasterForm() {
                       }}
                     />
                   </CCol>
+
+                  <CCol md="2">
+                    <CFormLabel htmlFor="defaultMaster">Default master</CFormLabel>
+                    <FormToggleSwitch
+                      id="defaultMaster"
+                      name="defaultMaster"
+                      checked={formik.values.defaultMaster}
+                      onChange={() => {
+                        formik.setFieldValue(
+                          "defaultMaster",
+                          editMode ? !formik.values.defaultMaster : true
+                        );
+                      }}
+                    />
+                  </CCol>
+
                 </Row>
 
                 <FormInput
