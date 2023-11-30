@@ -83,6 +83,7 @@ export default function EventList() {
     { id: "Live", lable: "Live" },
     { id: "Completed", lable: "Completed" },
     { id: "Upcoming", lable: "Upcoming" },
+    { id: "Settled", lable: "Settled" },
   ];
 
   const statusList = [
