@@ -383,6 +383,14 @@ export default function EventForm() {
                           checked={formik.values.completed}
                           onChange={() => {
                             formik.setFieldValue("completed", !formik.values.completed);
+                            console.log("formik.values.completed", formik.values.completed);
+                            if (!formik.values.completed) {
+                              formik.setFieldValue("isActive", false);
+                              formik.setFieldValue("isLive", false);
+                            } else {
+                              formik.setFieldValue("isActive", true);
+                              formik.setFieldValue("isLive", true);
+                            }
                           }}
                         />
                       </CCol>
