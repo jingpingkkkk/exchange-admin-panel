@@ -39,10 +39,11 @@ export default function EventList() {
   const [startDateValue, setStartDateValue] = useState("");
   const [endDateValue, setEndDateValue] = useState("");
   const [selectedCompetition, setSelectedCompetition] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState(true);
   const [sportLoading, setSportLoading] = useState(false);
   const [selectedSport, setSelectedSport] = useState("");
   const [sportList, setSportList] = useState([]);
+  const [selectedEventStatus, setSelectedEventStatus] = useState("Live");
 
   const updateEventStatus = (id, key, value) => {
     setEventStatus((prev) => ({ ...prev, [id]: { ...prev[id], [key]: value } }));
@@ -72,9 +73,18 @@ export default function EventList() {
     sportId: location.state ? location.state.sportId : "",
     starDate: "",
     endDate: "",
-    status: "",
+    status: true,
+    eventStatus: "Live",
     // Add more filters here if needed
   });
+
+  const eventStatusList = [
+    { id: "", lable: "All" },
+    { id: "Live", lable: "Live" },
+    { id: "Completed", lable: "Completed" },
+    { id: "Upcoming", lable: "Upcoming" },
+    { id: "Settled", lable: "Settled" },
+  ];
 
   const statusList = [
     { id: "", lable: "All" },
@@ -205,9 +215,10 @@ export default function EventList() {
   }, [data, selectdata, selectedRows]);
 
   const fetchData = async (page, sortBy, direction, searchQuery, filters) => {
+
     setLoading(true);
     try {
-      const { competitionId, fromDate, toDate, status, sportId } = filters;
+      const { competitionId, fromDate, toDate, status, sportId, eventStatus } = filters;
       const result = await getAllEvent({
         page: page,
         perPage: perPage,
@@ -219,6 +230,7 @@ export default function EventList() {
         fromDate: fromDate,
         toDate: toDate,
         status: status,
+        eventStatus: eventStatus,
       });
       setData(result.records);
       setTotalRows(result.totalRecords);
@@ -290,6 +302,7 @@ export default function EventList() {
       fromDate: startDateValue, // Replace startDateValue with the actual state value for start date
       toDate: endDateValue, // Replace endDateValue with the actual state value for end date
       status: selectedStatus,
+      eventStatus: selectedEventStatus,
     };
     setFilters(newFilters);
     // Fetch data with the updated filters object
@@ -301,9 +314,10 @@ export default function EventList() {
     setSelectedCompetition("");
     setStartDateValue("");
     setEndDateValue("");
-    setSelectedStatus("");
+    setSelectedStatus(true);
     setFormSelectKey(formSelectKey + 1);
     setSelectedSport("");
+    setSelectedEventStatus("Live");
     // Add more filter states if needed
     // Fetch data with the updated filters object
     fetchData(currentPage, sortBy, direction, searchQuery, {
@@ -349,16 +363,17 @@ export default function EventList() {
     filterData();
   }, [perPage, searchQuery, filters]);
 
-  useEffect(() => {
-    return () => {
-      setFilters({
-        competitionId: "",
-        starDate: "",
-        endDate: "",
-        // Add more filters here if needed
-      });
-    };
-  }, [location]);
+  // useEffect(() => {
+  //   return () => {
+  //     setFilters({
+  //       competitionId: "",
+  //       starDate: "",
+  //       endDate: "",
+  //       status: true,
+  //       // Add more filters here if needed
+  //     });
+  //   };
+  // }, [location]);
 
   return (
     <div>
@@ -416,6 +431,20 @@ export default function EventList() {
                 width={3}
                 options={sportList}
               />
+              <FormSelect
+                  label="Event Status"
+                  name="eventStatus"
+                  value={selectedEventStatus}
+                  onChange={(event) => setSelectedEventStatus(event.target.value)} // Use event.target.value to get the updated value
+                  onBlur={() => {}}
+                  width={3}
+              >
+                {eventStatusList.map((eventStatus, index) => (
+                    <option key={index} value={eventStatus.id}>
+                      {eventStatus.lable.toUpperCase()}
+                    </option>
+                ))}
+              </FormSelect>
             </Row>
 
             <Row className="mt-2">
