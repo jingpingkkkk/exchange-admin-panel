@@ -57,6 +57,7 @@ const validationSchemaForCreate = Yup.object({
   settlementDate: Yup.number().nullable(true),
   settlementDay: Yup.string().oneOf(days, "Invalid option selected").nullable(true),
   settlementTime: Yup.string().nullable(true),
+  businessType: Yup.string().required("Business Type is required"),
   // transactionCode: Yup.string().required("Transaction code is required"),
 });
 
@@ -89,6 +90,7 @@ const validationSchemaForUpdate = Yup.object({
   settlementDate: Yup.number().nullable(true),
   settlementDay: Yup.string().oneOf(days, "Invalid option selected").nullable(true),
   settlementTime: Yup.string().nullable(true),
+  businessType: Yup.string().required(),
   // transactionCode: Yup.string().required("Transaction code is required"),
 });
 
@@ -128,6 +130,7 @@ export default function SuperAdminForm() {
     settlementTime: "",
     isCasinoAvailable: false,
     isAutoSettlement: false,
+    businessType: ""
     // transactionCode: "",
   };
 
@@ -203,6 +206,7 @@ export default function SuperAdminForm() {
               isCasinoAvailable: result.isCasinoAvailable || false,
               isAutoSettlement: result.isAutoSettlement || false,
               defaultMasterUserId: result.defaultMasterUserId || false,
+              businessType: result.businessType || false,
             }));
           }
 
@@ -566,6 +570,21 @@ export default function SuperAdminForm() {
               isRequired="true"
               width={3}
             /> */}
+
+              <FormSelect
+                label="BusinessType"
+                name="businessType"
+                value={formik.values.businessType}
+                onChange={(event) => formik.setFieldValue("businessType", event.target.value)}
+                onBlur={formik.handleBlur}
+                error={formik.touched.businessType && formik.errors.businessType}
+                isRequired="true"
+                width={3}
+              >
+                <option value="">Select Business Type</option>
+                <option value="b2b">B2B</option>
+                <option value="b2c">B2C</option>
+              </FormSelect>
 
               <CCol xs={12} className="pt-3">
                 <div className="d-grid gap-2 d-md-block">
