@@ -6,6 +6,7 @@ import { AuthProvider } from "./components/AuthContext";
 import "./index.scss";
 import { permission } from "./lib/user-permissions";
 import { handshake } from "./utils/encryption";
+import UserActivity from "./Pages/Account/UserActivity/UserActivity";
 
 //const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 
@@ -269,7 +270,7 @@ const Root = () => {
                   >
                     <Route path={`${process.env.PUBLIC_URL}/account-statement`} element={<AccountStatement />} />
                   </Route>
-                  <Route path="/" element={<ProtectedRoutes allowedRoles={permission.REPORT_MODULE.USER_HISTORY} />}>
+                  <Route path="/user-history" element={<ProtectedRoutes allowedRoles={permission.REPORT_MODULE.USER_HISTORY} />}>
                     <Route path={`${process.env.PUBLIC_URL}/user-history`} element={<UserHistory />} />
                   </Route>
                   <Route path="/" element={<ProtectedRoutes allowedRoles={permission.BANK_MODULE.ACTIVE} />}>
@@ -278,6 +279,9 @@ const Root = () => {
                   {/* Sync Data */}
                   <Route path="/sync-data" element={<ProtectedRoutes allowedRoles={permission.SYNC_DATA.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/sync-data`} element={<SyncData />} />
+                  </Route>
+                  <Route path="/user-activity" element={<ProtectedRoutes allowedRoles={permission.USER_MODULE.ACTIVE} />}>
+                    <Route path={`${process.env.PUBLIC_URL}/user-activity`} element={<UserActivity />} />
                   </Route>
                 </Route>
               </Route>
