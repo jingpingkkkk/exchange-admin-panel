@@ -11,7 +11,7 @@ import FormToggleSwitch from "../../../components/Common/FormComponents/FormTogg
 import { Notify } from "../../../utils/notify";
 import { getAllCurrency } from "../../Currency/currencyService";
 import { getAllSport } from "../../Sport/sportService";
-import { addData, getDetailByID, updateData } from "../accountService";
+import { addData, getDetailByID, updateData, getSuperAdminMasters } from "../accountService";
 
 const settlementDurationOptions = [
   { value: "daily", label: "Daily" },
@@ -57,6 +57,7 @@ const validationSchemaForCreate = Yup.object({
   settlementDate: Yup.number().nullable(true),
   settlementDay: Yup.string().oneOf(days, "Invalid option selected").nullable(true),
   settlementTime: Yup.string().nullable(true),
+  businessType: Yup.string().required("Business Type is required"),
   // transactionCode: Yup.string().required("Transaction code is required"),
 });
 
@@ -89,6 +90,7 @@ const validationSchemaForUpdate = Yup.object({
   settlementDate: Yup.number().nullable(true),
   settlementDay: Yup.string().oneOf(days, "Invalid option selected").nullable(true),
   settlementTime: Yup.string().nullable(true),
+  businessType: Yup.string().required(),
   // transactionCode: Yup.string().required("Transaction code is required"),
 });
 
@@ -103,6 +105,7 @@ export default function SuperAdminForm() {
   const [currencyList, setCurrencyList] = useState([]);
   const [moduleList, setmoduleList] = useState([]);
   const [serverError, setServerError] = useState(null);
+  const [masterList, setMasterList] = useState([]);
 
   const user = {
     username: "",
@@ -127,6 +130,7 @@ export default function SuperAdminForm() {
     settlementTime: "",
     isCasinoAvailable: false,
     isAutoSettlement: false,
+    businessType: ""
     // transactionCode: "",
   };
 
@@ -173,9 +177,9 @@ export default function SuperAdminForm() {
     const fetchData = async () => {
       // !!! IMPORTANT NOTE: The order of the promises in the array must match the order of the results in the results array
       setLoading(true);
-      Promise.all([getDetailByID(id), getAllCurrency(0), getAllSport(0)])
+      Promise.all([getDetailByID(id), getAllCurrency(0), getAllSport(0), getSuperAdminMasters(id)])
         .then((results) => {
-          const [fetchtedUser, fetchedCurrencies, fetchedModules] = results;
+          const [fetchtedUser, fetchedCurrencies, fetchedModules, fetchMasters] = results;
 
           if (fetchtedUser !== null) {
             const result = fetchtedUser;
@@ -201,6 +205,8 @@ export default function SuperAdminForm() {
               settlementTime: result.settlementTime || "",
               isCasinoAvailable: result.isCasinoAvailable || false,
               isAutoSettlement: result.isAutoSettlement || false,
+              defaultMasterUserId: result.defaultMasterUserId || false,
+              businessType: result.businessType || false,
             }));
           }
 
@@ -212,6 +218,8 @@ export default function SuperAdminForm() {
               label: option.name,
             }))
           );
+
+          setMasterList(fetchMasters.records);
         })
         .finally(() => setLoading(false));
     };
@@ -532,7 +540,25 @@ export default function SuperAdminForm() {
                 isRequired="false"
                 width={3}
               />
-
+              {editMode && (
+                <FormSelect
+                  label="Default Master"
+                  name="defaultMasterUserId"
+                  value={formik.values.defaultMasterUserId}
+                  onChange={(event) => formik.setFieldValue("defaultMasterUserId", event.target.value)}
+                  onBlur={formik.handleBlur}
+                  error={formik.touched.defaultMasterUserId && formik.errors.defaultMasterUserId}
+                  isRequired="true"
+                  width={3}
+                >
+                  <option value="">Select Master</option>
+                  {masterList.map((master, index) => (
+                    <option key={master._id} value={master._id}>
+                      {master.username.toUpperCase()}
+                    </option>
+                  ))}
+                </FormSelect>
+              )}
               {/* <FormInput
               label="Transaction Code"
               name="transactionCode"
@@ -544,6 +570,21 @@ export default function SuperAdminForm() {
               isRequired="true"
               width={3}
             /> */}
+
+              <FormSelect
+                label="BusinessType"
+                name="businessType"
+                value={formik.values.businessType}
+                onChange={(event) => formik.setFieldValue("businessType", event.target.value)}
+                onBlur={formik.handleBlur}
+                error={formik.touched.businessType && formik.errors.businessType}
+                isRequired="true"
+                width={3}
+              >
+                <option value="">Select Business Type</option>
+                <option value="b2b">B2B</option>
+                <option value="b2c">B2C</option>
+              </FormSelect>
 
               <CCol xs={12} className="pt-3">
                 <div className="d-grid gap-2 d-md-block">

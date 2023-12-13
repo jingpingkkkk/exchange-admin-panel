@@ -107,8 +107,21 @@ export const createTransaction = async (request) => {
 };
 
 
+
 export const getUserActivity = async (request) => {
   const result = await postData('users/getUserActivity', request);
   return result.success ? result.data : [];
 };
-// users/getUserActivity
+
+
+export const getSuperAdminMasters = async (id) => {
+  if (!id) {
+    return null;
+  }
+  const result = await postData("users/getSuperAdminMasters", {
+    _id: id
+  });
+  console.log(result);
+  return result.success ? result.data : {};
+};
+
