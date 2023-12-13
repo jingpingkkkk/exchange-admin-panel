@@ -105,3 +105,10 @@ export const createTransaction = async (request) => {
   const result = await postData("transactionActivity/createTransaction", request);
   return result;
 };
+
+
+export const getUserActivity = async (request) => {
+  const result = await postData('users/getUserActivity', request);
+  return result.success ? result.data : [];
+};
+// users/getUserActivity

@@ -163,6 +163,21 @@ export default function UserList() {
       sortable: true,
       sortField: "exposure",
     },
+    {
+      name: "REGISTERED DATE",
+      width: "150px",
+      selector: (row) => {
+        const originalDate = new Date(row.createdAt);
+        const formattedDate = originalDate.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+        return <div title={formattedDate}>{formattedDate}</div>;
+      },
+      sortable: true,
+      sortField: "createdAt",
+    },
     permission.USER_MODULE.USER_BET_UPDATE && {
       name: "BET LOCK",
       selector: (row) => [row.betCategory],
@@ -211,7 +226,7 @@ export default function UserList() {
     },
     permission.USER_MODULE.UPDATE && {
       name: "ACTION",
-      width: "200px",
+      width: "260px",
       cell: (row) => (
         <div>
           <OverlayTrigger placement="top" overlay={<Tooltip> Click here to deposit</Tooltip>}>
@@ -232,10 +247,17 @@ export default function UserList() {
           </OverlayTrigger>
 
           <OverlayTrigger placement="top" overlay={<Tooltip> Click here to edit</Tooltip>}>
-            <Link to="/user-edit" state={{ id: row._id }} className="btn btn-primary btn-lg">
+            <Link to="/user-edit" state={{ id: row._id }} className="btn btn-primary btn-lg ms-2 me-2">
               <i className="fa fa-edit"></i>
             </Link>
           </OverlayTrigger>
+
+          <OverlayTrigger placement="top" overlay={<Tooltip> Click here to see activity</Tooltip>}>
+            <Link to="/user-activity" state={{ id: row._id }} className="btn btn-primary btn-lg">
+              <i className="fa fa-history"></i>
+            </Link>
+          </OverlayTrigger>
+
 
           {/* <button onClick={(e) => handleDelete(row._id)} className="btn btn-danger btn-lg ms-2"><i className="fa fa-trash"></i></button> */}
         </div>
