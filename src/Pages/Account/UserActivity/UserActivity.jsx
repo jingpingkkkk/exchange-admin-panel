@@ -99,6 +99,7 @@ export default function UserActivity() {
   const id = location.state ? location.state.id : null;
 
   const fetchData = async (page, sortBy, direction, searchQuery, filters) => {
+
     setLoading(true);
     try {
       const { userId, fromDate, toDate, type } = filters;
@@ -114,16 +115,22 @@ export default function UserActivity() {
         fromDate: fromDate,
         toDate: toDate,
       });
-      setData(result.records);
-      setTotalRows(result.totalRecords);
-      setLoading(false);
-    } catch (error) {
+      if (id) {
+        setData(result.records);
+        setTotalRows(result.totalRecords);
+        setLoading(false);
+      } else {
+        navigate("/user-list/");
+      }
+    }
+    catch (error) {
       // Handle error
       console.error("Error fetching :", error);
       // Display error message or show notification to the user
       // Set the state to indicate the error condition
       setLoading(false);
     }
+
   };
 
   const handleSort = (column, sortDirection) => {

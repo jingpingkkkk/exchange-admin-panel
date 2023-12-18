@@ -7,6 +7,7 @@ import "./index.scss";
 import { permission } from "./lib/user-permissions";
 import { handshake } from "./utils/encryption";
 import UserActivity from "./Pages/Account/UserActivity/UserActivity";
+import LoggedInUsers from "./Pages/Account/LoggedInUsers/LoggedInUsers";
 
 //const Switcherlayout = React.lazy(() => import("./components/switcherlayout"));
 
@@ -282,6 +283,9 @@ const Root = () => {
                   </Route>
                   <Route path="/user-activity" element={<ProtectedRoutes allowedRoles={permission.USER_MODULE.ACTIVE} />}>
                     <Route path={`${process.env.PUBLIC_URL}/user-activity`} element={<UserActivity />} />
+                  </Route>
+                  <Route path="/" element={<ProtectedRoutes allowedRoles={permission.USER_MODULE.ACTIVE} />}>
+                    <Route path={`${process.env.PUBLIC_URL}/logged-in-users`} element={<LoggedInUsers />} />
                   </Route>
                 </Route>
               </Route>

@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import * as dashboard from "../../../data/dashboard/dashboard";
 import { getTransactionCode } from "../../../lib/transaction-code";
 import { getDashboardById } from "../dashboardService";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   const location = useLocation();
@@ -26,6 +27,7 @@ export default function Dashboard() {
   const [settlementPts, setSettlementPts] = useState(0);
   const [upPts, setUpPts] = useState(0);
   const [downPts, setDownPts] = useState(0);
+  const [loggedInUsers, setloggedInUsers] = useState(0);
 
   const dashboardGraph = {
     options: {
@@ -141,7 +143,7 @@ export default function Dashboard() {
             </Col>
             <div className="col-lg-6 col-md-12 col-sm-12 col-xl-3">
               <div className="card overflow-hidden">
-                <div className="card-body">
+                <div className="card-body card-body">
                   <Row>
                     <div className="col">
                       <h6 className="">Exposure</h6>
@@ -297,6 +299,38 @@ export default function Dashboard() {
                 </Card.Body>
               </Card>
             </Col>
+            <Col lg={6} md={12} sm={12} xl={3}>
+
+
+              <Card className=" overflow-hidden">
+                {/* <Link to="/logged-in-users"> */}
+                <Card.Body className="card-body">
+                  <Row>
+                    <div className="col">
+                      <h6 className="">Logged In Users</h6>
+                      <h3 className="mb-2 number-font">
+                        <CountUp end={loggedInUsers} separator="," start={0} duration={2.94} />
+                      </h3>
+                      {/* <p className="text-muted mb-0">
+                        <span className="text-danger me-1">
+                          <i className="fa fa-chevron-circle-down text-danger me-1"></i>
+                          <span>0.2% </span>
+                        </span>
+                        last month
+                      </p> */}
+                    </div>
+                    <div className="col col-auto">
+                      <div className="counter-icon bg-success-gradient box-shadow-success brround  ms-auto">
+                        <i className="fe fe-user-check text-white mb-5"></i>
+                        {/* <i className="fe fe-user-shield  "></i> */}
+                      </div>
+                    </div>
+                  </Row>
+                </Card.Body>
+                {/* </Link> */}
+              </Card>
+            </Col>
+
           </Row>
         </Col>
       </Row>
