@@ -121,7 +121,6 @@ export const getSuperAdminMasters = async (id) => {
   const result = await postData("users/getSuperAdminMasters", {
     _id: id
   });
-  console.log(result);
   return result.success ? result.data : {};
 };
 
