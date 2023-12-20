@@ -99,7 +99,7 @@ export default function UserActivity() {
   const id = location.state ? location.state.id : null;
 
   const fetchData = async (page, sortBy, direction, searchQuery, filters) => {
-
+    
     setLoading(true);
     try {
       const { userId, fromDate, toDate, type } = filters;
