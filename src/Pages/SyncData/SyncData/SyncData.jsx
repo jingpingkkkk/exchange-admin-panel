@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Breadcrumb, Card, Col, Row, Spinner } from "react-bootstrap";
 import { getAllActiveEvents, syncData } from "../syncDataService";
 import { CButton } from "@coreui/react";
+import { Notify } from "../../../utils/notify";
 
 export default function SyncData() {
   const [syncLoading, setSyncLoading] = useState(false);
@@ -12,11 +13,13 @@ export default function SyncData() {
     try {
       const success = await syncData();
       if (success) {
+        Notify.success("Data synced successfully.");
         setSyncLoading(false);
       }
     } catch (error) {
       // Handle error
       console.error("Error removing :", error);
+      Notify.error(error.message);
       // Set the state to indicate the error condition
       setSyncLoading(false);
     }
