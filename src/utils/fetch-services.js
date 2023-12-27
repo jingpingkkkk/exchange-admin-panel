@@ -16,6 +16,7 @@ const postData = async (url, body, token = null) => {
       Accept: "application/json",
       ...encHeaders,
     },
+    credentials: "include",
     body: await encryptRequest(body),
   });
 
@@ -47,6 +48,7 @@ const getData = async (url) => {
       "Content-Type": "application/json; charset=utf-8",
       ...encHeaders,
     },
+    credentials: "include",
   });
 
   const result2 = await response.json();
@@ -78,6 +80,7 @@ const axiosPostData = async (url, formData) => {
         Authorization: localStorage.getItem("jws_token"),
         ...encHeaders,
       },
+      withCredentials: true,
     })
     .then(async ({ data }) => {
       return await decryptResponse(data);
