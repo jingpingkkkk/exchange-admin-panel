@@ -73,8 +73,8 @@ export default function EventList() {
     sportId: location.state ? location.state.sportId : "",
     starDate: "",
     endDate: "",
-    status: true,
-    eventStatus: "Live",
+    status: "",
+    eventStatus: "",
     // Add more filters here if needed
   });
 
